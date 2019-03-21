@@ -1,4 +1,4 @@
-package com.example.comp6239;
+package com.comp6239;
 
 import org.junit.Test;
 
