@@ -12,4 +12,11 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+    <string name="title_activity_student_home">StudentHomeActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_activity_tutor_home">TutorHomeActivity</string>
+    <string name="title_activity_tutor_view_profile">TutorViewProfile</string>
+    <string name="title_activity_admin_home">AdminHomeActivity</string>
 </resources>
