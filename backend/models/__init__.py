@@ -1,4 +1,5 @@
 import enum
+import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
@@ -56,11 +57,34 @@ class OAuthClient(Base):
     __tablename__ = "oauth_clients"
 
     id = Column(UUIDType, primary_key=True)
-    user = Column(UUIDType, ForeignKey(User.id))  # type: User
+    _client_secret = Column(String, default=None)
+
+    @property
+    def client_secret(self):
+        return self._client_secret
+
+    @client_secret.setter
+    def client_secret(self, value):
+        self._client_secret = hashpw(value.encode(), gensalt())
+
+    def verify_client_secret(self, secret) -> bool:
+        if secret is not None:
+            return checkpw(secret.encode(), self._client_secret)
+        if self._client_secret is None:
+            return True
+        return checkpw(secret.encode(), self._client_secret)
+
+    user_id = Column(UUIDType, ForeignKey(User.id))
+    user = relationship(User)
+
     grant_type = Column(Enum(OAuthGrantType))
     response_type = Column(Enum(OAuthResponseType))
     _scopes = Column(String)
     _redirect_uris = Column(String)
+
+    @property
+    def client_id(self) -> uuid.UUID:
+        return self.id
 
     @property
     def redirect_uris(self) -> List[str]:
@@ -71,6 +95,10 @@ class OAuthClient(Base):
     @property
     def default_redirect_uri(self):
         return self.redirect_uris[0]
+
+    @property
+    def default_scopes(self):
+        return self._scopes
 
     @property
     def scopes(self):
@@ -84,8 +112,38 @@ class OAuthBearerToken(Base):
 
     id = Column(UUIDType, primary_key=True)
 
-    access_token = Column(String)
-    refresh_token = Column(String)
+    _access_token = Column(String)
+
+    @property
+    def access_token(self):
+        return self._access_token
+
+    @access_token.setter
+    def access_token(self, value):
+        self._access_token = hashpw(value.encode(), gensalt())
+
+    def verify_access_token(self, token) -> bool:
+        return checkpw(token.encode(), self._access_token)
+
+    _refresh_token = Column(String)
+
+    @property
+    def refresh_token(self):
+        return self._refresh_token
+
+    @refresh_token.setter
+    def refresh_token(self, value):
+        if value is None:
+            self._refresh_token = None
+        else:
+            self._refresh_token = hashpw(value.encode(), gensalt())
+
+    def verify_refresh_token(self, token) -> bool:
+        if token is not None:
+            return checkpw(token.encode(), self._refresh_token)
+        if self._refresh_token is None:
+            return True
+        return checkpw(token.encode(), self._refresh_token)
 
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
     client = relationship(OAuthClient)
@@ -95,17 +153,17 @@ class OAuthBearerToken(Base):
 
     expires = Column(DateTime)
 
-    _scopes = Column(String)
+    scope = Column(String)
 
     @property
     def scopes(self):
-        if self._scopes:
-            return self._scopes.split()
+        if self.scope:
+            return self.scope.split()
         return []
 
 
-class OAuthAuthorizationCode(Base):
-    __tablename__ = "oauth_authorization_tokens"
+class OAuthGrantToken(Base):
+    __tablename__ = "oauth_grant_tokens"
 
     id = Column(UUIDType, primary_key=True)
 
@@ -115,17 +173,28 @@ class OAuthAuthorizationCode(Base):
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
     client = relationship(OAuthClient)
 
-    code = Column(String)
+    _code = Column(String)
+
+    @property
+    def code(self):
+        return self._code
+
+    @code.setter
+    def code(self, value):
+        self._code = hashpw(value.encode(), gensalt())
+
+    def verify_code(self, code) -> bool:
+        return checkpw(code.encode(), self._code)
 
     redirect_uri = Column(String)
     expires = Column(DateTime)
 
-    _scopes = Column(String)
+    scope = Column(String)
 
     @property
     def scopes(self):
-        if self._scopes:
-            return self._scopes.split()
+        if self.scope:
+            return self.scope.split()
         return []
 
     challenge = Column(String)
