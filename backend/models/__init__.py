@@ -1,4 +1,5 @@
 import enum
+import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
@@ -6,6 +7,8 @@ from sqlalchemy import Column, String, Binary, ForeignKey, Enum, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
+
+from backend.utils.hash import hash_string, compare_hash
 
 Base = declarative_base()
 
@@ -56,11 +59,34 @@ class OAuthClient(Base):
     __tablename__ = "oauth_clients"
 
     id = Column(UUIDType, primary_key=True)
-    user = Column(UUIDType, ForeignKey(User.id))  # type: User
+    _client_secret = Column(Binary(60), default=None)
+
+    @property
+    def client_secret(self):
+        return self._client_secret
+
+    @client_secret.setter
+    def client_secret(self, value):
+        self._client_secret = hashpw(value.encode(), gensalt())
+
+    def verify_client_secret(self, secret) -> bool:
+        if secret is not None:
+            return checkpw(secret.encode(), self._client_secret)
+        if self._client_secret is None:
+            return True
+        return checkpw(secret.encode(), self._client_secret)
+
+    user_id = Column(UUIDType, ForeignKey(User.id))
+    user = relationship(User)
+
     grant_type = Column(Enum(OAuthGrantType))
     response_type = Column(Enum(OAuthResponseType))
     _scopes = Column(String)
     _redirect_uris = Column(String)
+
+    @property
+    def client_id(self) -> uuid.UUID:
+        return self.id
 
     @property
     def redirect_uris(self) -> List[str]:
@@ -71,6 +97,10 @@ class OAuthClient(Base):
     @property
     def default_redirect_uri(self):
         return self.redirect_uris[0]
+
+    @property
+    def default_scopes(self):
+        return self._scopes
 
     @property
     def scopes(self):
@@ -84,8 +114,34 @@ class OAuthBearerToken(Base):
 
     id = Column(UUIDType, primary_key=True)
 
-    access_token = Column(String)
-    refresh_token = Column(String)
+    _access_token = Column(Binary(64), unique=True)
+
+    @property
+    def access_token(self):
+        return self._access_token
+
+    @access_token.setter
+    def access_token(self, value):
+        self._access_token = hash_string(value)
+
+    def verify_access_token(self, token) -> bool:
+        return compare_hash(self._access_token, hash_string(token))
+
+    _refresh_token = Column(Binary(64))
+
+    @property
+    def refresh_token(self):
+        return self._refresh_token
+
+    @refresh_token.setter
+    def refresh_token(self, value):
+        if value is None:
+            self._refresh_token = None
+        else:
+            self._refresh_token = hash_string(value)
+
+    def verify_refresh_token(self, token) -> bool:
+        return compare_hash(self._access_token, hash_string(token))
 
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
     client = relationship(OAuthClient)
@@ -95,17 +151,17 @@ class OAuthBearerToken(Base):
 
     expires = Column(DateTime)
 
-    _scopes = Column(String)
+    scope = Column(String)
 
     @property
     def scopes(self):
-        if self._scopes:
-            return self._scopes.split()
+        if self.scope:
+            return self.scope.split()
         return []
 
 
-class OAuthAuthorizationCode(Base):
-    __tablename__ = "oauth_authorization_tokens"
+class OAuthGrantToken(Base):
+    __tablename__ = "oauth_grant_tokens"
 
     id = Column(UUIDType, primary_key=True)
 
@@ -115,17 +171,28 @@ class OAuthAuthorizationCode(Base):
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
     client = relationship(OAuthClient)
 
-    code = Column(String)
+    _code = Column(Binary(64))
+
+    @property
+    def code(self):
+        return self._code
+
+    @code.setter
+    def code(self, value):
+        self._code = hash_string(value.encode())
+
+    def verify_code(self, code) -> bool:
+        return compare_hash(self._code, hash_string(code))
 
     redirect_uri = Column(String)
     expires = Column(DateTime)
 
-    _scopes = Column(String)
+    scope = Column(String)
 
     @property
     def scopes(self):
-        if self._scopes:
-            return self._scopes.split()
+        if self.scope:
+            return self.scope.split()
         return []
 
     challenge = Column(String)
