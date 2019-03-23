@@ -8,6 +8,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
 
+from backend.utils.hash import hash_string, compare_hash
+
 Base = declarative_base()
 
 
@@ -57,7 +59,7 @@ class OAuthClient(Base):
     __tablename__ = "oauth_clients"
 
     id = Column(UUIDType, primary_key=True)
-    _client_secret = Column(String, default=None)
+    _client_secret = Column(Binary(60), default=None)
 
     @property
     def client_secret(self):
@@ -112,7 +114,7 @@ class OAuthBearerToken(Base):
 
     id = Column(UUIDType, primary_key=True)
 
-    _access_token = Column(String)
+    _access_token = Column(Binary(64), unique=True)
 
     @property
     def access_token(self):
@@ -120,12 +122,12 @@ class OAuthBearerToken(Base):
 
     @access_token.setter
     def access_token(self, value):
-        self._access_token = hashpw(value.encode(), gensalt())
+        self._access_token = hash_string(value)
 
     def verify_access_token(self, token) -> bool:
-        return checkpw(token.encode(), self._access_token)
+        return compare_hash(self._access_token, hash_string(token))
 
-    _refresh_token = Column(String)
+    _refresh_token = Column(Binary(64))
 
     @property
     def refresh_token(self):
@@ -136,14 +138,10 @@ class OAuthBearerToken(Base):
         if value is None:
             self._refresh_token = None
         else:
-            self._refresh_token = hashpw(value.encode(), gensalt())
+            self._refresh_token = hash_string(value)
 
     def verify_refresh_token(self, token) -> bool:
-        if token is not None:
-            return checkpw(token.encode(), self._refresh_token)
-        if self._refresh_token is None:
-            return True
-        return checkpw(token.encode(), self._refresh_token)
+        return compare_hash(self._access_token, hash_string(token))
 
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
     client = relationship(OAuthClient)
@@ -173,7 +171,7 @@ class OAuthGrantToken(Base):
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
     client = relationship(OAuthClient)
 
-    _code = Column(String)
+    _code = Column(Binary(64))
 
     @property
     def code(self):
@@ -181,10 +179,10 @@ class OAuthGrantToken(Base):
 
     @code.setter
     def code(self, value):
-        self._code = hashpw(value.encode(), gensalt())
+        self._code = hash_string(value.encode())
 
     def verify_code(self, code) -> bool:
-        return checkpw(code.encode(), self._code)
+        return compare_hash(self._code, hash_string(code))
 
     redirect_uri = Column(String)
     expires = Column(DateTime)

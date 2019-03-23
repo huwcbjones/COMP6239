@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
 from backend.models import OAuthClient, OAuthGrantToken, OAuthBearerToken, User
+from backend.utils.hash import hash_string
 
 
 @sql_session
@@ -123,9 +124,26 @@ def get_bearer_token_by_id(grant_id: UUID, session: Session, lock_update: bool =
 
 @sql_session
 def get_bearer_token_by_refresh_token(token: str, session: Session, lock_update: bool = False) -> OAuthBearerToken:
+    token = hash_string(token)
     query = session.query(OAuthBearerToken).options(
         # noload(User.api_keys)
-    ).filter_by(refresh_token=token)
+    ).filter_by(_refresh_token=token)
+    if lock_update:
+        query = query.with_for_update()
+
+    token = query.first()
+    if token is None:
+        return None
+        # raise NotFoundException("User not found")
+    return token
+
+
+@sql_session
+def get_bearer_token_by_access_token(token: str, session: Session, lock_update: bool = False) -> OAuthBearerToken:
+    token = hash_string(token)
+    query = session.query(OAuthBearerToken).options(
+        # noload(User.api_keys)
+    ).filter_by(_access_token=token)
     if lock_update:
         query = query.with_for_update()
 
@@ -152,11 +170,11 @@ def save_bearer_token(
         id=uuid.uuid4(),
         client_id=client_id,
         user_id=user_id,
-        access_token=access_token,
-        refresh_token=refresh_token,
         scope=scopes,
         expires=expires
     )
+    token.access_token = access_token
+    token.refresh_token = refresh_token
     try:
         session.add(token)
         session.commit()

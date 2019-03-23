@@ -1,14 +1,18 @@
+import datetime
+import functools
 import logging
 import os
 import uuid
 
-from oauthlib.oauth2 import RequestValidator, Server
+from oauthlib.oauth2 import RequestValidator, Server, ResourceEndpoint
 from sqlalchemy.orm import Session
 
 from backend.database import Database
+from backend.exc import UnauthorisedException
 from backend.models.oauth import client_exists_by_id, get_client_by_id, get_grant_token_by_code, \
-    get_bearer_token_by_refresh_token, delete_grant_token_by_code, save_grant_token, save_bearer_token
-from backend.models.user import get_user_by_email, user_exists_by_email
+    get_bearer_token_by_refresh_token, delete_grant_token_by_code, save_grant_token, save_bearer_token, \
+    get_bearer_token_by_access_token
+from backend.models.user import get_user_by_email, user_exists_by_email, get_user_by_id
 
 log = logging.getLogger(__name__)
 
@@ -189,6 +193,45 @@ class AppRequestValidator(RequestValidator):
         )
         return request.client.default_redirect_uri
 
+    def validate_bearer_token(self, token, scopes, request):
+        """Validate access token.
+        :param token: A string of random characters
+        :param scopes: A list of scopes
+        :param request: The Request object passed by oauthlib
+        The validation validates:
+            1) if the token is available
+            2) if the token has expired
+            3) if the scopes are available
+        """
+        log.debug('Validate bearer token %r', token)
+        tok = get_bearer_token_by_access_token(token)
+        if not tok:
+            msg = 'Bearer token not found.'
+            request.error_message = msg
+            log.debug(msg)
+            return False
+
+        # validate expires
+        if tok.expires is not None and \
+                datetime.datetime.utcnow() > tok.expires:
+            msg = 'Bearer token is expired.'
+            request.error_message = msg
+            log.debug(msg)
+            return False
+
+        # validate scopes
+        if scopes and not set(tok.scopes) & set(scopes):
+            msg = 'Bearer token scope not valid.'
+            request.error_message = msg
+            log.debug(msg)
+            return False
+
+        request.access_token = tok
+        request.user = get_user_by_id(tok.user_id)
+        request.scopes = scopes
+        request.client = get_client_by_id(tok.client_id)
+        return True
+
     def validate_client_id(self, client_id, request, *args, **kwargs):
         with Database.instance.session() as s:  # type: Session
             return client_exists_by_id(client_id, s)
@@ -279,3 +322,49 @@ class AppRequestValidator(RequestValidator):
 
 validator = AppRequestValidator()
 server = Server(validator)
+
+
+def protected2(f):
+    @functools.wraps(f)
+    async def wrapper(*args, **kwargs):
+        self = args[0]
+        scopes = []
+        if "scopes" in kwargs:
+            scopes = kwargs["scopes"]
+
+        v, r = server.verify_request(
+            self.request.uri,
+            http_method=self.request.method,
+            body=self.request.body,
+            headers=self.request.headers,
+            scopes=scopes
+        )
+        if v:
+            return f(*args, **kwargs)
+        else:
+            raise UnauthorisedException()
+
+        # return verify_oauth
+
+    return wrapper
+
+
+async def protected(realms=None):
+    def wrapper(f):
+        @functools.wraps(f)
+        async def verify_oauth(*args, **kwargs):
+            v, r = validator.validate_protected_resource_request(
+                self.request.uri,
+                http_method=self.request.method,
+                body=self.request.body,
+                headers=self.request.headers,
+                realms=realms or []
+            )
+            if v:
+                return f(*args, **kwargs)
+            else:
+                return UnauthorisedException()
+
+        return verify_oauth
+
+    return wrapper

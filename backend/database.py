@@ -60,7 +60,7 @@ class Database:
 
     instance = None  # type: Optional[Database]
 
-    def __init__(self, hostname: str, port: int, user: str, password: str, **kwargs: Dict[str, Any]):
+    def __init__(self, hostname: str, port: int, user: str, password: str, **kwargs):
         """
         Connect to the database
         :param hostname:
