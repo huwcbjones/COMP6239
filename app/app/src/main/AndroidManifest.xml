@@ -26,11 +26,11 @@
             android:name=".TutorHomeActivity"
             android:label="@string/title_activity_tutor_home" />
         <activity
-            android:name=".StudentHomeActivity"
+            android:name=".LoginActivity"
             android:label="@string/title_activity_student_home" />
         <activity android:name=".WaitForApprovalActivity" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".StudentHomeActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

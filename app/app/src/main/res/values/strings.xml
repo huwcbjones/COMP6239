@@ -15,8 +15,14 @@
     <string name="title_activity_student_home">StudentHomeActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
+    <string name="title_my_tutors">My Tutors</string>
+    <string name="title_search_tutors">Search Tutors</string>
+    <string name="title_my_profile">Profile</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_tutor_home">TutorHomeActivity</string>
     <string name="title_activity_tutor_view_profile">TutorViewProfile</string>
     <string name="title_activity_admin_home">AdminHomeActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
