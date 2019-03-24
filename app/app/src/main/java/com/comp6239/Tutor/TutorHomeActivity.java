@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Tutor;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -7,12 +7,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-public class TutorHomeActivity extends AppCompatActivity {
+import com.comp6239.R;
+import com.comp6239.Student.StudentMyTutorsFragment;
+import com.comp6239.Student.StudentSearchTutorsFragment;
+import com.comp6239.Tutor.dummy.DummyContent;
 
-    final Fragment myTutees = new StudentSearchTutorsFragment();
-    final Fragment myRequests = new StudentMyTutorsFragment();
+public class TutorHomeActivity extends AppCompatActivity implements MyStudentsFragment.OnListFragmentInteractionListener, StudentListFragment.OnListFragmentInteractionListener {
+
+    final Fragment myTutees = new MyStudentsFragment();
+    final Fragment myRequests = new StudentListFragment();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment activeFrag = myTutees;
 
@@ -47,4 +51,8 @@ public class TutorHomeActivity extends AppCompatActivity {
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+
+    }
 }

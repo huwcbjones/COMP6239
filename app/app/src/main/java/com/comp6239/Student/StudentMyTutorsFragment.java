@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Student;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,8 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.comp6239.dummy.DummyContent;
-import com.comp6239.dummy.DummyContent.DummyItem;
+import com.comp6239.R;
+import com.comp6239.Student.dummy.DummyContent;
+import com.comp6239.Student.dummy.DummyContent.DummyItem;
 
 /**
  * A fragment representing a list of Items.
@@ -19,7 +20,7 @@ import com.comp6239.dummy.DummyContent.DummyItem;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class StudentSearchTutorsFragment extends Fragment {
+public class StudentMyTutorsFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -31,13 +32,13 @@ public class StudentSearchTutorsFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public StudentSearchTutorsFragment() {
+    public StudentMyTutorsFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static StudentSearchTutorsFragment newInstance(int columnCount) {
-        StudentSearchTutorsFragment fragment = new StudentSearchTutorsFragment();
+    public static StudentMyTutorsFragment newInstance(int columnCount) {
+        StudentMyTutorsFragment fragment = new StudentMyTutorsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -67,7 +68,7 @@ public class StudentSearchTutorsFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new SearchTutorRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setAdapter(new MyTutorsRecyclerViewAdapter(DummyContent.ITEMS, mListener));
         }
         return view;
     }

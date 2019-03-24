@@ -14,23 +14,23 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".AdminHomeActivity"
+            android:name=".Admin.AdminHomeActivity"
             android:label="@string/title_activity_admin_home"></activity>
         <activity
-            android:name=".TutorViewProfileActivity"
+            android:name=".Tutor.TutorViewProfileActivity"
             android:label="@string/title_activity_tutor_view_profile"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".TutorEditProfileActivity" />
-        <activity android:name=".StudentEditProfileActivity" />
+        <activity android:name=".Tutor.TutorEditProfileActivity" />
+        <activity android:name=".Student.StudentEditProfileActivity" />
         <activity
-            android:name=".TutorHomeActivity"
+            android:name=".Tutor.TutorHomeActivity"
             android:label="@string/title_activity_tutor_home" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/title_activity_student_home" />
-        <activity android:name=".WaitForApprovalActivity" />
+        <activity android:name=".Tutor.WaitForApprovalActivity" />
         <activity
-            android:name=".StudentHomeActivity"
+            android:name=".Student.StudentHomeActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

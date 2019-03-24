@@ -20,6 +20,8 @@
     <string name="title_my_tutees">My Tutees</string>
     <string name="title_my_requests">My Requests</string>
     <string name="title_my_profile">Profile</string>
+    <string name="title_tutor_requests">Tutor Approval</string>
+    <string name="title_subjects">Available Subjects</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_tutor_home">TutorHomeActivity</string>
     <string name="title_activity_tutor_view_profile">TutorViewProfile</string>

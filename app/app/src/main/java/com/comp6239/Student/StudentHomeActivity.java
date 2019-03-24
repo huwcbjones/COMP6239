@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Student;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,9 +9,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
-import android.widget.TextView;
 
-import com.comp6239.dummy.DummyContent;
+import com.comp6239.R;
+import com.comp6239.Student.dummy.DummyContent;
 
 public class StudentHomeActivity extends AppCompatActivity implements StudentMyProfileFragment.OnFragmentInteractionListener, StudentMyTutorsFragment.OnListFragmentInteractionListener, StudentSearchTutorsFragment.OnListFragmentInteractionListener {
 

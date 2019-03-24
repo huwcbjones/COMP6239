@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Admin;
 
 import android.content.Context;
 import android.net.Uri;
@@ -8,15 +8,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.comp6239.R;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link StudentMyProfileFragment.OnFragmentInteractionListener} interface
+ * {@link SubjectListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link StudentMyProfileFragment#newInstance} factory method to
+ * Use the {@link SubjectListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StudentMyProfileFragment extends Fragment {
+public class SubjectListFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -28,7 +30,7 @@ public class StudentMyProfileFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    public StudentMyProfileFragment() {
+    public SubjectListFragment() {
         // Required empty public constructor
     }
 
@@ -38,11 +40,11 @@ public class StudentMyProfileFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment StudentMyProfileFragment.
+     * @return A new instance of fragment SubjectListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static StudentMyProfileFragment newInstance(String param1, String param2) {
-        StudentMyProfileFragment fragment = new StudentMyProfileFragment();
+    public static SubjectListFragment newInstance(String param1, String param2) {
+        SubjectListFragment fragment = new SubjectListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -63,7 +65,7 @@ public class StudentMyProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_student_my_profile, container, false);
+        return inflater.inflate(R.layout.fragment_subject_list, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

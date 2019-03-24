@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Student;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.comp6239.StudentSearchTutorsFragment.OnListFragmentInteractionListener;
-import com.comp6239.dummy.DummyContent.DummyItem;
+import com.comp6239.R;
+import com.comp6239.Student.StudentSearchTutorsFragment.OnListFragmentInteractionListener;
+import com.comp6239.Student.dummy.DummyContent.DummyItem;
 
 import java.util.List;
 

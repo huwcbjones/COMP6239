@@ -1,7 +1,9 @@
-package com.comp6239;
+package com.comp6239.Student;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.comp6239.R;
 
 public class StudentEditProfileActivity extends AppCompatActivity {
 

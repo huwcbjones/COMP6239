@@ -1,4 +1,4 @@
-package com.comp6239.dummy;
+package com.comp6239.Admin.dummy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
