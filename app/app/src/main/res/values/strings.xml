@@ -17,6 +17,8 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_my_tutors">My Tutors</string>
     <string name="title_search_tutors">Search Tutors</string>
+    <string name="title_my_tutees">My Tutees</string>
+    <string name="title_my_requests">My Requests</string>
     <string name="title_my_profile">Profile</string>
     <string name="title_notifications">Notifications</string>
     <string name="title_activity_tutor_home">TutorHomeActivity</string>
