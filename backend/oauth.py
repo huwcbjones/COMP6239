@@ -3,6 +3,7 @@ import functools
 import logging
 import os
 import uuid
+from asyncio import iscoroutinefunction
 
 import basicauth
 from oauthlib.oauth2 import RequestValidator, Server
@@ -346,7 +347,11 @@ def protected(f):
             scopes=scopes
         )
         if v:
-            return f(*args, **kwargs)
+            self.current_user = r.user
+            if iscoroutinefunction(f):
+                return await f(*args, **kwargs)
+            else:
+                return f(*args, **kwargs)
         else:
             raise UnauthorisedException()
 
