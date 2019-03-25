@@ -1,4 +1,3 @@
-import enum
 import uuid
 from typing import List
 
@@ -8,6 +7,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
 
+from backend.utils import enum
 from backend.utils.hash import hash_string, compare_hash
 
 Base = declarative_base()
@@ -17,6 +17,12 @@ class UserRole(enum.Enum):
     ADMIN = "a"
     STUDENT = "s"
     TUTOR = "t"
+
+
+class UserGender(enum.Enum):
+    FEMALe = "f"
+    MALE = "m"
+    NOT_SAY = "n"
 
 
 class OAuthGrantType(enum.Enum):
@@ -42,6 +48,9 @@ class User(Base):
     _password = Column("password", Binary(60))
 
     role = Column(Enum(UserRole))
+    gender = Column(Enum(UserGender))
+
+    location = Column(String)
 
     @property
     def password(self):
