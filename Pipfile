@@ -13,6 +13,7 @@ psycopg2-binary = "*"
 alembic = "*"
 bcrypt = "*"
 oauthlib = "*"
+basicauth = "*"
 
 [requires]
 python_version = "3.6"
