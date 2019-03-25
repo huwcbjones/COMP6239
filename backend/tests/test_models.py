@@ -1,16 +1,11 @@
 import logging
-import random
-import string
 import unittest
 import uuid
 
 from backend.database import Database
 from backend.models import User, OAuthClient, OAuthGrantType, OAuthResponseType
 from backend.models.oauth import save_bearer_token, get_bearer_token_by_access_token, get_bearer_token_by_refresh_token
-
-
-def random_string(length):
-    return "".join(random.choices(string.ascii_lowercase + string.digits, k=length))
+from backend.utils import random_string
 
 
 class OAuthBearerTokenTest(unittest.TestCase):

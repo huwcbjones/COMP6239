@@ -1,10 +1,16 @@
+import random
 import re
+import string
 import uuid
 from typing import Optional, Any
 
 from .regex import uuid as uuid_regex
 
 _uuid_regex = re.compile(uuid_regex)
+
+
+def random_string(length):
+    return "".join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
 
 def convert_to_uuid(uuid_obj: Any) -> Optional[uuid.UUID]:
