@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import logging
+import uuid
 
 import tornado.web
 from sqlalchemy.exc import OperationalError
@@ -8,6 +9,8 @@ from sqlalchemy.exc import OperationalError
 import backend.controllers
 from backend.controller import Controller, WebSocketController
 from backend.database import Database
+from backend.models import User, OAuthClient, OAuthGrantType, OAuthResponseType
+from backend.utils import random_string
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +34,7 @@ class App:
         try:
             self.db = self._init_database("localhost", 5432, "postgres", "")
             self.db.recreate_db()
+            self._init_oauth_client()
         except OperationalError as e:
             logging.fatal(e)
             quit(1)
@@ -111,6 +115,31 @@ class App:
             user,
             password
         )
+
+    def _init_oauth_client(self):
+        password = random_string(20)
+        service_user = User(
+            id=uuid.uuid4(),
+            first_name="Service",
+            last_name="Account",
+            email="service@comp6239",
+            password=password
+        )
+        service_client = OAuthClient(
+            id=uuid.UUID("7834452b12ab480d9fc99f23b3546524"),
+            client_secret=None,
+            user_id=service_user.id,
+            grant_type=OAuthGrantType.PASSWORD,
+            response_type=OAuthResponseType.AUTHORIZATION_CODE,
+            _scopes="*",
+            _redirect_uris="http://localhost:8080/oauth/authorize"
+        )
+        with self.db.session() as s:
+            s.add(service_user)
+            s.add(service_client)
+            s.commit()
+            logging.info("Service Account: {} {}".format(service_user.email, password))
+            logging.info("OAuth Client ID: {}".format(service_client.client_id))
 
     def run(self):
         """
