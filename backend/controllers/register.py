@@ -3,12 +3,11 @@ import uuid
 from backend.controller import Controller
 from backend.database import sql_session
 from backend.exc import ResourceAlreadyExistsException, BadRequestException
-from backend.models import User, UserRole
-from backend.models.user import get_user_by_email, user_exists_by_email, user_exists_by_id
+from backend.models import User, UserRole, UserGender
+from backend.models.user import user_exists_by_email, user_exists_by_id
 
 
 class RegisterController(Controller):
-
     route = [r"/register"]
 
     async def post(self):
@@ -16,11 +15,23 @@ class RegisterController(Controller):
             "email",
             "first_name",
             "last_name",
+            "gender",
+            "location",
             "role",
             "password"
         )
-        if self.json_args["role"] not in ("s", "t"):
-            raise BadRequestException("Invalid role provided: must be either 's' or 't'")
+        if UserRole.contains(self.json_args["role"]):
+            valid_roles = list(UserRole.values())
+            valid_roles.remove("a")
+            raise BadRequestException("Invalid role provided: must be in: {}".format(
+                ", ".join(valid_roles)
+            ))
+
+        if not UserGender.contains(self.json_args["gender"]):
+            raise BadRequestException("Invalid gender provided: must be in: {}".format(
+                ", ".join(UserGender.values())
+            ))
+
         with self.app.db.session() as s:
             if user_exists_by_email(self.json_args["email"], s):
                 raise ResourceAlreadyExistsException("An account with that email already exists")
@@ -35,5 +46,5 @@ class RegisterController(Controller):
     def _generate_unique_id(self, session):
         while True:
             id = uuid.uuid4()
-            if not user_exists_by_id(id):
+            if not user_exists_by_id(id, session):
                 return id
