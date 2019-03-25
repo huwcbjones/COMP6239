@@ -27,8 +27,7 @@ def convert_to_uuid(uuid_obj: Any) -> Optional[uuid.UUID]:
 
 def convert_string_to_uuid(uuid_obj: str) -> Optional[uuid.UUID]:
     uuid_obj = uuid_obj.lower()
-    if _uuid_regex.match(uuid_obj):
-        try:
-            return uuid.UUID(uuid_obj)
-        except ValueError:
-            pass
+    try:
+        return uuid.UUID(uuid_obj)
+    except ValueError:
+        pass
