@@ -67,7 +67,10 @@ class OAuthClient(Base):
 
     @client_secret.setter
     def client_secret(self, value):
-        self._client_secret = hashpw(value.encode(), gensalt())
+        if value is None:
+            self._client_secret = None
+        else:
+            self._client_secret = hashpw(value.encode(), gensalt())
 
     def verify_client_secret(self, secret) -> bool:
         if secret is not None:
