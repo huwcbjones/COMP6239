@@ -2,7 +2,9 @@
 Mobile Applications Development
 
 
-## API
+See [API Docs (/docs/api.md)](docs/api.md)
+
+
 * `POST /register`: register for account
 
 * `GET /student/$ID/profile`: get profile for student `$ID`
