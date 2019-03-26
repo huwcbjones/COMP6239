@@ -69,6 +69,16 @@ class Controller(tornado.web.RequestHandler):
             )
         )
 
+    def merge_fields(self, object, *fields):
+        for f in fields:
+            if not hasattr(object, f):
+                continue
+            if not f in self.json_args:
+                continue
+            if getattr(object, f) == self.json_args[f]:
+                continue
+            setattr(object, f, self.json_args[f])
+
     def get_valid_fields(self, *fields) -> Dict:
         return {k: v for k, v in self.json_args.items() if k in fields}
 
