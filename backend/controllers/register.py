@@ -11,7 +11,7 @@ class RegisterController(Controller):
     route = [r"/register"]
 
     async def post(self):
-        self.check_required_fields(
+        permissible_fields = [
             "email",
             "first_name",
             "last_name",
@@ -19,24 +19,28 @@ class RegisterController(Controller):
             "location",
             "role",
             "password"
-        )
-        if UserRole.contains(self.json_args["role"]):
+        ]
+        self.check_required_fields(*permissible_fields)
+        if not UserRole.contains(self.json_args["role"]):
             valid_roles = list(UserRole.values())
             valid_roles.remove("a")
             raise BadRequestException("Invalid role provided: must be in: {}".format(
                 ", ".join(valid_roles)
             ))
+        else:
+            self.json_args["role"] = UserRole(self.json_args["role"])
 
         if not UserGender.contains(self.json_args["gender"]):
             raise BadRequestException("Invalid gender provided: must be in: {}".format(
                 ", ".join(UserGender.values())
             ))
+        else:
+            self.json_args["gender"] = UserGender(self.json_args["gender"])
 
         with self.app.db.session() as s:
             if user_exists_by_email(self.json_args["email"], s):
                 raise ResourceAlreadyExistsException("An account with that email already exists")
-            self.json_args["role"] = UserRole(self.json_args["role"])
-            new_user = User(**self.json_args)
+            new_user = User(**self.get_valid_fields(*permissible_fields))
             new_user.id = self._generate_unique_id(s)
             s.add(new_user)
             s.commit()
