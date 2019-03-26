@@ -355,6 +355,4 @@ def protected(f):
         else:
             raise UnauthorisedException()
 
-        # return verify_oauth
-
     return wrapper
