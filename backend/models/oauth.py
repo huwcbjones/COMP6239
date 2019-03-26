@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
-from backend.models import OAuthClient, OAuthGrantToken, OAuthBearerToken, User
+from backend.models import OAuthClient, OAuthGrantToken, OAuthBearerToken
 from backend.utils.hash import hash_string
 
 
@@ -110,7 +110,7 @@ def bearer_token_exists_by_id(grant_id: UUID, session: Session) -> bool:
 @sql_session
 def get_bearer_token_by_id(grant_id: UUID, session: Session, lock_update: bool = False) -> OAuthBearerToken:
     query = session.query(OAuthBearerToken).options(
-        # noload(User.api_keys)
+        joinedload(OAuthBearerToken.user)
     ).filter_by(id=grant_id)
     if lock_update:
         query = query.with_for_update()
@@ -126,7 +126,7 @@ def get_bearer_token_by_id(grant_id: UUID, session: Session, lock_update: bool =
 def get_bearer_token_by_refresh_token(token: str, session: Session, lock_update: bool = False) -> OAuthBearerToken:
     token = hash_string(token)
     query = session.query(OAuthBearerToken).options(
-        # noload(User.api_keys)
+        joinedload(OAuthBearerToken.user)
     ).filter_by(_refresh_token=token)
     if lock_update:
         query = query.with_for_update()
@@ -142,7 +142,7 @@ def get_bearer_token_by_refresh_token(token: str, session: Session, lock_update:
 def get_bearer_token_by_access_token(token: str, session: Session, lock_update: bool = False) -> OAuthBearerToken:
     token = hash_string(token)
     query = session.query(OAuthBearerToken).options(
-        # noload(User.api_keys)
+        joinedload(OAuthBearerToken.user)
     ).filter_by(_access_token=token)
     if lock_update:
         query = query.with_for_update()
@@ -152,6 +152,13 @@ def get_bearer_token_by_access_token(token: str, session: Session, lock_update: 
         return None
         # raise NotFoundException("User not found")
     return token
+
+
+@sql_session
+def delete_bearer_token(token: OAuthBearerToken, session: Session):
+    with session:
+        session.delete(token)
+        session.commit()
 
 
 @sql_session
