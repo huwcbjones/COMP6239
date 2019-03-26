@@ -4,6 +4,8 @@ import logging
 from json import JSONEncoder as _JSONEncoder
 from uuid import UUID
 
+from enum import Enum
+
 log = logging.getLogger(__name__)
 loads = _json.loads
 
@@ -34,6 +36,8 @@ class JSONEncoder(_JSONEncoder):
         #             if not self.__class__.continue_on_error:
         #                 raise ex
         #     return return_fields
+        if isinstance(o, Enum):
+            return o.value
         if isinstance(o, datetime.datetime):
             return o.isoformat()
         if isinstance(o, UUID):
