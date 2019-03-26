@@ -1,14 +1,14 @@
-from typing import Dict, Any, Union
+from typing import Dict, Any, Union, List
 from uuid import UUID
 
-from sqlalchemy.orm import Session, noload
+from sqlalchemy.orm import Session
 
 # from models import User, apply_common_options, get_pagination_data
 # from utils import sql, convert_to_uuid
 # from utils.exceptions import NotFoundException
 # from utils.sql import handle_db_error, sql_session
 from backend.database import sql_session
-from backend.models import User
+from backend.models import User, Student, Subject, student_subject_assoc_table
 
 
 # @handle_db_error
@@ -69,6 +69,32 @@ def get_user_by_id(id: UUID, session: Session, lock_update: bool = False) -> Use
         query = query.with_for_update()
 
     user = query.first()
+    if user is None:
+        return None
+        # raise NotFoundException("User not found")
+    return user
+
+
+@sql_session
+def get_student_by_id(id: UUID, session: Session, lock_update: bool = False) -> Student:
+    query = session.query(Student).options(
+
+    ).filter_by(id=id)
+    if lock_update:
+        query = query.with_for_update()
+
+    user = query.first()
+    if user is None:
+        return None
+        # raise NotFoundException("User not found")
+    return user
+
+
+@sql_session
+def get_subjects_by_student_id(id: UUID, session: Session) -> List[Subject]:
+    query = session.query(student_subject_assoc_table).join(Subject).filter(Student.id==id)
+
+    user = query.all()
     if user is None:
         return None
         # raise NotFoundException("User not found")

@@ -2,7 +2,7 @@ import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy import Column, String, Binary, ForeignKey, Enum, DateTime
+from sqlalchemy import Column, String, Binary, ForeignKey, Enum, DateTime, Table
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
@@ -38,6 +38,21 @@ class OAuthResponseType(enum.Enum):
     AUTHORIZATION_CODE = "code"
 
 
+student_subject_assoc_table = Table(
+    'students_subjects',
+    Base.metadata,
+    Column('subject_id', UUIDType, ForeignKey('subjects.id')),
+    Column('student_id', UUIDType, ForeignKey('users.id'))
+)
+
+
+class Subject(Base):
+    __tablename__ = "subjects"
+
+    id = Column(UUIDType, primary_key=True)
+    name = Column(String, unique=True)
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -62,6 +77,14 @@ class User(Base):
 
     def verify_password(self, password) -> bool:
         return checkpw(password.encode(), self._password)
+
+
+class Student(User):
+    subjects = relationship(
+        Subject,
+        secondary=student_subject_assoc_table,
+        order_by=Subject.name
+    )
 
 
 class OAuthClient(Base):
