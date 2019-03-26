@@ -117,13 +117,22 @@ class App:
         )
 
     def _init_oauth_client(self):
-        password = random_string(20)
+        service_password = random_string(20)
+        admin_password = random_string(20)
         service_user = User(
             id=uuid.uuid4(),
             first_name="Service",
             last_name="Account",
             email="service@comp6239",
-            password=password
+            password=service_password
+        )
+        admin_user = User(
+            id=uuid.uuid4(),
+            first_name="Admin",
+            last_name="Account",
+            email="admin@comp6239",
+            password=admin_password,
+            role="ADMIN"
         )
         service_client = OAuthClient(
             id=uuid.UUID("7834452b12ab480d9fc99f23b3546524"),
@@ -137,9 +146,11 @@ class App:
         with self.db.session() as s:
             s.add(service_user)
             s.add(service_client)
+            s.add(admin_user)
             s.commit()
-            logging.info("Service Account: {} {}".format(service_user.email, password))
+            logging.info("Service Account: {} {}".format(service_user.email, service_password))
             logging.info("OAuth Client ID: {}".format(service_client.client_id))
+            logging.info("Admin Account: {} {}".format(admin_user.email, admin_password))
 
     def run(self):
         """
