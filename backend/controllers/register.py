@@ -1,3 +1,5 @@
+from http import HTTPStatus
+
 from backend.controller import Controller
 from backend.database import generate_unique_id
 from backend.exc import ResourceAlreadyExistsException, BadRequestException
@@ -42,4 +44,13 @@ class RegisterController(Controller):
             new_user.id = generate_unique_id(user_exists_by_id, s)
             s.add(new_user)
             s.commit()
-            self.write({"msg": "registered"})
+            self.set_status(HTTPStatus.CREATED)
+            self.write({
+                "id": new_user.id,
+                "first_name": new_user.first_name,
+                "last_name": new_user.last_name,
+                "email": new_user.email,
+                "gender": new_user.gender,
+                "role": new_user.role,
+                "location": new_user.location
+            })
