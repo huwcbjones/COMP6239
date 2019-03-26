@@ -1,7 +1,5 @@
-import uuid
-
 from backend.controller import Controller
-from backend.database import sql_session
+from backend.database import generate_unique_id
 from backend.exc import ResourceAlreadyExistsException, BadRequestException
 from backend.models import User, UserRole, UserGender
 from backend.models.user import user_exists_by_email, user_exists_by_id
@@ -41,14 +39,7 @@ class RegisterController(Controller):
             if user_exists_by_email(self.json_args["email"], s):
                 raise ResourceAlreadyExistsException("An account with that email already exists")
             new_user = User(**self.get_valid_fields(*permissible_fields))
-            new_user.id = self._generate_unique_id(s)
+            new_user.id = generate_unique_id(user_exists_by_id, s)
             s.add(new_user)
             s.commit()
             self.write({"msg": "registered"})
-
-    @sql_session
-    def _generate_unique_id(self, session):
-        while True:
-            id = uuid.uuid4()
-            if not user_exists_by_id(id, session):
-                return id
