@@ -2,6 +2,7 @@ import http.client
 import json
 import logging
 from json import JSONDecodeError
+from typing import Dict
 
 import tornado.web
 import tornado.websocket
@@ -68,13 +69,8 @@ class Controller(tornado.web.RequestHandler):
             )
         )
 
-
-class AuthorisedController(Controller):
-    """
-    Authorised Controller
-    Attributes:
-        json_args (Dict): JSON Data
-    """
+    def get_valid_fields(self, *fields) -> Dict:
+        return {k: v for k, v in self.json_args.items() if k in fields}
 
 
 class WebSocketController(tornado.websocket.WebSocketHandler):
