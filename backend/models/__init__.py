@@ -2,7 +2,7 @@ import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy import Column, String, Binary, ForeignKey, Enum, DateTime, Table, Integer, Boolean, Numeric
+from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Boolean, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
@@ -76,7 +76,7 @@ class User(Base):
     first_name = Column(String)
     last_name = Column(String)
     email = Column(EmailType, unique=True)
-    _password = Column("password", Binary(60))
+    _password = Column("password", LargeBinary(60))
 
     role = Column(Enum(UserRole))
     gender = Column(Enum(UserGender))
@@ -140,7 +140,7 @@ class OAuthClient(Base):
     __tablename__ = "oauth_clients"
 
     id = Column(UUIDType, primary_key=True)
-    _client_secret = Column(Binary(60), default=None)
+    _client_secret = Column(LargeBinary(60), default=None)
 
     @property
     def client_secret(self):
@@ -198,7 +198,7 @@ class OAuthBearerToken(Base):
 
     id = Column(UUIDType, primary_key=True)
 
-    _access_token = Column(Binary(64), unique=True)
+    _access_token = Column(LargeBinary(64), unique=True)
 
     @property
     def access_token(self):
@@ -211,7 +211,7 @@ class OAuthBearerToken(Base):
     def verify_access_token(self, token) -> bool:
         return compare_hash(self._access_token, hash_string(token))
 
-    _refresh_token = Column(Binary(64))
+    _refresh_token = Column(LargeBinary(64))
 
     @property
     def refresh_token(self):
@@ -255,7 +255,7 @@ class OAuthGrantToken(Base):
     client_id = Column(UUIDType, ForeignKey(OAuthClient.id, ondelete="CASCADE"))
     client = relationship(OAuthClient)
 
-    _code = Column(Binary(64))
+    _code = Column(LargeBinary(64))
 
     @property
     def code(self):
