@@ -2,7 +2,7 @@ import http.client
 import json
 import logging
 from json import JSONDecodeError
-from typing import Dict
+from typing import Dict, Any
 
 import tornado.web
 import tornado.websocket
@@ -45,7 +45,7 @@ class Controller(tornado.web.RequestHandler):
         except TypeError:
             self.write({"message": http.client.responses[status_code]})
 
-    def write(self, chunk, set_content_type=True, status_code=None):
+    def write(self, chunk: Any, set_content_type=True, status_code=None):
         if status_code is not None:
             self.set_status(status_code)
         if chunk is None:
