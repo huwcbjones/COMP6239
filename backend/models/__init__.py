@@ -13,6 +13,9 @@ from backend.utils.hash import hash_string, compare_hash
 Base = declarative_base()
 
 
+# region Enums
+
+
 class UserRole(enum.Enum):
     ADMIN = "a"
     STUDENT = "s"
@@ -20,9 +23,9 @@ class UserRole(enum.Enum):
 
 
 class UserGender(enum.Enum):
-    FEMALe = "f"
+    FEMALE = "f"
     MALE = "m"
-    NOT_SAY = "n"
+    PREFER_NOT_TO_SAY = "n"
 
 
 class OAuthGrantType(enum.Enum):
@@ -38,18 +41,20 @@ class OAuthResponseType(enum.Enum):
     AUTHORIZATION_CODE = "code"
 
 
+# endregion
+
 student_subject_assoc_table = Table(
     'students_subjects',
     Base.metadata,
-    Column('subject_id', UUIDType, ForeignKey('subjects.id')),
-    Column('student_id', UUIDType, ForeignKey('users.id'))
+    Column('subject_id', UUIDType, ForeignKey('subjects.id', ondelete="CASCADE")),
+    Column('student_id', UUIDType, ForeignKey('users.id', ondelete="CASCADE"))
 )
 
 tutor_subject_assoc_table = Table(
     'tutors_subjects',
     Base.metadata,
-    Column('subject_id', UUIDType, ForeignKey('subjects.id')),
-    Column('profile_id', UUIDType, ForeignKey('tutor_profiles.id'))
+    Column('subject_id', UUIDType, ForeignKey('subjects.id', ondelete="CASCADE")),
+    Column('profile_id', UUIDType, ForeignKey('tutor_profiles.id', ondelete="CASCADE"))
 )
 
 
@@ -99,14 +104,14 @@ class Student(User):
 
 
 class TutorProfile(Base):
-
     __tablename__ = "tutor_profiles"
 
     id = Column(UUIDType, primary_key=True)
-    tutor_id = Column(UUIDType, ForeignKey(User.id), nullable=False)
+    tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), nullable=False)
     tutor = relationship(User)
 
     revision = Column(DateTime, nullable=False)
+    bio = Column(String)
     approved = Column(Boolean, default=False)
     price = Column(Numeric())
 
@@ -118,17 +123,17 @@ class TutorProfile(Base):
 
 
 class Rating(Base):
-
     __tablename__ = "tutor_ratings"
 
-    tutor_id = Column(UUIDType, ForeignKey(User.id), primary_key=True)
-    student_id = Column(UUIDType, ForeignKey(User.id), primary_key=True)
+    tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), primary_key=True)
+    student_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), primary_key=True)
 
-    subject_id = Column(UUIDType, ForeignKey(Subject.id))
+    subject_id = Column(UUIDType, ForeignKey(Subject.id, ondelete="CASCADE"))
     rating = Column(Integer, nullable=False)
     feedback = Column(String)
 
     date = Column(DateTime, nullable=False)
+
 
 # region OAuth Classes
 class OAuthClient(Base):
@@ -155,7 +160,7 @@ class OAuthClient(Base):
             return True
         return checkpw(secret.encode(), self._client_secret)
 
-    user_id = Column(UUIDType, ForeignKey(User.id))
+    user_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))
     user = relationship(User)
 
     grant_type = Column(Enum(OAuthGrantType))
@@ -222,10 +227,10 @@ class OAuthBearerToken(Base):
     def verify_refresh_token(self, token) -> bool:
         return compare_hash(self._access_token, hash_string(token))
 
-    client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
+    client_id = Column(UUIDType, ForeignKey(OAuthClient.id, ondelete="CASCADE"))
     client = relationship(OAuthClient)
 
-    user_id = Column(UUIDType, ForeignKey(User.id))
+    user_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))
     user = relationship(User)
 
     expires = Column(DateTime)
@@ -244,10 +249,10 @@ class OAuthGrantToken(Base):
 
     id = Column(UUIDType, primary_key=True)
 
-    user_id = Column(UUIDType, ForeignKey(User.id))
+    user_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))
     user = relationship(User)
 
-    client_id = Column(UUIDType, ForeignKey(OAuthClient.id))
+    client_id = Column(UUIDType, ForeignKey(OAuthClient.id, ondelete="CASCADE"))
     client = relationship(OAuthClient)
 
     _code = Column(Binary(64))
