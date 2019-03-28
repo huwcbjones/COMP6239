@@ -2,7 +2,7 @@ import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Numeric, func
+from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Numeric, func, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
@@ -60,7 +60,7 @@ tutor_subject_assoc_table = Table(
     'tutors_subjects',
     Base.metadata,
     Column('subject_id', UUIDType, ForeignKey('subjects.id', ondelete="CASCADE")),
-    Column('profile_id', UUIDType, ForeignKey('tutor_profiles.id', ondelete="CASCADE"))
+    Column('profile_id', Integer, ForeignKey('tutor_profiles.id', ondelete="CASCADE"))
 )
 
 
@@ -112,11 +112,10 @@ class Student(User):
 class TutorProfile(TimestampMixin, Base):
     __tablename__ = "tutor_profiles"
 
-    id = Column(UUIDType, primary_key=True)
+    id = Column(Integer, autoincrement=True, primary_key=True)
     tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), nullable=False)
     tutor = relationship(User, foreign_keys=[tutor_id])
 
-    revision = Column(DateTime, default=func.now(), nullable=False)
     bio = Column(String)
     approved_at = Column(DateTime)
 
@@ -141,6 +140,7 @@ class Tutor:
     def __init__(self, tutor: User, profile: TutorProfile):
         super().__setattr__("_tutor", tutor)
         super().__setattr__("_profile", profile)
+        del self._profile.tutor
 
     def __getattr__(self, item):
         if hasattr(self, "_tutor") and hasattr(self._tutor, item):
@@ -155,6 +155,24 @@ class Tutor:
         if hasattr(self, "_profile") and hasattr(self._profile, key):
             return self._profile.__setattr__(key, value)
         super().__setattr__(key, value)
+
+    def fields(self):
+        profile = self._get_fields(self._profile)
+        tutor = self._get_fields(self._tutor)
+        return {**profile, **tutor}
+
+    def _get_fields(self, obj):
+        return_fields = {}
+        inspection = inspect(obj)
+        fields = [field for field in dir(obj) if not field.startswith("_") and field != "metadata"]
+        for field in fields:
+            if field in inspection.unloaded:
+                continue
+            data = obj.__getattribute__(field)
+            if callable(data):
+                continue
+            return_fields[field] = data
+        return return_fields
 
 
 class Rating(TimestampMixin, Base):

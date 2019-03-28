@@ -63,6 +63,5 @@ class RegisterController(Controller):
     async def create_blank_tutor_profile(self, tutor: User, session: Session):
         with session:
             profile = TutorProfile()
-            profile.id = generate_unique_id(profile_exists_by_id, session)
             profile.tutor_id = tutor.id
             session.add(profile)
