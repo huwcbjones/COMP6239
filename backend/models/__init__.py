@@ -2,7 +2,7 @@ import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy import Column, String, Binary, ForeignKey, Enum, DateTime, Table
+from sqlalchemy import Column, String, Binary, ForeignKey, Enum, DateTime, Table, Integer, Boolean, Numeric
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
@@ -45,12 +45,23 @@ student_subject_assoc_table = Table(
     Column('student_id', UUIDType, ForeignKey('users.id'))
 )
 
+tutor_subject_assoc_table = Table(
+    'tutors_subjects',
+    Base.metadata,
+    Column('subject_id', UUIDType, ForeignKey('subjects.id')),
+    Column('profile_id', UUIDType, ForeignKey('tutor_profiles.id'))
+)
+
 
 class Subject(Base):
     __tablename__ = "subjects"
 
     id = Column(UUIDType, primary_key=True)
     name = Column(String, unique=True)
+    students = relationship(
+        "Student",
+        secondary=student_subject_assoc_table
+    )
 
 
 class User(Base):
@@ -87,6 +98,39 @@ class Student(User):
     )
 
 
+class TutorProfile(Base):
+
+    __tablename__ = "tutor_profiles"
+
+    id = Column(UUIDType, primary_key=True)
+    tutor_id = Column(UUIDType, ForeignKey(User.id), nullable=False)
+    tutor = relationship(User)
+
+    revision = Column(DateTime, nullable=False)
+    approved = Column(Boolean, default=False)
+    price = Column(Numeric())
+
+    subjects = relationship(
+        Subject,
+        secondary=tutor_subject_assoc_table,
+        order_by=Subject.name
+    )
+
+
+class Rating(Base):
+
+    __tablename__ = "tutor_ratings"
+
+    tutor_id = Column(UUIDType, ForeignKey(User.id), primary_key=True)
+    student_id = Column(UUIDType, ForeignKey(User.id), primary_key=True)
+
+    subject_id = Column(UUIDType, ForeignKey(Subject.id))
+    rating = Column(Integer, nullable=False)
+    feedback = Column(String)
+
+    date = Column(DateTime, nullable=False)
+
+# region OAuth Classes
 class OAuthClient(Base):
     __tablename__ = "oauth_clients"
 
@@ -232,3 +276,4 @@ class OAuthGrantToken(Base):
 
     challenge = Column(String)
     challenge_method = Column(String)
+# endregion
