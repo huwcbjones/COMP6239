@@ -1,4 +1,5 @@
 from backend.controller import Controller
+from backend.models import OAuthGrantType, OAuthResponseType
 from backend.oauth import server
 
 
@@ -26,3 +27,17 @@ class OAuthTokenController(Controller):
         [self.add_header(h, v) for h, v in headers.items()]
         self.set_status(status)
         self.write(body)
+
+
+class OAuthGrantTypesController(Controller):
+    route = [r"/oauth/grant_types"]
+
+    async def get(self):
+        self.write({g.value: g.name.replace("_", " ").capitalize() for g in OAuthGrantType})
+
+
+class OAuthResponseTypesController(Controller):
+    route = [r"/oauth/response_types"]
+
+    async def get(self):
+        self.write({g.value: g.name.replace("_", " ").capitalize() for g in OAuthResponseType})
