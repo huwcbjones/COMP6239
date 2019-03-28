@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 # from utils.exceptions import NotFoundException
 # from utils.sql import handle_db_error, sql_session
 from backend.database import sql_session
-from backend.models import User, Student, Subject
+from backend.models import User, Student, Subject, UserRole
 
 
 # @handle_db_error
@@ -43,6 +43,13 @@ def user_exists_by_id(user_id: UUID, session: Session) -> bool:
 @sql_session
 def user_exists_by_email(email: str, session: Session) -> bool:
     return session.query(User).filter_by(email=email).count() != 0
+
+
+@sql_session
+def user_is_role(id: UUID, role: UserRole, session: Session) -> bool:
+    with session:
+        user = get_user_by_id(id, session=session)
+        return user.role == role
 
 
 @sql_session
