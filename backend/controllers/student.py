@@ -128,6 +128,8 @@ class StudentSubjectProfileController(Controller):
             student_id = self.current_user.id
         if not user_exists_by_id(student_id):
             raise NotFoundException("Student with that ID not found")
+        if not user_is_role(student_id, UserRole.STUDENT):
+            raise NotFoundException("Student with that ID not found")
         subjects = get_subjects_by_student_id(student_id)
         self.write(subjects)
 
@@ -135,12 +137,16 @@ class StudentSubjectProfileController(Controller):
     async def post(self, student_id: Optional[UUID] = None):
         if student_id is not None:
             raise BadRequestException()
+        student_id = self.current_user.id
 
         if not isinstance(self.json_args, list):
             raise BadRequestException("Invalid body")
 
+        if not user_is_role(student_id, UserRole.STUDENT):
+            raise NotFoundException("Student with that ID not found")
+
         with self.app.db.session() as s:
-            student = get_student_by_id(self.current_user.id, session=s)
+            student = get_student_by_id(student_id, session=s)
 
             if not self.json_args:
                 self.write(student.subjects)
@@ -160,12 +166,16 @@ class StudentSubjectProfileController(Controller):
     async def delete(self, student_id: Optional[UUID] = None):
         if student_id is not None:
             raise BadRequestException()
+        student_id = self.current_user.id
 
         if not isinstance(self.json_args, list):
             raise BadRequestException("Invalid body")
 
+        if not user_is_role(student_id, UserRole.STUDENT):
+            raise NotFoundException("Student with that ID not found")
+
         with self.app.db.session() as s:
-            student = get_student_by_id(self.current_user.id, session=s)
+            student = get_student_by_id(student_id, session=s)
 
             if not self.json_args:
                 self.write(student.subjects)
