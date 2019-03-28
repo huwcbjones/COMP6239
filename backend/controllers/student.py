@@ -1,4 +1,5 @@
 import re
+from http import HTTPStatus
 from typing import Optional
 from uuid import UUID
 
@@ -6,7 +7,7 @@ from backend.controller import Controller
 from backend.exc import NotFoundException, BadRequestException
 from backend.models import UserRole, UserGender
 from backend.models.subject import get_subject_by_id
-from backend.models.user import get_student_by_id, get_subjects_by_student_id, user_exists_by_id
+from backend.models.user import get_student_by_id, get_subjects_by_student_id, user_exists_by_id, user_is_role
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
 
@@ -90,6 +91,29 @@ class StudentProfileController(Controller):
             }
 
         self.write(data)
+
+    @protected
+    async def delete(self, student_id: Optional[UUID] = None):
+        permissible_fields = [
+            "password",
+        ]
+
+        if student_id is not None:
+            raise BadRequestException()
+
+        with self.app.db.session() as s:
+            student = get_student_by_id(self.current_user.id, session=s, lock_update=True)
+            if student is None or student.role != UserRole.STUDENT:
+                raise NotFoundException("Student not found!")
+
+            if not student.verify_password(self.json_args["password"]):
+                raise BadRequestException("Invalid password")
+
+            s.delete(student)
+            s.commit()
+
+        self.set_status(HTTPStatus.NO_CONTENT)
+        self.finish()
 
 
 class StudentSubjectProfileController(Controller):
