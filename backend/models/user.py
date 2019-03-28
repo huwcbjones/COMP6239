@@ -8,31 +8,31 @@ from sqlalchemy.orm import Session
 # from utils.exceptions import NotFoundException
 # from utils.sql import handle_db_error, sql_session
 from backend.database import sql_session
-from backend.models import User, Student, Subject, student_subject_assoc_table
+from backend.models import User, Student, Subject
 
 
 # @handle_db_error
 # @sql_session
 # def user_exists(user_id, session):
-    # type: (Union[int, UUID], Session) -> bool
-    # user_id = convert_to_uuid(user_id)
-    # return session.query(User.id).filter_by(id=user_id).count() != 0
+# type: (Union[int, UUID], Session) -> bool
+# user_id = convert_to_uuid(user_id)
+# return session.query(User.id).filter_by(id=user_id).count() != 0
 
 
 # @handle_db_error
 # @sql_session
 # def get_users(options, session):
-    # type: (Dict[str, Any], Session) -> Dict[str, Any]
-    # query = session.query(User)
-    # total = query.count()
-    # query = apply_common_options(query, User, options)
-    #
-    # users = query.all()
-    # if users is None:
-    #     users = []
-    # data = get_pagination_data(options, total)
-    # data['data'] = users
-    # return data
+# type: (Dict[str, Any], Session) -> Dict[str, Any]
+# query = session.query(User)
+# total = query.count()
+# query = apply_common_options(query, User, options)
+#
+# users = query.all()
+# if users is None:
+#     users = []
+# data = get_pagination_data(options, total)
+# data['data'] = users
+# return data
 
 
 @sql_session
@@ -92,7 +92,7 @@ def get_student_by_id(id: UUID, session: Session, lock_update: bool = False) -> 
 
 @sql_session
 def get_subjects_by_student_id(id: UUID, session: Session) -> List[Subject]:
-    query = session.query(student_subject_assoc_table).join(Subject).filter(Student.id==id)
+    query = session.query(Subject).join(Subject.students).filter_by(id=id)
 
     user = query.all()
     if user is None:
