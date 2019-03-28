@@ -2,8 +2,9 @@ import uuid
 from typing import List
 
 from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Boolean, Numeric
+from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Numeric, func
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import relationship
 from sqlalchemy_utils import UUIDType, EmailType
 
@@ -11,6 +12,11 @@ from backend.utils import enum
 from backend.utils.hash import hash_string, compare_hash
 
 Base = declarative_base()
+
+
+class TimestampMixin(object):
+    created_at = Column(DateTime, default=func.now())
+    modified_at = Column(DateTime, default=func.now(), onupdate=func.current_timestamp())
 
 
 # region Enums
@@ -69,7 +75,7 @@ class Subject(Base):
     )
 
 
-class User(Base):
+class User(TimestampMixin, Base):
     __tablename__ = "users"
 
     id = Column(UUIDType, primary_key=True)
@@ -103,16 +109,20 @@ class Student(User):
     )
 
 
-class TutorProfile(Base):
+class TutorProfile(TimestampMixin, Base):
     __tablename__ = "tutor_profiles"
 
     id = Column(UUIDType, primary_key=True)
     tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), nullable=False)
-    tutor = relationship(User)
+    tutor = relationship(User, foreign_keys=[tutor_id])
 
-    revision = Column(DateTime, nullable=False)
+    revision = Column(DateTime, default=func.now(), nullable=False)
     bio = Column(String)
-    approved = Column(Boolean, default=False)
+    approved_at = Column(DateTime)
+
+    approved_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))
+    approved_by = relationship(User, foreign_keys=[approved_id])
+
     price = Column(Numeric())
 
     subjects = relationship(
@@ -121,8 +131,33 @@ class TutorProfile(Base):
         order_by=Subject.name
     )
 
+    @hybrid_property
+    def is_approved(self) -> bool:
+        return self.approved_at is not None
 
-class Rating(Base):
+
+class Tutor:
+
+    def __init__(self, tutor: User, profile: TutorProfile):
+        super().__setattr__("_tutor", tutor)
+        super().__setattr__("_profile", profile)
+
+    def __getattr__(self, item):
+        if hasattr(self, "_tutor") and hasattr(self._tutor, item):
+            return getattr(self._tutor, item)
+        if hasattr(self, "_profile") and hasattr(self._profile, item):
+            return getattr(self._profile, item)
+        raise AttributeError()
+
+    def __setattr__(self, key, value):
+        if hasattr(self, "_tutor") and hasattr(self._tutor, key):
+            return self._tutor.__setattr__(key, value)
+        if hasattr(self, "_profile") and hasattr(self._profile, key):
+            return self._profile.__setattr__(key, value)
+        super().__setattr__(key, value)
+
+
+class Rating(TimestampMixin, Base):
     __tablename__ = "tutor_ratings"
 
     tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), primary_key=True)
@@ -136,7 +171,7 @@ class Rating(Base):
 
 
 # region OAuth Classes
-class OAuthClient(Base):
+class OAuthClient(TimestampMixin, Base):
     __tablename__ = "oauth_clients"
 
     id = Column(UUIDType, primary_key=True)
@@ -193,7 +228,7 @@ class OAuthClient(Base):
         return []
 
 
-class OAuthBearerToken(Base):
+class OAuthBearerToken(TimestampMixin, Base):
     __tablename__ = "oauth_bearer_tokens"
 
     id = Column(UUIDType, primary_key=True)
@@ -244,7 +279,7 @@ class OAuthBearerToken(Base):
         return []
 
 
-class OAuthGrantToken(Base):
+class OAuthGrantToken(TimestampMixin, Base):
     __tablename__ = "oauth_grant_tokens"
 
     id = Column(UUIDType, primary_key=True)
