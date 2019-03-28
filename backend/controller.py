@@ -51,6 +51,8 @@ class Controller(tornado.web.RequestHandler):
         if chunk is None:
             return
         if isinstance(chunk, (dict, list)):
+            if isinstance(chunk, dict):
+                chunk = dict(sorted(chunk.items()))
             chunk = dumps(chunk)
         # if isinstance(chunk, (Model, dict, list)):
         #     chunk = json.dumps(chunk, cls=ModelDecoder)
