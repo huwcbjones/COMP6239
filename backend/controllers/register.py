@@ -15,11 +15,13 @@ class RegisterController(Controller):
             "email",
             "first_name",
             "last_name",
-            "gender",
             "location",
             "role",
             "password"
         ]
+        required_fields = permissible_fields.copy()
+        required_fields.append("gender")
+
         self.check_required_fields(*permissible_fields)
         if not UserRole.contains(self.json_args["role"]):
             valid_roles = list(UserRole.values())
@@ -31,16 +33,14 @@ class RegisterController(Controller):
             self.json_args["role"] = UserRole(self.json_args["role"])
 
         if not UserGender.contains(self.json_args["gender"]):
-            raise BadRequestException("Invalid gender provided: must be in: {}".format(
-                ", ".join(UserGender.values())
-            ))
+            self.json_args["gender"] = UserGender.PREFER_NOT_TO_SAY
         else:
             self.json_args["gender"] = UserGender(self.json_args["gender"])
 
         with self.app.db.session() as s:
             if user_exists_by_email(self.json_args["email"], s):
                 raise ResourceAlreadyExistsException("An account with that email already exists")
-            new_user = User(**self.get_valid_fields(*permissible_fields))
+            new_user = User(**self.get_valid_fields(*required_fields))
             new_user.id = generate_unique_id(user_exists_by_id, s)
             s.add(new_user)
             s.commit()
