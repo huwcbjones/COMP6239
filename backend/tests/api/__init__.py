@@ -65,7 +65,7 @@ class APITestCase(TestCase):
     @classmethod
     def setUpAPI(cls):
         free_port = get_free_port()
-        cls.test_time = datetime.datetime.utcnow().isoformat()
+        cls.test_time = datetime.datetime.utcnow().isoformat().lower()
         cls.api_uri = "http://localhost:{}".format(free_port)
         log.info("API URI: {}".format(cls.api_uri))
         cls.app_process = Process(target=launch_app, args=(free_port,), daemon=True)
