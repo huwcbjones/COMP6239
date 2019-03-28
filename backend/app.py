@@ -5,6 +5,7 @@ import uuid
 
 import tornado.web
 from sqlalchemy.exc import OperationalError
+from tornado.log import access_log
 
 import backend.controllers
 from backend.controller import Controller, WebSocketController
@@ -105,7 +106,7 @@ class App:
                 raise tornado.web.HTTPError(status_code=404)
 
         routes.append((r"[\w\W]*", DefaultController))
-        return tornado.web.Application(routes)
+        return TornadoWebApp(routes)
 
     def _init_database(self, host: str, port: int, user: str, password: str):
 
@@ -169,3 +170,17 @@ class App:
         finally:
             loop.stop()
             loop.close()
+
+
+class TornadoWebApp(tornado.web.Application):
+
+    def log_request(self, handler):
+        # disable protected-access pylint: disable=W0212
+        if handler.get_status() < 400:
+            log_method = access_log.info
+        elif handler.get_status() < 500:
+            log_method = access_log.warning
+        else:
+            log_method = access_log.error
+        request_time = 1000.0 * handler.request.request_time()
+        log_method("{:d} {} {:.2f}ms".format(handler.get_status(), handler._request_summary(), request_time))
