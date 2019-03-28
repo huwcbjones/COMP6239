@@ -1,9 +1,12 @@
 from http import HTTPStatus
 
+from sqlalchemy.orm import Session
+
 from backend.controller import Controller
 from backend.database import generate_unique_id
 from backend.exc import ResourceAlreadyExistsException, BadRequestException
-from backend.models import User, UserRole, UserGender
+from backend.models import User, UserRole, UserGender, TutorProfile
+from backend.models.tutor import profile_exists_by_id
 from backend.models.user import user_exists_by_email, user_exists_by_id
 
 
@@ -43,6 +46,8 @@ class RegisterController(Controller):
             new_user = User(**self.get_valid_fields(*required_fields))
             new_user.id = generate_unique_id(user_exists_by_id, s)
             s.add(new_user)
+            if new_user.role == UserRole.TUTOR:
+                await self.create_blank_tutor_profile(new_user, s)
             s.commit()
             self.set_status(HTTPStatus.CREATED)
             self.write({
@@ -54,3 +59,10 @@ class RegisterController(Controller):
                 "role": new_user.role,
                 "location": new_user.location
             })
+
+    async def create_blank_tutor_profile(self, tutor: User, session: Session):
+        with session:
+            profile = TutorProfile()
+            profile.id = generate_unique_id(profile_exists_by_id, session)
+            profile.tutor_id = tutor.id
+            session.add(profile)
