@@ -32,7 +32,7 @@ class RegisterController(Controller):
         else:
             self.json_args["role"] = UserRole(self.json_args["role"])
 
-        if not UserGender.contains(self.json_args["gender"]):
+        if "gender" not in self.json_args or not UserGender.contains(self.json_args["gender"]):
             self.json_args["gender"] = UserGender.PREFER_NOT_TO_SAY
         else:
             self.json_args["gender"] = UserGender(self.json_args["gender"])
