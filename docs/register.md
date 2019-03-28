@@ -3,9 +3,15 @@
 ## Contents
 * [API](api.md)
 * Endpoints
-  * /register
-  * [/student](student.md)
-* [Objects](objects.md)
+    * [/register](register.md)
+    * [/student](student.md)
+* Objects
+    * [Enumerations](#enumerations)
+        * [Gender](#gender)
+        * [Role](#role)
+    * [User](#user)
+        * [Student](#student)
+    * [Subject](#subject)
   
 ## /register
 
