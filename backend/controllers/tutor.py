@@ -7,9 +7,9 @@ from sqlalchemy.orm import Session
 
 from backend.controller import Controller
 from backend.exc import NotFoundException, BadRequestException
-from backend.models import UserRole, UserGender, Tutor, TutorProfile
+from backend.models import UserRole, UserGender, TutorProfile
 from backend.models.subject import get_subject_by_id
-from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_id
+from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_tutor_id, get_subjects_by_tutor_id
 from backend.models.user import user_exists_by_id, user_is_role, get_user_by_id
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
@@ -81,7 +81,7 @@ class TutorProfileController(Controller):
 
         with self.app.db.session() as s:  # type: Session
             user = get_user_by_id(self.current_user.id, session=s, lock_update=True)
-            profile = get_profile_by_id(self.current_user.id, session=s)
+            profile = get_profile_by_tutor_id(self.current_user.id, session=s)
             if user is None or user.role != UserRole.TUTOR:
                 raise NotFoundException("Tutor not found!")
 
@@ -109,7 +109,8 @@ class TutorProfileController(Controller):
                 new_profile = TutorProfile(**{
                     "tutor_id": profile.tutor_id,
                     "bio": profile.bio,
-                    "price": profile.price
+                    "price": profile.price,
+                    "subjects": profile.subjects
                 })
                 s.add(new_profile)
                 s.expunge(profile)
@@ -188,14 +189,14 @@ class TutorSubjectProfileController(Controller):
         if not isinstance(self.json_args, list):
             raise BadRequestException("Invalid body")
 
-        if not user_is_role(tutor_id, UserRole.STUDENT):
+        if not user_is_role(tutor_id, UserRole.TUTOR):
             raise NotFoundException("Tutor with that ID not found")
 
         with self.app.db.session() as s:
-            tutor = get_tutor_by_id(tutor_id, session=s)
+            profile = get_profile_by_tutor_id(self.current_user.id, session=s)
 
             if not self.json_args:
-                self.write(tutor.subjects)
+                self.write(profile.subjects)
                 return
 
             subject_ids = [UUID(s_id) for s_id in self.json_args if _uuid_regex.match(s_id)]
@@ -203,10 +204,22 @@ class TutorSubjectProfileController(Controller):
                 subject = get_subject_by_id(s_id, session=s)
                 if subject is None:
                     continue
-                tutor.subjects.append(subject)
-            s.merge(tutor)
+                profile.subjects.append(subject)
+
+            if profile.is_approved:
+                new_profile = TutorProfile(**{
+                    "tutor_id": profile.tutor_id,
+                    "bio": profile.bio,
+                    "price": profile.price,
+                    "subjects": profile.subjects
+                })
+                s.expunge(profile)
+                profile = new_profile
+                s.add(profile)
+            else:
+                s.merge(profile)
             s.commit()
-            self.write(tutor.subjects)
+            self.write(profile.subjects)
 
     @protected
     async def delete(self, tutor_id: Optional[UUID] = None):
@@ -221,10 +234,10 @@ class TutorSubjectProfileController(Controller):
             raise NotFoundException("Tutor with that ID not found")
 
         with self.app.db.session() as s:
-            tutor = get_tutor_by_id(tutor_id, session=s)
+            profile = get_profile_by_tutor_id(self.current_user.id, session=s)
 
             if not self.json_args:
-                self.write(tutor.subjects)
+                self.write(profile.subjects)
                 return
 
             subject_ids = [UUID(s_id) for s_id in self.json_args if _uuid_regex.match(s_id)]
@@ -232,8 +245,20 @@ class TutorSubjectProfileController(Controller):
                 subject = get_subject_by_id(s_id, session=s)
                 if subject is None:
                     continue
-                if subject in tutor.subjects:
-                    tutor.subjects.remove(subject)
-            s.merge(tutor)
+                if subject in profile.subjects:
+                    profile.subjects.remove(subject)
+
+            if profile.is_approved:
+                new_profile = TutorProfile(**{
+                    "tutor_id": profile.tutor_id,
+                    "bio": profile.bio,
+                    "price": profile.price,
+                    "subjects": profile.subjects
+                })
+                s.expunge(profile)
+                profile = new_profile
+                s.add(profile)
+            else:
+                s.merge(profile)
             s.commit()
-            self.write(tutor.subjects)
+            self.write(profile.subjects)

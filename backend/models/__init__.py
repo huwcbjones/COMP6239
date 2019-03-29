@@ -73,6 +73,10 @@ class Subject(Base):
         "Student",
         secondary=student_subject_assoc_table
     )
+    tutors = relationship(
+        "TutorProfile",
+        secondary=tutor_subject_assoc_table
+    )
 
 
 class User(TimestampMixin, Base):

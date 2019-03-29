@@ -34,6 +34,10 @@ def launch_app(port):
 class APITestCase(TestCase):
     api_uri = ""
     client = None  # type: Optional[OAuth2Session]
+    test_time = datetime.datetime.utcnow().isoformat().lower()
+    free_port = get_free_port()
+    email = "test@test"
+    password = "Test1!"
 
     @classmethod
     def get(cls, uri, json=None, query=None) -> Response:
@@ -65,11 +69,9 @@ class APITestCase(TestCase):
 
     @classmethod
     def setUpAPI(cls):
-        free_port = get_free_port()
-        cls.test_time = datetime.datetime.utcnow().isoformat().lower()
-        cls.api_uri = "http://localhost:{}".format(free_port)
+        cls.api_uri = "http://localhost:{}".format(cls.free_port)
         log.info("API URI: {}".format(cls.api_uri))
-        cls.app_process = Process(target=launch_app, args=(free_port,), daemon=True)
+        cls.app_process = Process(target=launch_app, args=(cls.free_port,), daemon=True)
         cls.app_process.start()
 
         while True:
@@ -85,7 +87,11 @@ class APITestCase(TestCase):
         os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "True"
 
     @classmethod
-    def setUpOAuthClient(cls, username, password):
+    def setUpOAuthClient(cls, username: str = None, password: str = None):
+        if username is None:
+            username = cls.email
+        if password is None:
+            password = cls.password
         with OAuth2Session(client=LegacyApplicationClient(client_id="7834452b-12ab-480d-9fc9-9f23b3546524")) as oauth:
             token = oauth.fetch_token(cls.api_uri + "/oauth/token", username=username, password=password)
 

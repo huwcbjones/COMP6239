@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
-from backend.models import TutorProfile, Tutor
+from backend.models import TutorProfile, Tutor, Subject
 from backend.models.user import get_user_by_id
 
 
@@ -31,7 +31,7 @@ def profile_exists_by_id(profile_id: int, session: Session) -> bool:
 
 
 @sql_session
-def get_profile_by_id(id: UUID, session: Session, is_approved: bool = False) -> TutorProfile:
+def get_profile_by_tutor_id(id: UUID, session: Session, is_approved: bool = False) -> TutorProfile:
     with session:
         query = session.query(TutorProfile).options(
             joinedload(TutorProfile.subjects)
@@ -49,7 +49,18 @@ def get_tutor_by_id(id: UUID, session: Session, lock_update: bool = False, is_ap
         user = get_user_by_id(id, session, lock_update=lock_update)
         if user is None:
             return None
-        profile = get_profile_by_id(id, session, is_approved=is_approved)
+        profile = get_profile_by_tutor_id(id, session, is_approved=is_approved)
         if profile is None:
             return None
         return Tutor(user, profile)
+
+
+@sql_session
+def get_subjects_by_tutor_id(id: UUID, session: Session, is_approved: bool = False) -> List[Subject]:
+    profile_id = get_profile_by_tutor_id(id, session=session, is_approved=is_approved).id
+    query = session.query(Subject).join(Subject.tutors).filter_by(id=profile_id)
+    subjects = query.all()
+    if subjects is None:
+        return None
+        # raise NotFoundException("User not found")
+    return subjects
