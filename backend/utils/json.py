@@ -1,6 +1,7 @@
 import datetime
 import json as _json
 import logging
+from decimal import Decimal
 from json import JSONEncoder as _JSONEncoder
 from uuid import UUID
 
@@ -46,6 +47,8 @@ class JSONEncoder(_JSONEncoder):
             return o.isoformat()
         if isinstance(o, UUID):
             return str(o)
+        if isinstance(o, Decimal):
+            return float(o)
         return o
 
 
