@@ -2,6 +2,7 @@ import http.client
 import json
 import logging
 from json import JSONDecodeError
+from typing import Dict, Any
 
 import tornado.web
 import tornado.websocket
@@ -44,12 +45,14 @@ class Controller(tornado.web.RequestHandler):
         except TypeError:
             self.write({"message": http.client.responses[status_code]})
 
-    def write(self, chunk, set_content_type=True, status_code=None):
+    def write(self, chunk: Any, set_content_type=True, status_code=None):
         if status_code is not None:
             self.set_status(status_code)
         if chunk is None:
             return
         if isinstance(chunk, (dict, list)):
+            if isinstance(chunk, dict):
+                chunk = dict(sorted(chunk.items()))
             chunk = dumps(chunk)
         # if isinstance(chunk, (Model, dict, list)):
         #     chunk = json.dumps(chunk, cls=ModelDecoder)
@@ -68,13 +71,18 @@ class Controller(tornado.web.RequestHandler):
             )
         )
 
+    def merge_fields(self, object, *fields):
+        for f in fields:
+            if not hasattr(object, f):
+                continue
+            if not f in self.json_args:
+                continue
+            if getattr(object, f) == self.json_args[f]:
+                continue
+            setattr(object, f, self.json_args[f])
 
-class AuthorisedController(Controller):
-    """
-    Authorised Controller
-    Attributes:
-        json_args (Dict): JSON Data
-    """
+    def get_valid_fields(self, *fields) -> Dict:
+        return {k: v for k, v in self.json_args.items() if k in fields}
 
 
 class WebSocketController(tornado.websocket.WebSocketHandler):

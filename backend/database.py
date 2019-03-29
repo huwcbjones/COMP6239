@@ -1,7 +1,8 @@
 import inspect
 import logging
 import os
-from typing import Callable, Dict, Any, Optional
+import uuid
+from typing import Callable, Optional
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
@@ -57,7 +58,6 @@ class _WrappedSession:
 
 
 class Database:
-
     instance = None  # type: Optional[Database]
 
     def __init__(self, hostname: str, port: int, user: str, password: str, **kwargs):
@@ -159,3 +159,14 @@ def sql_session(func: Callable) -> Callable:
             return func(*args, **kwargs)
 
     return wrapper
+
+
+@sql_session
+def generate_unique_id(
+        exists_callback: Callable[[uuid.UUID, Session], Session],
+        session: Session
+) -> uuid.UUID:
+    while True:
+        id = uuid.uuid4()
+        if not exists_callback(id, session):
+            return id

@@ -3,8 +3,10 @@ import functools
 import logging
 import os
 import uuid
+from asyncio import iscoroutinefunction
 
-from oauthlib.oauth2 import RequestValidator, Server, ResourceEndpoint
+import basicauth
+from oauthlib.oauth2 import RequestValidator, Server
 from sqlalchemy.orm import Session
 
 from backend.database import Database
@@ -13,6 +15,7 @@ from backend.models.oauth import client_exists_by_id, get_client_by_id, get_gran
     get_bearer_token_by_refresh_token, delete_grant_token_by_code, save_grant_token, save_bearer_token, \
     get_bearer_token_by_access_token
 from backend.models.user import get_user_by_email, user_exists_by_email, get_user_by_id
+from backend.utils import convert_to_uuid
 
 log = logging.getLogger(__name__)
 
@@ -36,13 +39,15 @@ class AppRequestValidator(RequestValidator):
             return request.client_id, request.client_secret
 
         auth = request.headers.get('Authorization')
-        # If Werkzeug successfully parsed the Authorization header,
-        # `extract_params` helper will replace the header with a parsed dict,
-        # otherwise, there is nothing useful in the header and we just skip it.
-        if isinstance(auth, dict):
-            return auth['username'], auth['password']
+        if auth is None:
+            return None, None
 
-        return None, None
+        username, password = basicauth.decode(auth)
+        if username == "":
+            username = None
+        if password == "":
+            password = None
+        return username, password
 
     def authenticate_client(self, request, *args, **kwargs):
         """Authenticate itself in other means.
@@ -50,6 +55,8 @@ class AppRequestValidator(RequestValidator):
         .. _`Section 3.2.1`: http://tools.ietf.org/html/rfc6749#section-3.2.1
         """
         client_id, client_secret = self._get_client_credentials_from_request(request)
+        client_id = convert_to_uuid(client_id)
+
         log.debug('Authenticating client %r', client_id)
 
         client = get_client_by_id(client_id)
@@ -324,7 +331,7 @@ validator = AppRequestValidator()
 server = Server(validator)
 
 
-def protected2(f):
+def protected(f):
     @functools.wraps(f)
     async def wrapper(*args, **kwargs):
         self = args[0]
@@ -340,31 +347,12 @@ def protected2(f):
             scopes=scopes
         )
         if v:
-            return f(*args, **kwargs)
+            self.current_user = r.user
+            if iscoroutinefunction(f):
+                return await f(*args, **kwargs)
+            else:
+                return f(*args, **kwargs)
         else:
             raise UnauthorisedException()
-
-        # return verify_oauth
-
-    return wrapper
-
-
-async def protected(realms=None):
-    def wrapper(f):
-        @functools.wraps(f)
-        async def verify_oauth(*args, **kwargs):
-            v, r = validator.validate_protected_resource_request(
-                self.request.uri,
-                http_method=self.request.method,
-                body=self.request.body,
-                headers=self.request.headers,
-                realms=realms or []
-            )
-            if v:
-                return f(*args, **kwargs)
-            else:
-                return UnauthorisedException()
-
-        return verify_oauth
 
     return wrapper

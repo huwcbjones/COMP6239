@@ -1,13 +1,17 @@
 import asyncio
 import inspect
 import logging
+import uuid
 
 import tornado.web
 from sqlalchemy.exc import OperationalError
+from tornado.log import access_log
 
 import backend.controllers
 from backend.controller import Controller, WebSocketController
 from backend.database import Database
+from backend.models import User, OAuthClient, OAuthGrantType, OAuthResponseType
+from backend.utils import random_string
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +35,7 @@ class App:
         try:
             self.db = self._init_database("localhost", 5432, "postgres", "")
             self.db.recreate_db()
+            self._init_oauth_client()
         except OperationalError as e:
             logging.fatal(e)
             quit(1)
@@ -101,7 +106,7 @@ class App:
                 raise tornado.web.HTTPError(status_code=404)
 
         routes.append((r"[\w\W]*", DefaultController))
-        return tornado.web.Application(routes)
+        return TornadoWebApp(routes)
 
     def _init_database(self, host: str, port: int, user: str, password: str):
 
@@ -111,6 +116,42 @@ class App:
             user,
             password
         )
+
+    def _init_oauth_client(self):
+        service_password = random_string(20)
+        admin_password = random_string(20)
+        service_user = User(
+            id=uuid.uuid4(),
+            first_name="Service",
+            last_name="Account",
+            email="service@comp6239",
+            password=service_password
+        )
+        admin_user = User(
+            id=uuid.uuid4(),
+            first_name="Admin",
+            last_name="Account",
+            email="admin@comp6239",
+            password=admin_password,
+            role="ADMIN"
+        )
+        service_client = OAuthClient(
+            id=uuid.UUID("7834452b12ab480d9fc99f23b3546524"),
+            client_secret=None,
+            user_id=service_user.id,
+            grant_type=OAuthGrantType.PASSWORD,
+            response_type=OAuthResponseType.AUTHORIZATION_CODE,
+            _scopes="*",
+            _redirect_uris="http://localhost:8080/oauth/authorize"
+        )
+        with self.db.session() as s:
+            s.add(service_user)
+            s.add(service_client)
+            s.add(admin_user)
+            s.commit()
+            logging.info("Service Account: {} {}".format(service_user.email, service_password))
+            logging.info("OAuth Client ID: {}".format(service_client.client_id))
+            logging.info("Admin Account: {} {}".format(admin_user.email, admin_password))
 
     def run(self):
         """
@@ -129,3 +170,17 @@ class App:
         finally:
             loop.stop()
             loop.close()
+
+
+class TornadoWebApp(tornado.web.Application):
+
+    def log_request(self, handler):
+        # disable protected-access pylint: disable=W0212
+        if handler.get_status() < 400:
+            log_method = access_log.info
+        elif handler.get_status() < 500:
+            log_method = access_log.warning
+        else:
+            log_method = access_log.error
+        request_time = 1000.0 * handler.request.request_time()
+        log_method("{:d} {} {:.2f}ms".format(handler.get_status(), handler._request_summary(), request_time))
