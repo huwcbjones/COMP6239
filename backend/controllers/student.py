@@ -6,8 +6,9 @@ from uuid import UUID
 from backend.controller import Controller
 from backend.exc import NotFoundException, BadRequestException
 from backend.models import UserRole, UserGender
+from backend.models.student import get_student_by_id, get_subjects_by_student_id
 from backend.models.subject import get_subject_by_id
-from backend.models.user import get_student_by_id, get_subjects_by_student_id, user_exists_by_id, user_is_role
+from backend.models.user import user_exists_by_id, user_is_role
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
 
