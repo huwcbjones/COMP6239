@@ -6,21 +6,45 @@
     android:layout_height="match_parent"
     tools:context=".Tutor.TutorViewProfileActivity">
 
-    <android.support.design.widget.AppBarLayout
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="413dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_marginTop="450dp"
+        android:layout_marginLeft="8dp"
+        android:orientation="vertical">
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <TextView
+            android:id="@+id/tutorName"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
 
-    </android.support.design.widget.AppBarLayout>
+            android:text="Tutor Name"
+            tools:text="Tutor Name" />
 
-    <include layout="@layout/content_tutor_view_profile" />
+        <TextView
+            android:id="@+id/tutorEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tutor Email"
+            tools:text="Tutor Email" />
+
+        <TextView
+            android:id="@+id/tutorSubjects"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Tutor Subjects"
+            tools:text="Tutor Subjects" />
+
+    </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -29,5 +53,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_dialog_email" />
+
 
 </android.support.design.widget.CoordinatorLayout>

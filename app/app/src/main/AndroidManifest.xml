@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.comp6239">
+
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -14,8 +15,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".RegistrationActivity"
+            android:label="@string/title_activity_registration"></activity>
+        <activity
             android:name=".Admin.AdminHomeActivity"
-            android:label="@string/title_activity_admin_home"></activity>
+            android:label="@string/title_activity_admin_home" />
         <activity
             android:name=".Tutor.TutorViewProfileActivity"
             android:label="@string/title_activity_tutor_view_profile"
