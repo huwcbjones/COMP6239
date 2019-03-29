@@ -20,7 +20,7 @@ class TutorsController(Controller):
 
     async def get(self):
         tutors = get_tutors()
-        self.write(tutors)
+        self.write([t.fields() for t in tutors])
 
 
 class TutorProfileController(Controller):
@@ -31,10 +31,10 @@ class TutorProfileController(Controller):
 
     @protected
     async def get(self, tutor_id: Optional[UUID] = None):
-        if tutor_id is None:
+        if tutor_id is None and self.current_user.role == UserRole.TUTOR:
             tutor_id = self.current_user.id
         with self.app.db.session() as s:
-            tutor = get_tutor_by_id(tutor_id, s)
+            tutor = get_tutor_by_id(tutor_id, s, is_approved=self.current_user.role == UserRole.STUDENT)
             if tutor is None or tutor.role != UserRole.TUTOR:
                 raise NotFoundException("Tutor not found!")
 
@@ -52,7 +52,12 @@ class TutorProfileController(Controller):
         if tutor.id == self.current_user.id:
             data["email"] = tutor.email
             data["approved_at"] = tutor.approved_at
-            data["revision"] = tutor.revision
+            data["revision"] = tutor.profile.modified_at
+        if self.current_user.role == UserRole.ADMIN:
+            data["email"] = tutor.email
+            data["approved_at"] = tutor.approved_at
+            data["revision"] = tutor.profile.modified_at
+            data["approved_by"] = tutor.approved_id
         elif not tutor.is_approved:
             raise NotFoundException("Tutor not found!")
         self.write(data)
