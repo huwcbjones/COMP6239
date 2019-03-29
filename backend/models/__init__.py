@@ -156,10 +156,29 @@ class Tutor:
             return self._profile.__setattr__(key, value)
         super().__setattr__(key, value)
 
-    def fields(self):
+    @property
+    def user(self) -> User:
+        return self._tutor
+
+    @property
+    def profile(self) -> TutorProfile:
+        return self._profile
+
+    def fields(self, include_private=False):
         profile = self._get_fields(self._profile)
         tutor = self._get_fields(self._tutor)
-        return {**profile, **tutor}
+        fields = {**profile, **tutor}
+        self._remove_fields(fields, ["password", "created_at", "tutor"])
+        if not include_private:
+            self._remove_fields(fields, ["approved_at", "approved_id", "is_approved", "email"])
+        return fields
+
+    def _remove_fields(self, dct, keys):
+        [self._remove_field(dct, k) for k in keys]
+
+    def _remove_field(self, dct, key):
+        if key in dct:
+            del dct[key]
 
     def _get_fields(self, obj):
         return_fields = {}
