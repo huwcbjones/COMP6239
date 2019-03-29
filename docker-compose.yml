@@ -1,0 +1,22 @@
+version: "3"
+services:
+  db:
+    image: postgres:9.6
+    restart: always
+    environment:
+      POSTGRES_DB: comp6239
+
+  backend:
+    build:
+      context: .
+      dockerfile: ./backend/Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      DATABASE_DB: comp6239
+      DATABASE_HOST: db
+      DATABASE_USER: postgres
+      WAIT_HOSTS: db:5432

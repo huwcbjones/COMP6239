@@ -1,6 +1,7 @@
 import asyncio
 import inspect
 import logging
+import os
 import uuid
 
 import tornado.web
@@ -11,6 +12,7 @@ import backend.controllers
 from backend.controller import Controller, WebSocketController
 from backend.database import Database
 from backend.models import User, OAuthClient, OAuthGrantType, OAuthResponseType
+from backend.models.user import user_exists_by_email
 from backend.utils import random_string
 
 logger = logging.getLogger(__name__)
@@ -33,7 +35,13 @@ class App:
         #     quit(1)
 
         try:
-            self.db = self._init_database("localhost", 5432, "postgres", "")
+            db_host = os.environ.get("DATABASE_HOST", "localhost")
+            db_port = os.environ.get("DATABASE_PORT", 5432)
+            db_user = os.environ.get("DATABASE_USER", "postgres")
+            db_password = os.environ.get("DATABASE_PASSWORD", "")
+            db_db = os.environ.get("DATABASE_DB", "comp6239")
+
+            self.db = self._init_database(db_host, int(db_port), db_user, db_password, db_db)
             self.db.recreate_db()
             self._init_oauth_client()
         except OperationalError as e:
@@ -108,50 +116,61 @@ class App:
         routes.append((r"[\w\W]*", DefaultController))
         return TornadoWebApp(routes)
 
-    def _init_database(self, host: str, port: int, user: str, password: str):
+    def _init_database(self, host: str, port: int, user: str, password: str, db: str = "comp6239"):
 
         return Database(
             host,
             port,
             user,
-            password
+            password,
+            database=db
         )
 
     def _init_oauth_client(self):
+        service_user = None
+        service_client = None
         service_password = random_string(20)
+        if not user_exists_by_email("service@comp6239"):
+            service_user = User(
+                id=uuid.uuid4(),
+                first_name="Service",
+                last_name="Account",
+                email="service@comp6239",
+                password=service_password
+            )
+            service_client = OAuthClient(
+                id=uuid.UUID("7834452b12ab480d9fc99f23b3546524"),
+                client_secret=None,
+                user_id=service_user.id,
+                grant_type=OAuthGrantType.PASSWORD,
+                response_type=OAuthResponseType.AUTHORIZATION_CODE,
+                _scopes="*",
+                _redirect_uris="http://localhost:8080/oauth/authorize"
+            )
+        admin_user = None
         admin_password = random_string(20)
-        service_user = User(
-            id=uuid.uuid4(),
-            first_name="Service",
-            last_name="Account",
-            email="service@comp6239",
-            password=service_password
-        )
-        admin_user = User(
-            id=uuid.uuid4(),
-            first_name="Admin",
-            last_name="Account",
-            email="admin@comp6239",
-            password=admin_password,
-            role="ADMIN"
-        )
-        service_client = OAuthClient(
-            id=uuid.UUID("7834452b12ab480d9fc99f23b3546524"),
-            client_secret=None,
-            user_id=service_user.id,
-            grant_type=OAuthGrantType.PASSWORD,
-            response_type=OAuthResponseType.AUTHORIZATION_CODE,
-            _scopes="*",
-            _redirect_uris="http://localhost:8080/oauth/authorize"
-        )
+        if not user_exists_by_email("admin@comp6239"):
+
+            admin_user = User(
+                id=uuid.uuid4(),
+                first_name="Admin",
+                last_name="Account",
+                email="admin@comp6239",
+                password=admin_password,
+                role="ADMIN"
+            )
         with self.db.session() as s:
-            s.add(service_user)
-            s.add(service_client)
-            s.add(admin_user)
+            if service_user is not None:
+                s.add(service_user)
+                s.add(service_client)
+            if admin_user is not None:
+                s.add(admin_user)
             s.commit()
-            logging.info("Service Account: {} {}".format(service_user.email, service_password))
-            logging.info("OAuth Client ID: {}".format(service_client.client_id))
-            logging.info("Admin Account: {} {}".format(admin_user.email, admin_password))
+            if service_user is not None:
+                logging.info("Service Account: {} {}".format(service_user.email, service_password))
+                logging.info("OAuth Client ID: {}".format(service_client.client_id))
+            if admin_user is not None:
+                logging.info("Admin Account: {} {}".format(admin_user.email, admin_password))
 
     def run(self):
         """

@@ -98,11 +98,17 @@ class Database:
         self.__class__.instance = self
         logger.info("Database connection established!")
 
-    def recreate_db(self):
+    def recreate_db(self, if_not_exists: bool = True):
         if not self.is_connected():
             return
-        Base.metadata.drop_all(self._engine)
-        Base.metadata.create_all(self._engine)
+        if not if_not_exists:
+            Base.metadata.drop_all(self._engine)
+        try:
+            Base.metadata.create_all(self._engine)
+        except Exception:
+            if if_not_exists:
+                return
+            raise
 
     def session(self) -> Session:
         """
