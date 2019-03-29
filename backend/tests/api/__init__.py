@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 import socket
 from asyncio import sleep
 from contextlib import closing
@@ -81,6 +82,7 @@ class APITestCase(TestCase):
     @classmethod
     def setUpClass(cls):
         cls.setUpAPI()
+        os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "True"
 
     @classmethod
     def setUpOAuthClient(cls, username, password):

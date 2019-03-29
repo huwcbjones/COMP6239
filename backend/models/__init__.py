@@ -168,7 +168,7 @@ class Tutor:
         profile = self._get_fields(self._profile)
         tutor = self._get_fields(self._tutor)
         fields = {**profile, **tutor}
-        self._remove_fields(fields, ["password", "created_at", "tutor"])
+        self._remove_fields(fields, ["password", "created_at", "tutor", "approved_by"])
         if not include_private:
             self._remove_fields(fields, ["approved_at", "approved_id", "is_approved", "email"])
         return fields
