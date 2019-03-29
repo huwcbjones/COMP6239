@@ -1,5 +1,6 @@
 import logging
 from http import HTTPStatus
+from typing import List, Dict
 
 from backend.models import UserRole, UserGender
 from backend.tests.api import APITestCase
@@ -45,6 +46,9 @@ class TestStudentRegister(APITestCase):
 
         with self.delete("/student/profile", json={"password": data["password"]}) as r:
             self.assertEqual(HTTPStatus.NO_CONTENT, r.status_code)
+
+
+class TestStudentEditProfile(APITestCase):
 
     def test_profile_edit(self):
         data = {
@@ -99,38 +103,60 @@ class TestStudentRegister(APITestCase):
         with self.delete("/student/profile", json={"password": data["password"]}) as r:
             self.assertEqual(r.status_code, HTTPStatus.NO_CONTENT)
 
-    def test_subjects(self):
+
+class TestStudentSubjectEdit(APITestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.register_tutor()
+        cls.setUpOAuthClient()
+        with cls.get("/subject") as r:
+            cls.subjects = r.json()  # type: List[Dict[str, str]]
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        with cls.delete("/student/profile", json={"password": cls.password}) as r:
+            assert r.status_code == HTTPStatus.NO_CONTENT
+
+        super().tearDownClass()
+
+    @classmethod
+    def register_tutor(cls):
+        cls.email = "student@" + cls.test_time
+        cls.password = "Test1!"
         data = {
-            "email": "test@" + self.test_time,
-            "password": "Test1!",
-            "first_name": "Test",
-            "last_name": "User",
+            "email": cls.email,
+            "password": cls.password,
             "role": UserRole.STUDENT.value,
-            "location": "Test Server",
+            "location": "test server",
+            "first_name": "Test",
+            "last_name": "Student"
         }
+        with cls.post("/register", json=data) as r:
+            assert r.status_code == HTTPStatus.CREATED
+            cls.user_id = r.json()["id"]
 
-        with self.post("/register", json=data) as r:
-            self.assertEqual(r.status_code, HTTPStatus.CREATED, r.json())
+    def test_add_subject(self):
+        with self.get("/student/profile/subject") as r:
+            self.assertEqual(r.status_code, HTTPStatus.OK, r.json())
+            self.assertEqual([], r.json())
 
-        self.setUpOAuthClient(data["email"], data["password"])
+        subjects = []
+        for s in self.subjects:
+            subjects.append(s)
+            with self.post("/student/profile/subject", json=[s["id"]]) as r:
+                self.assertEqual(r.status_code, HTTPStatus.OK, r.json())
+                self.assertEqual(subjects, r.json())
 
-        with self.get("/subject") as r:
-            subjects = r.json()
-        if not subjects:
-            return
+    def test_delete_subject(self):
+        with self.post("/student/profile/subject", json=[s["id"] for s in self.subjects]) as r:
+            self.assertEqual(r.status_code, HTTPStatus.OK, r.json())
+            self.assertEqual(self.subjects, r.json())
 
-        subject = subjects[0]
-        with self.post("/student/profile/subject", json=[subject["id"]]) as r:
-            self.assertEqual(HTTPStatus.OK, r.status_code, r.json())
-
-        with self.get("/student/profile") as r:
-            self.assertEqual([subject], r.json()["subjects"])
-
-        with self.delete("/student/profile/subject", json=[subject["id"]]) as r:
-            self.assertEqual(HTTPStatus.OK, r.status_code, r.json())
-
-        with self.get("/student/profile") as r:
-            self.assertEqual([], r.json()["subjects"])
-
-        with self.delete("/student/profile", json={"password": data["password"]}) as r:
-            self.assertEqual(r.status_code, HTTPStatus.NO_CONTENT)
+        subjects = self.subjects.copy()
+        for s in self.subjects:
+            subjects.remove(s)
+            with self.delete("/student/profile/subject", json=[s["id"]]) as r:
+                self.assertEqual(r.status_code, HTTPStatus.OK, r.json())
+                self.assertEqual(subjects, r.json())
