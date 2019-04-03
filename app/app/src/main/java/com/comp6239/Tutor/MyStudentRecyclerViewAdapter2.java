@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.comp6239.R;
 import com.comp6239.Tutor.MyStudentsFragment.OnListFragmentInteractionListener;
 import com.comp6239.Tutor.dummy.DummyContent.DummyItem;
 
@@ -29,7 +30,7 @@ public class MyStudentRecyclerViewAdapter2 extends RecyclerView.Adapter<MyStuden
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_student2, parent, false);
+                .inflate(R.layout.fragment_student, parent, false);
         return new ViewHolder(view);
     }
 

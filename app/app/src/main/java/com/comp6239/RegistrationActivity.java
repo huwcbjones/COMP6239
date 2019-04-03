@@ -29,6 +29,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.comp6239.Backend.Model.User;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -177,7 +179,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!User.isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -199,10 +201,6 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic

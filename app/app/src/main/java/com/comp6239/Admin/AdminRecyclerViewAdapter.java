@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.comp6239.Admin.AdminApprovalFragment.OnListFragmentInteractionListener;
 import com.comp6239.Admin.dummy.DummyContent.DummyItem;
+import com.comp6239.R;
 
 import java.util.List;
 
