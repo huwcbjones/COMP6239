@@ -29,10 +29,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.User;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -45,6 +50,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    public static BackendRequestController backendApi;
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -73,6 +79,8 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
+
+        backendApi = BackendRequestController.getInstance(this);
 
         mLastNameView = (EditText) findViewById(R.id.lastName);
         mFirstNameView = (EditText) findViewById(R.id.firstName);
@@ -196,7 +204,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName);
+            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName, backendApi);
             mAuthTask.execute((Void) null);
         }
     }
@@ -307,17 +315,34 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         private final String mPassword;
         private final String mFirstName;
         private final String mLastName;
+        public BackendRequestController backend;
 
-        UserRegistrationTask(String email, String password, String firstName, String lastName) {
+        UserRegistrationTask(String email, String password, String firstName, String lastName, BackendRequestController backend) {
             mEmail = email;
             mPassword = password;
             mFirstName = firstName;
             mLastName = lastName;
+            this.backend = backend;
+
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            User newUser = new User();
+
+            Call<User> call = backend.apiServiceAsync.createUser(newUser);
+            call.enqueue(new Callback<User>() {
+
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+
+                }
+            });
 
             try {
                 // Simulate network access.

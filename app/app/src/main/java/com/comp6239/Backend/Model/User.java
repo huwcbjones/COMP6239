@@ -21,11 +21,43 @@ public class User  {
     @SerializedName("gender")
     private Gender gender;
 
+    @SerializedName("role")
+    private Role role;
+
+    @SerializedName("location")
+    private String location;
+
+    @SerializedName("password")
+    private String password;
+
 
     public UUID getId() {
         return id;
     }
 
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -61,6 +93,11 @@ public class User  {
         this.gender = gender;
     }
 
+    /**
+     * Checks if email is valid, by checking presence of '@' in String
+     * @param email The email represented as String
+     * @return whether its a good email or not
+     */
     public static boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
         return email.contains("@");

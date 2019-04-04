@@ -9,8 +9,29 @@ public class Tutor extends User {
     @SerializedName("price")
     private float price;
 
-    @SerializedName("location")
-    private String location;
+
+    /**
+     * Registration constructor for Tutor
+     * @param email
+     * @param firstName
+     * @param lastName
+     * @param gender
+     * @param location
+     * @param password
+     * @param bio
+     * @param price
+     */
+    public Tutor(String email, String firstName, String lastName, Gender gender, String location, String password, String bio, float price) {
+        this.bio = bio;
+        this.price = price;
+        this.setEmail(email);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
+        this.setGender(gender);
+        this.setLocation(location);
+        this.setRole(Role.TUTOR);
+        this.setPassword(password);
+    }
 
     public String getBio() {
         return bio;
@@ -28,11 +49,4 @@ public class Tutor extends User {
         this.price = price;
     }
 
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
-    }
 }

@@ -30,7 +30,7 @@ public class BackendRequestController {
 
     private final static String BASE_URL = "url";
     private static BackendRequestController instance;
-    private static BackEndService apiServiceAsync;
+    public static BackEndService apiServiceAsync;
     private Context context;
 
     private BackendRequestController(Context context) {
@@ -63,7 +63,11 @@ public class BackendRequestController {
         apiServiceAsync = retrofitAsync.create(BackEndService.class);
     }
 
-    //Get the static instance
+    /**
+     * Returns the static instance of the backend controller
+     * @param context The instance of 'this' for most Activities
+     * @return The Backend Request Controller
+     */
     public static BackendRequestController getInstance(Context context) {
         if (instance == null) {
             instance = new BackendRequestController(context);
