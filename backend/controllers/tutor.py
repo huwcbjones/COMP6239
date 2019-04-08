@@ -6,7 +6,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from backend.controller import Controller
-from backend.exc import NotFoundException, BadRequestException
+from backend.exc import NotFoundException, BadRequestException, UnauthorisedException
 from backend.models import UserRole, UserGender, TutorProfile
 from backend.models.subject import get_subject_by_id
 from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_tutor_id, get_subjects_by_tutor_id
@@ -20,6 +20,7 @@ _uuid_regex = re.compile(uuid_regex)
 class TutorsController(Controller):
     route = [r"/tutor"]
 
+    @protected(roles=[UserRole.STUDENT])
     async def get(self):
         tutors = get_tutors()
         self.write([t.fields() for t in tutors])
@@ -62,7 +63,7 @@ class TutorProfileController(Controller):
             data["approved_by"] = tutor.approved_id
         self.write(data)
 
-    @protected
+    @protected(roles=[UserRole.TUTOR])
     async def post(self, tutor_id: Optional[UUID] = None):
         user_fields = [
             "email",
@@ -82,7 +83,7 @@ class TutorProfileController(Controller):
         with self.app.db.session() as s:  # type: Session
             user = get_user_by_id(self.current_user.id, session=s, lock_update=True)
             profile = get_profile_by_tutor_id(self.current_user.id, session=s)
-            if user is None or user.role != UserRole.TUTOR:
+            if user is None:
                 raise NotFoundException("Tutor not found!")
 
             if "gender" in self.json_args:
@@ -139,22 +140,22 @@ class TutorProfileController(Controller):
                 data["approved_by"] = profile.approved_id
             self.write(data)
 
-    @protected
-    async def delete(self, student_id: Optional[UUID] = None):
+    @protected(roles=[UserRole.TUTOR])
+    async def delete(self, tutor_id: Optional[UUID] = None):
         permissible_fields = [
             "password",
         ]
 
-        if student_id is not None:
+        if tutor_id is not None:
             raise BadRequestException()
 
         with self.app.db.session() as s:
             tutor = get_user_by_id(self.current_user.id, session=s, lock_update=True)
-            if tutor is None or tutor.role != UserRole.TUTOR:
+            if tutor is None:
                 raise NotFoundException("Tutor not found!")
 
             if not tutor.verify_password(self.json_args["password"]):
-                raise BadRequestException("Invalid password")
+                raise UnauthorisedException("Invalid password")
 
             s.delete(tutor)
             s.commit()

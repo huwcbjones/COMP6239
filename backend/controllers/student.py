@@ -4,7 +4,7 @@ from typing import Optional
 from uuid import UUID
 
 from backend.controller import Controller
-from backend.exc import NotFoundException, BadRequestException
+from backend.exc import NotFoundException, BadRequestException, UnauthorisedException
 from backend.models import UserRole, UserGender
 from backend.models.student import get_student_by_id, get_subjects_by_student_id
 from backend.models.subject import get_subject_by_id
@@ -43,7 +43,7 @@ class StudentProfileController(Controller):
             data["email"] = student.email
         self.write(data)
 
-    @protected
+    @protected(roles=[UserRole.STUDENT])
     async def post(self, student_id: Optional[UUID] = None):
         permissible_fields = [
             "email",
@@ -58,7 +58,7 @@ class StudentProfileController(Controller):
 
         with self.app.db.session() as s:
             student = get_student_by_id(self.current_user.id, session=s, lock_update=True)
-            if student is None or student.role != UserRole.STUDENT:
+            if student is None:
                 raise NotFoundException("Student not found!")
 
             if not UserGender.contains(self.json_args["gender"]):
@@ -93,7 +93,7 @@ class StudentProfileController(Controller):
 
         self.write(data)
 
-    @protected
+    @protected(roles=[UserRole.STUDENT])
     async def delete(self, student_id: Optional[UUID] = None):
         permissible_fields = [
             "password",
@@ -104,11 +104,11 @@ class StudentProfileController(Controller):
 
         with self.app.db.session() as s:
             student = get_student_by_id(self.current_user.id, session=s, lock_update=True)
-            if student is None or student.role != UserRole.STUDENT:
+            if student is None:
                 raise NotFoundException("Student not found!")
 
             if not student.verify_password(self.json_args["password"]):
-                raise BadRequestException("Invalid password")
+                raise UnauthorisedException("Invalid password")
 
             s.delete(student)
             s.commit()
@@ -130,11 +130,11 @@ class StudentSubjectProfileController(Controller):
         if not user_exists_by_id(student_id):
             raise NotFoundException("Student with that ID not found")
         if not user_is_role(student_id, UserRole.STUDENT):
-            raise NotFoundException("Student with that ID not found")
+            raise NotFoundException()
         subjects = get_subjects_by_student_id(student_id)
         self.write(subjects)
 
-    @protected
+    @protected(roles=[UserRole.STUDENT])
     async def post(self, student_id: Optional[UUID] = None):
         if student_id is not None:
             raise BadRequestException()
@@ -142,9 +142,6 @@ class StudentSubjectProfileController(Controller):
 
         if not isinstance(self.json_args, list):
             raise BadRequestException("Invalid body")
-
-        if not user_is_role(student_id, UserRole.STUDENT):
-            raise NotFoundException("Student with that ID not found")
 
         with self.app.db.session() as s:
             student = get_student_by_id(student_id, session=s)
@@ -163,7 +160,7 @@ class StudentSubjectProfileController(Controller):
             s.commit()
             self.write(student.subjects)
 
-    @protected
+    @protected(roles=[UserRole.STUDENT])
     async def delete(self, student_id: Optional[UUID] = None):
         if student_id is not None:
             raise BadRequestException()
@@ -171,9 +168,6 @@ class StudentSubjectProfileController(Controller):
 
         if not isinstance(self.json_args, list):
             raise BadRequestException("Invalid body")
-
-        if not user_is_role(student_id, UserRole.STUDENT):
-            raise NotFoundException("Student with that ID not found")
 
         with self.app.db.session() as s:
             student = get_student_by_id(student_id, session=s)

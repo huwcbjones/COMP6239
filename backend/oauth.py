@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 
 from backend.database import Database
 from backend.exc import UnauthorisedException
+from backend.models import UserRole
 from backend.models.oauth import client_exists_by_id, get_client_by_id, get_grant_token_by_code, \
     get_bearer_token_by_refresh_token, delete_grant_token_by_code, save_grant_token, save_bearer_token, \
     get_bearer_token_by_access_token
@@ -331,13 +332,24 @@ validator = AppRequestValidator()
 server = Server(validator)
 
 
-def protected(f):
-    @functools.wraps(f)
+def protected(method=None, scopes=None, roles=None):
+    """
+
+    :param method:
+    :param scopes: List of permitted scopes
+    :param roles: List of permitted roles
+    :return:
+    """
+    if method is None:
+        return functools.partial(protected, scopes=scopes, roles=roles)
+    if scopes is None:
+        scopes = ["*"]
+    if roles is None:
+        roles = [r for r in UserRole]
+
+    @functools.wraps(method)
     async def wrapper(*args, **kwargs):
         self = args[0]
-        scopes = []
-        if "scopes" in kwargs:
-            scopes = kwargs["scopes"]
 
         v, r = server.verify_request(
             self.request.uri,
@@ -346,13 +358,12 @@ def protected(f):
             headers=self.request.headers,
             scopes=scopes
         )
-        if v:
+        if v and r.user.role in roles:
             self.current_user = r.user
-            if iscoroutinefunction(f):
-                return await f(*args, **kwargs)
+            if iscoroutinefunction(method):
+                return await method(*args, **kwargs)
             else:
-                return f(*args, **kwargs)
+                return method(*args, **kwargs)
         else:
             raise UnauthorisedException()
-
     return wrapper
