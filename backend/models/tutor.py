@@ -16,7 +16,21 @@ def get_tutors(session: Session, include_unapproved: bool = False) -> List[Tutor
             func.max(TutorProfile.id)
         ).group_by(TutorProfile.tutor_id)
         if not include_unapproved:
-            subquery = subquery.filter(TutorProfile.approved_at.isnot(None))
+            subquery = subquery.filter(TutorProfile.reason.is_(None)).filter(TutorProfile.reviewed_at.is_(None))
+        query = session.query(TutorProfile).options(
+            joinedload(TutorProfile.tutor),
+            joinedload(TutorProfile.subjects)
+        ).filter(TutorProfile.id.in_(subquery))
+        tutors = query.all()
+        return [Tutor(p.tutor, p) for p in tutors]
+
+
+@sql_session
+def get_unapproved_tutors(session: Session) -> List[Tutor]:
+    with session:
+        subquery = session.query(
+            func.max(TutorProfile.id)
+        ).group_by(TutorProfile.tutor_id).filter(TutorProfile.reason.is_(None))
         query = session.query(TutorProfile).options(
             joinedload(TutorProfile.tutor),
             joinedload(TutorProfile.subjects)
@@ -37,7 +51,7 @@ def get_profile_by_tutor_id(id: UUID, session: Session, is_approved: bool = Fals
             joinedload(TutorProfile.subjects)
         ).filter_by(tutor_id=id).order_by(TutorProfile.id.desc())
         if is_approved:
-            query = query.filter(TutorProfile.approved_at.isnot(None))
+            query = query.filter(TutorProfile.reviewed_at.isnot(None))
         return query.first()
 
 

@@ -54,13 +54,15 @@ class TutorProfileController(Controller):
             }
         if tutor.id == self.current_user.id:
             data["email"] = tutor.email
-            data["approved_at"] = tutor.approved_at
+            data["reviewed_at"] = tutor.reviewed_at
+            data["reason"] = tutor.reason
             data["revision"] = tutor.profile.created_at
         if self.current_user.role == UserRole.ADMIN:
             data["email"] = tutor.email
-            data["approved_at"] = tutor.approved_at
+            data["reviewed_at"] = tutor.reviwed_at
             data["revision"] = tutor.profile.created_at
-            data["approved_by"] = tutor.approved_id
+            data["reviewed_by"] = tutor.reviewed_id
+            data["reason"] = tutor.reason
         self.write(data)
 
     @protected(roles=[UserRole.TUTOR])
@@ -106,7 +108,7 @@ class TutorProfileController(Controller):
                     profile.subjects.append(subject)
 
             s.add(user)
-            if profile.is_approved and s.is_modified(profile):
+            if profile.state and s.is_modified(profile):
                 new_profile = TutorProfile(**{
                     "tutor_id": profile.tutor_id,
                     "bio": profile.bio,
@@ -131,13 +133,13 @@ class TutorProfileController(Controller):
             }
             if user.id == self.current_user.id:
                 data["email"] = user.email
-                data["approved_at"] = profile.approved_at
+                data["approved_at"] = profile.reviewed_at
                 data["revision"] = profile.created_at
             if self.current_user.role == UserRole.ADMIN:
                 data["email"] = user.email
-                data["approved_at"] = profile.approved_at
+                data["approved_at"] = profile.reviewed_at
                 data["revision"] = profile.created_at
-                data["approved_by"] = profile.approved_id
+                data["approved_by"] = profile.reviewed_id
             self.write(data)
 
     @protected(roles=[UserRole.TUTOR])
@@ -207,7 +209,7 @@ class TutorSubjectProfileController(Controller):
                     continue
                 profile.subjects.append(subject)
 
-            if profile.is_approved:
+            if profile.state:
                 new_profile = TutorProfile(**{
                     "tutor_id": profile.tutor_id,
                     "bio": profile.bio,
@@ -249,7 +251,7 @@ class TutorSubjectProfileController(Controller):
                 if subject in profile.subjects:
                     profile.subjects.remove(subject)
 
-            if profile.is_approved:
+            if profile.state:
                 new_profile = TutorProfile(**{
                     "tutor_id": profile.tutor_id,
                     "bio": profile.bio,

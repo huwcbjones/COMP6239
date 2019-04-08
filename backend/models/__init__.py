@@ -1,5 +1,6 @@
+import datetime
 import uuid
-from typing import List
+from typing import List, Optional
 
 from bcrypt import hashpw, gensalt, checkpw
 from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Numeric, func, inspect
@@ -121,10 +122,11 @@ class TutorProfile(TimestampMixin, Base):
     tutor = relationship(User, foreign_keys=[tutor_id])
 
     bio = Column(String)
-    approved_at = Column(DateTime)
+    reviewed_at = Column(DateTime)
 
-    approved_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))
-    approved_by = relationship(User, foreign_keys=[approved_id])
+    reason = Column(String)
+    reviewed_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))
+    approved_by = relationship(User, foreign_keys=[reviewed_id])
 
     price = Column(Numeric())
 
@@ -134,9 +136,16 @@ class TutorProfile(TimestampMixin, Base):
         order_by=Subject.name
     )
 
+    def review(self, user_id: uuid.UUID, reason: str = None):
+        self.reason = reason
+        self.reviewed_at = datetime.datetime.utcnow()
+        self.reviewed_id = user_id
+
     @hybrid_property
-    def is_approved(self) -> bool:
-        return self.approved_at is not None
+    def state(self) -> Optional[bool]:
+        if self.reviewed_at is None:
+            return None
+        return self.reason is not None
 
 
 class Tutor:
@@ -172,9 +181,9 @@ class Tutor:
         profile = self._get_fields(self._profile)
         tutor = self._get_fields(self._tutor)
         fields = {**profile, **tutor}
-        self._remove_fields(fields, ["password", "created_at", "tutor", "approved_by"])
+        self._remove_fields(fields, ["password", "created_at", "tutor", "reviewed_by"])
         if not include_private:
-            self._remove_fields(fields, ["approved_at", "approved_id", "is_approved", "email"])
+            self._remove_fields(fields, ["reason", "reviewed_at", "reviewed_id", "state", "email"])
         return fields
 
     def _remove_fields(self, dct, keys):

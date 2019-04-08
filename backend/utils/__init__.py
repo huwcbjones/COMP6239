@@ -37,3 +37,12 @@ def convert_string_to_uuid(uuid_obj: str) -> Optional[uuid.UUID]:
         return uuid.UUID(uuid_obj)
     except ValueError:
         pass
+
+
+def str_to_bool(s: str) -> bool:
+    if s.lower() in ("true", "t", "yes", "y"):
+        return True
+    elif s.lower() in ("false", "f", "no", "n"):
+        return False
+    else:
+        raise ValueError("'{}' is not a valid boolean value".format(s))

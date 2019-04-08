@@ -1,6 +1,8 @@
 import enum as _enum
 from typing import Set
 
+auto = _enum.auto
+
 
 class Enum(_enum.Enum):
 
