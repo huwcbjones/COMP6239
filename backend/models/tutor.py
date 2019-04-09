@@ -30,7 +30,7 @@ def get_unapproved_tutors(session: Session) -> List[Tutor]:
     with session:
         subquery = session.query(
             func.max(TutorProfile.id)
-        ).group_by(TutorProfile.tutor_id).filter(TutorProfile.reason.is_(None))
+        ).group_by(TutorProfile.tutor_id).filter(TutorProfile.reason.is_(None)).filter(TutorProfile.reviewed_at.is_(None))
         query = session.query(TutorProfile).options(
             joinedload(TutorProfile.tutor),
             joinedload(TutorProfile.subjects)
