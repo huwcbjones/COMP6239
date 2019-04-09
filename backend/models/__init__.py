@@ -143,9 +143,18 @@ class TutorProfile(TimestampMixin, Base):
 
     @hybrid_property
     def state(self) -> Optional[bool]:
+        """
+        Get the profile state
+
+        * true: profile has been approved
+        * false: profile has been denied
+        * None: profile is awaiting approval
+
+        :return: Optional[bool]
+        """
         if self.reviewed_at is None:
             return None
-        return self.reason is not None
+        return self.reason is None
 
 
 class Tutor:
