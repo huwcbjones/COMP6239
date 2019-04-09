@@ -16,7 +16,7 @@ def get_tutors(session: Session, include_unapproved: bool = False) -> List[Tutor
             func.max(TutorProfile.id)
         ).group_by(TutorProfile.tutor_id)
         if not include_unapproved:
-            subquery = subquery.filter(TutorProfile.reason.is_(None)).filter(TutorProfile.reviewed_at.is_(None))
+            subquery = subquery.filter(TutorProfile.reason.is_(None)).filter(TutorProfile.reviewed_at.isnot(None))
         query = session.query(TutorProfile).options(
             joinedload(TutorProfile.tutor),
             joinedload(TutorProfile.subjects)
