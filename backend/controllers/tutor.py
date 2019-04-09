@@ -108,7 +108,7 @@ class TutorProfileController(Controller):
                     profile.subjects.append(subject)
 
             s.add(user)
-            if profile.state and s.is_modified(profile):
+            if profile.state is not None and s.is_modified(profile):
                 new_profile = TutorProfile(**{
                     "tutor_id": profile.tutor_id,
                     "bio": profile.bio,
