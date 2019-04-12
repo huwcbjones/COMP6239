@@ -1,6 +1,5 @@
 import datetime
 import functools
-import logging
 import os
 import uuid
 from asyncio import iscoroutinefunction
@@ -9,6 +8,7 @@ import basicauth
 from oauthlib.oauth2 import RequestValidator, Server
 from sqlalchemy.orm import Session
 
+from backend import log
 from backend.database import Database
 from backend.exc import UnauthorisedException
 from backend.models import UserRole
@@ -17,8 +17,6 @@ from backend.models.oauth import client_exists_by_id, get_client_by_id, get_gran
     get_bearer_token_by_access_token
 from backend.models.user import get_user_by_email, user_exists_by_email, get_user_by_id
 from backend.utils import convert_to_uuid
-
-log = logging.getLogger(__name__)
 
 
 class AppRequestValidator(RequestValidator):
@@ -366,4 +364,5 @@ def protected(method=None, scopes=None, roles=None):
                 return method(*args, **kwargs)
         else:
             raise UnauthorisedException()
+
     return wrapper

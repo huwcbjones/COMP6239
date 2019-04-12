@@ -1,6 +1,5 @@
 import asyncio
 import inspect
-import logging
 import os
 import uuid
 
@@ -9,22 +8,21 @@ from sqlalchemy.exc import OperationalError
 from tornado.log import access_log
 
 import backend.controllers
+from backend import log
 from backend.controller import Controller, WebSocketController
 from backend.database import Database
 from backend.models import User, OAuthClient, OAuthGrantType, OAuthResponseType
 from backend.models.user import user_exists_by_email
 from backend.utils import random_string
 
-logger = logging.getLogger(__name__)
-
 
 class App:
 
     def __init__(self, port, **kwargs):
         if __debug__:
-            logger.warning("DEBUG MODE IS ENABLED!")
-            logger.warning("Safeguards may be disabled.")
-            logger.warning("To disable this warning, run python with the -O flag")
+            log.warning("DEBUG MODE IS ENABLED!")
+            log.warning("Safeguards may be disabled.")
+            log.warning("To disable this warning, run python with the -O flag")
 
         # errors = self._check_ports(port, kwargs.get("listen_port", 5998), kwargs.get("broadcast_port", 9850))
         # if len(errors) != 0:
@@ -45,7 +43,7 @@ class App:
             self.db.recreate_db()
             self._init_oauth_client()
         except OperationalError as e:
-            logging.fatal(e)
+            log.fatal(e)
             quit(1)
 
         # try:
@@ -69,17 +67,21 @@ class App:
         try:
             app.listen(port, kwargs.get("listen_addr", ""))
         except OSError as e:
-            logger.fatal("Failed to listen on port {}".format(port))
-            logger.fatal(e.strerror)
+            log.fatal("Failed to listen on port {}".format(port))
+            log.fatal(e.strerror)
             quit(1)
 
     def _load_route_class(self, obj, checked):
         routes = []
         # Loop through members of obj
         for name, obj in inspect.getmembers(obj):
-            if name in checked:
+            module = inspect.getmodule(obj)
+            full_name = name
+            if module:
+                full_name = module.__name__ + "." + name
+            if full_name in checked:
                 continue
-            checked.add(name)
+            checked.add(full_name)
             if name[0:2] == '__':
                 continue
 
@@ -93,20 +95,20 @@ class App:
             if not issubclass(obj, (Controller, WebSocketController)):
                 continue
 
-            logger.debug("Checking {}".format(name))
+            log.debug("Checking {}".format(name))
             if obj.route is not None:
                 obj.app = self
                 [routes.append((regex, obj)) for regex in obj.route]
-                logger.debug("Loaded {} routes for {}!".format(len(obj.route), name))
+                log.debug("Loaded {} routes for {}!".format(len(obj.route), name))
 
         return routes
 
     def _make_app(self):
-        logger.info("Loading controllers...")
+        log.info("Loading controllers...")
 
         routes = self._load_route_class(backend.controllers, set())
 
-        logger.info("Loaded {} routes!".format(len(routes)))
+        log.info("Loaded {} routes!".format(len(routes)))
 
         class DefaultController(Controller):
 
@@ -150,7 +152,6 @@ class App:
         admin_user = None
         admin_password = random_string(20)
         if not user_exists_by_email("admin@comp6239"):
-
             admin_user = User(
                 id=uuid.uuid4(),
                 first_name="Admin",
@@ -167,17 +168,18 @@ class App:
                 s.add(admin_user)
             s.commit()
             if service_user is not None:
-                logging.info("Service Account: {} {}".format(service_user.email, service_password))
-                logging.info("OAuth Client ID: {}".format(service_client.client_id))
+                log.info("Service Account: {} {}".format(service_user.email, service_password))
+                log.info("OAuth Client ID: {}".format(service_client.client_id))
             if admin_user is not None:
-                logging.info("Admin Account: {} {}".format(admin_user.email, admin_password))
+                log.info("Admin Account: {} {}".format(admin_user.email, admin_password))
 
     def run(self):
         """
         Run the result server
         """
-        logging.info("Starting listen loop...")
+        log.info("Starting listen loop...")
         loop = asyncio.get_event_loop()
+        loop.set_debug(True)
         try:
             loop.run_forever()
         except Exception:

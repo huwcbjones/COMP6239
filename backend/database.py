@@ -129,8 +129,6 @@ class Database:
         # need debug to see session logging
         if state:
             logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(logging.getLogger().getEffectiveLevel())
 
     def _get_sql_connection_string(self):
         return "postgresql+psycopg2://{}:{}@{}:{}/{}?client_encoding=utf8".format(

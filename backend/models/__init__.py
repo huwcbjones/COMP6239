@@ -17,6 +17,9 @@ Base = declarative_base()
 
 class TimestampMixin(object):
     created_at = Column(DateTime, default=func.now())
+
+
+class TimestampModifiedMixin(TimestampMixin):
     modified_at = Column(DateTime, default=func.now(), onupdate=func.current_timestamp())
 
 
@@ -33,6 +36,12 @@ class UserGender(enum.Enum):
     FEMALE = "f"
     MALE = "m"
     PREFER_NOT_TO_SAY = "n"
+
+
+class MessageState(enum.Enum):
+    SENT = "s"
+    DELIVERED = "d"
+    READ = "r"
 
 
 class OAuthGrantType(enum.Enum):
@@ -80,7 +89,7 @@ class Subject(Base):
     )
 
 
-class User(TimestampMixin, Base):
+class User(TimestampModifiedMixin, Base):
     __tablename__ = "users"
 
     id = Column(UUIDType, primary_key=True)
@@ -114,7 +123,7 @@ class Student(User):
     )
 
 
-class TutorProfile(TimestampMixin, Base):
+class TutorProfile(TimestampModifiedMixin, Base):
     __tablename__ = "tutor_profiles"
 
     id = Column(Integer, autoincrement=True, primary_key=True)
@@ -216,7 +225,7 @@ class Tutor:
         return return_fields
 
 
-class Rating(TimestampMixin, Base):
+class Rating(TimestampModifiedMixin, Base):
     __tablename__ = "tutor_ratings"
 
     tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"), primary_key=True)
@@ -229,8 +238,19 @@ class Rating(TimestampMixin, Base):
     date = Column(DateTime, nullable=False)
 
 
+class Message(TimestampMixin, Base):
+    __tablename__ = "messages"
+
+    id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
+    from_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    to_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+
+    message = Column(String)  # type: str
+    state = Column(Enum(MessageState))  # type: MessageState
+
+
 # region OAuth Classes
-class OAuthClient(TimestampMixin, Base):
+class OAuthClient(TimestampModifiedMixin, Base):
     __tablename__ = "oauth_clients"
 
     id = Column(UUIDType, primary_key=True)
@@ -287,7 +307,7 @@ class OAuthClient(TimestampMixin, Base):
         return []
 
 
-class OAuthBearerToken(TimestampMixin, Base):
+class OAuthBearerToken(TimestampModifiedMixin, Base):
     __tablename__ = "oauth_bearer_tokens"
 
     id = Column(UUIDType, primary_key=True)
@@ -338,7 +358,7 @@ class OAuthBearerToken(TimestampMixin, Base):
         return []
 
 
-class OAuthGrantToken(TimestampMixin, Base):
+class OAuthGrantToken(TimestampModifiedMixin, Base):
     __tablename__ = "oauth_grant_tokens"
 
     id = Column(UUIDType, primary_key=True)

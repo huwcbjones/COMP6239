@@ -9,9 +9,9 @@ from enum import Enum
 
 from sqlalchemy import inspect
 
+from backend import log
 from backend.models import Base
 
-log = logging.getLogger(__name__)
 loads = _json.loads
 
 

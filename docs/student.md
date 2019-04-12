@@ -24,6 +24,20 @@ Permissible fields:
 * location
 * subjects (list of subject IDs)
 
+Please note, posting a list of subjects will replace that student's preferred subjects. Use /student/profile/subject to add/remove single subjects.
+
+### /student/profile
+__DELETE__ delete the current student's account
+
+Requires the user's password to confirm the request.
+
+E.g.:
+```json
+{
+  "password": "User's Password"
+}
+```
+
 ### /student/`$ID`/profile
 __GET__ profile for student with `$ID`
 See [Objects/Student](objects.md#student)

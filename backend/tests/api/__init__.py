@@ -1,5 +1,4 @@
 import datetime
-import logging
 import os
 import socket
 from asyncio import sleep
@@ -13,11 +12,8 @@ from oauthlib.oauth2 import LegacyApplicationClient
 from requests import Response
 from requests_oauthlib import OAuth2Session
 
+from backend import log
 from backend.app import App
-
-log = logging.getLogger(__name__)
-logging.getLogger().setLevel(logging.DEBUG)
-
 
 def get_free_port() -> int:
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:

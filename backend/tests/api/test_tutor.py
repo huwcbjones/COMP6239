@@ -1,12 +1,8 @@
-import logging
 from http import HTTPStatus
 from typing import List, Dict
 
 from backend.models import UserRole, UserGender
 from backend.tests.api import APITestCase
-
-log = logging.getLogger(__name__)
-logging.getLogger().setLevel(logging.DEBUG)
 
 
 class TestTutorRegister(APITestCase):

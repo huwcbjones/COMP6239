@@ -6,7 +6,6 @@ from backend.controller import Controller
 from backend.database import generate_unique_id
 from backend.exc import ResourceAlreadyExistsException, BadRequestException
 from backend.models import User, UserRole, UserGender, TutorProfile
-from backend.models.tutor import profile_exists_by_id
 from backend.models.user import user_exists_by_email, user_exists_by_id
 
 
