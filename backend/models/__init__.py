@@ -246,7 +246,7 @@ class Message(TimestampMixin, Base):
     to_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
 
     message = Column(String)  # type: str
-    state = Column(Enum(MessageState))  # type: MessageState
+    state = Column(Enum(MessageState), default=MessageState.SENT)  # type: MessageState
 
 
 # region OAuth Classes
