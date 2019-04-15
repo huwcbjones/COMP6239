@@ -15,6 +15,7 @@ connect_payload = Payload(
 class MessageSocket(WebSocketController):
     route = [r"/ws"]
     method_map = {}  # type: Dict[OpCode, Union[callable, Coroutine]]
+    event_map = {}  # type: Dict[str, Union[callable, Coroutine]]
 
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
@@ -22,9 +23,12 @@ class MessageSocket(WebSocketController):
         self.identify_task = None  # type: Optional[Future]
 
     @classmethod
-    def add_handler(cls, op=None):
+    def add_handler(cls, event: Optional[Union[OpCode, str]] = None):
         def wrapper(f):
-            cls.method_map[op] = f
+            if isinstance(event, OpCode):
+                cls.method_map[event] = f
+            elif isinstance(event, str):
+                cls.event_map[event] = f
 
         return wrapper
 
@@ -47,9 +51,9 @@ class MessageSocket(WebSocketController):
                 self.close()
                 return
 
-            result = self.method_map[payload.op](self, payload.data)
+            result = self.method_map[payload.op](self, payload)
             if result is not None:
-                await result(self, payload.data)
+                await result
 
         except ValueError:
             self.send_opcode(OpCode.DECODE_ERROR)
@@ -57,12 +61,12 @@ class MessageSocket(WebSocketController):
 
 
 @MessageSocket.add_handler(OpCode.IDENTIFY)
-def identify(socket: MessageSocket, data: Union[Dict, List]):
+def identify(socket: MessageSocket, payload: Payload):
     if socket.has_identified:
         socket.send_opcode(OpCode.ALREADY_AUTHENTICATED)
         socket.close()
         return
-
+    data = payload.data
     if "properties" not in data:
         socket.send_opcode(OpCode.INVALID_SESSION)
         socket.close()
@@ -98,12 +102,13 @@ def identify(socket: MessageSocket, data: Union[Dict, List]):
         socket.send_opcode(OpCode.INVALID_SESSION)
         socket.close()
         return
+
     user = r.user
     socket.has_identified = True
     if socket.identify_task:
         socket.identify_task.cancel()
 
-    socket.send_payload(Payload.event(
+    socket.send_payload(Payload.dispatch(
         "READY",
         {
             "id": user.id,
@@ -115,6 +120,21 @@ def identify(socket: MessageSocket, data: Union[Dict, List]):
             ]
         }
     ))
+
+
+@MessageSocket.add_handler(OpCode.DISPATCH)
+async def handle_dispatch(socket: MessageSocket, payload: Payload):
+    if payload.event not in MessageSocket.method_map:
+        return
+    result = MessageSocket.method_map[payload.op](socket, payload)
+    if result is not None:
+        await result
+
+
+@MessageSocket.add_handler("SEND_MESSAGE")
+def send_message(socket: MessageSocket, payload: Payload):
+    log.info("Send message received!")
+    pass
 
 
 async def identify_timeout(socket: MessageSocket, timeout: int = 45):

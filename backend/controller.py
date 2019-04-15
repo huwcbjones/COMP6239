@@ -173,12 +173,19 @@ class Payload:
             raise ValueError("Invalid OpCode: {}".format(payload["o"]))
 
         op_code = OpCode(payload["o"])
+
+        event = None
+        if op_code == OpCode.DISPATCH:
+            if "e" not in payload:
+                raise ValueError("Missing event type")
+            event = payload["e"].upper()
+
         payload = payload["d"]
 
         if not isinstance(payload, (dict, list)):
             payload = json.loads(payload)
 
-        return Payload(op_code, payload)
+        return Payload(op_code, payload, event=event)
 
     def __repr__(self):
         if self.op == OpCode.DISPATCH:
@@ -187,7 +194,7 @@ class Payload:
             return "{}: {}".format(self.op.name, dumps(self.data))
 
     @classmethod
-    def event(cls, event: str, data: Union[Dict, List]) -> "Payload":
+    def dispatch(cls, event: str, data: Union[Dict, List]) -> "Payload":
         return Payload(
             OpCode.DISPATCH,
             data,
