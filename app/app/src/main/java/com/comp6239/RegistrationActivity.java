@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,8 +30,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.User;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -43,6 +51,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
+    public static BackendRequestController backendApi;
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -54,11 +63,13 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private UserRegistrationTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
     private EditText mPasswordView;
+    private EditText mFirstNameView;
+    private EditText mLastNameView;
     private View mProgressView;
     private View mLoginFormView;
 
@@ -70,6 +81,10 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
+        backendApi = BackendRequestController.getInstance(this);
+
+        mLastNameView = (EditText) findViewById(R.id.lastName);
+        mFirstNameView = (EditText) findViewById(R.id.firstName);
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -155,6 +170,8 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        String firstName = mFirstNameView.getText().toString();
+        String lastName = mLastNameView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
@@ -171,11 +188,14 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!User.isEmailValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
         }
+
+        //TODO: First name, last name validation
+
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
@@ -185,15 +205,11 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName);
             mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
-    }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
@@ -294,19 +310,38 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
      * Represents an asynchronous login/registration task used to authenticate
      * the user.
      */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class UserRegistrationTask extends AsyncTask<Void, Void, Boolean> {
 
         private final String mEmail;
         private final String mPassword;
+        private final String mFirstName;
+        private final String mLastName;
 
-        UserLoginTask(String email, String password) {
+
+        UserRegistrationTask(String email, String password, String firstName, String lastName) {
             mEmail = email;
             mPassword = password;
+            mFirstName = firstName;
+            mLastName = lastName;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+            User newUser = new User();
+
+            Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
+            call.enqueue(new Callback<User>() {
+
+                @Override
+                public void onResponse(Call<User> call, Response<User> response) {
+                    Log.d("Registration", "Response received");
+                }
+
+                @Override
+                public void onFailure(Call<User> call, Throwable t) {
+                    Log.d("Registration", "Failed to register");
+                }
+            });
 
             try {
                 // Simulate network access.
