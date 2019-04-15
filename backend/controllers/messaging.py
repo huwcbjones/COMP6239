@@ -1,9 +1,17 @@
 import asyncio
+import time
+import uuid
 from asyncio import Future
 from typing import Union, Dict, Coroutine, List, Optional
+from uuid import UUID
+
+from sqlalchemy.orm import Session
 
 from backend import log
 from backend.controller import WebSocketController, Payload, OpCode
+from backend.database import sql_session
+from backend.models import Message, UserRole
+from backend.models.user import get_user_by_id
 from backend.oauth import server
 
 connect_payload = Payload(
@@ -17,10 +25,26 @@ class MessageSocket(WebSocketController):
     method_map = {}  # type: Dict[OpCode, Union[callable, Coroutine]]
     event_map = {}  # type: Dict[str, Union[callable, Coroutine]]
 
+    client_maps = {}  # type: Dict[UUID, List[MessageSocket]]
+
     def __init__(self, application, request, **kwargs):
         super().__init__(application, request, **kwargs)
-        self.has_identified = False
+        self._has_identified = False
         self.identify_task = None  # type: Optional[Future]
+
+    @property
+    def has_identified(self) -> bool:
+        return self._has_identified
+
+    @has_identified.setter
+    def has_identified(self, value: bool):
+        self._has_identified = value
+        if not value:
+            return
+        user_id = self.current_user.id
+        if user_id not in self.client_maps:
+            self.client_maps[user_id] = list()
+        self.client_maps[user_id].append(self)
 
     @classmethod
     def add_handler(cls, event: Optional[Union[OpCode, str]] = None):
@@ -32,9 +56,27 @@ class MessageSocket(WebSocketController):
 
         return wrapper
 
+    def broadcast(self, user_id: UUID, payload: Payload):
+        if user_id not in self.client_maps:
+            return
+        [c.send_payload(payload) for c in self.client_maps[user_id]]
+
     def open(self, *args: str, **kwargs: str):
         self.send_payload(connect_payload)
         self.identify_task = asyncio.ensure_future(identify_timeout(self))
+
+    def on_close(self) -> None:
+        super().on_close()
+
+        if not self.has_identified:
+            return
+
+        user_id = self.current_user.id
+        if user_id not in self.client_maps:
+            return
+
+        if self in self.client_maps[user_id]:
+            self.client_maps[user_id].remove(self)
 
     async def on_message(self, message: Union[str, bytes]):
         try:
@@ -104,6 +146,12 @@ def identify(socket: MessageSocket, payload: Payload):
         return
 
     user = r.user
+    if user.role == UserRole.ADMIN:
+        socket.send_opcode(OpCode.INVALID_SESSION)
+        socket.close()
+        return
+
+    socket.current_user = user
     socket.has_identified = True
     if socket.identify_task:
         socket.identify_task.cancel()
@@ -124,17 +172,62 @@ def identify(socket: MessageSocket, payload: Payload):
 
 @MessageSocket.add_handler(OpCode.DISPATCH)
 async def handle_dispatch(socket: MessageSocket, payload: Payload):
-    if payload.event not in MessageSocket.method_map:
+    if payload.event not in MessageSocket.event_map:
         return
-    result = MessageSocket.method_map[payload.op](socket, payload)
+    result = MessageSocket.event_map[payload.event](socket, payload)
     if result is not None:
         await result
 
 
 @MessageSocket.add_handler("SEND_MESSAGE")
-def send_message(socket: MessageSocket, payload: Payload):
-    log.info("Send message received!")
-    pass
+@sql_session
+def send_message(socket: MessageSocket, payload: Payload, session: Session):
+    data = payload.data
+    if "to" not in data or "message" not in data:
+        return
+
+    sender = get_user_by_id(socket.current_user.id, session)
+    recipient = get_user_by_id(data["to"], session)
+    if not recipient:
+        log.info("Not sending message to {} - does not exist".format(data["to"]))
+        return
+
+    if recipient.role == sender.role:
+        log.info("Not sending message to {} - cannot send message to users of same role ({})".format(
+            data["to"], recipient.role
+        ))
+        return
+
+    message = Message(
+        id=uuid.uuid1(int(time.time())),
+        from_id=sender.id,
+        to_id=recipient.id,
+        message=data["message"]
+    )
+
+    with session as s:  # type: Session
+        s.add(message)
+        s.commit()
+
+    # TODO: send message with FCM
+    # TODO: prevent tutors from messaging students first
+    # TODO: add message request before unfiltered communication
+    socket.broadcast(
+        recipient.id,
+        Payload.dispatch(
+            "MESSAGE",
+            {
+                "from": {
+                    "id": sender.id,
+                    "first_name": sender.first_name,
+                    "last_name": sender.last_name
+                },
+                "message": message.message,
+                "timestamp": message.created_at.utcnow()
+            }
+        )
+    )
+    log.info("Sent message to {}".format(message.to_id))
 
 
 async def identify_timeout(socket: MessageSocket, timeout: int = 45):

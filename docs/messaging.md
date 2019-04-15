@@ -59,3 +59,21 @@ Send a payload with OpCode 0 and event SEND_MESSAGE with data as follows:
   }
 }
 ```
+
+## Receiving messages
+Receive a payload with OpCode 0 and event MESSAGE with data as follows:
+```json
+{
+  "o": 0,
+  "e": "MESSAGE",
+  "d": {
+    "from": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "id": "$UUID"
+    },
+    "message": "message content",
+    "timestamp": "when message was sent (received by server)"
+  }
+}
+```
