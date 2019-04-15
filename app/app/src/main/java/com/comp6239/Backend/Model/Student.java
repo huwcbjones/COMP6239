@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Student extends User {
 
+
     /**
      * Registration constructor for Student
      * @param email

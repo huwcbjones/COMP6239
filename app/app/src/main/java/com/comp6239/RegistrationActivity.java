@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -204,7 +205,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName, backendApi);
+            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName);
             mAuthTask.execute((Void) null);
         }
     }
@@ -315,32 +316,30 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         private final String mPassword;
         private final String mFirstName;
         private final String mLastName;
-        public BackendRequestController backend;
 
-        UserRegistrationTask(String email, String password, String firstName, String lastName, BackendRequestController backend) {
+
+        UserRegistrationTask(String email, String password, String firstName, String lastName) {
             mEmail = email;
             mPassword = password;
             mFirstName = firstName;
             mLastName = lastName;
-            this.backend = backend;
-
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             User newUser = new User();
 
-            Call<User> call = backend.apiServiceAsync.createUser(newUser);
+            Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
             call.enqueue(new Callback<User>() {
 
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
-
+                    Log.d("Registration", "Response received");
                 }
 
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
-
+                    Log.d("Registration", "Failed to register");
                 }
             });
 
