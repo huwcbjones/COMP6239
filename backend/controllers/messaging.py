@@ -419,6 +419,12 @@ def send_message(socket: MessageSocket, payload: Payload, session: Session):
         )
     )
     log.info("Sent message to {}".format(recipient.id))
+    socket.send_payload(Payload.dispatch(
+        "MESSAGE_SENT",
+        {
+            "message_id": message.id
+        }
+    ))
 
 
 async def identify_timeout(socket: MessageSocket, timeout: int = 45):

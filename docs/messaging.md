@@ -60,20 +60,37 @@ Send a payload with OpCode 0 and event SEND_MESSAGE with data as follows:
 }
 ```
 
+You will then receive a `MESSAGE_SENT` with the `message_id` when the message has been sent!
+
+
 ## Receiving messages
-Receive a payload with OpCode 0 and event MESSAGE with data as follows:
+Receive a payload with OpCode 0 and event `MESSAGE` with data as follows.
+If the user is messaging for the first time, the event type will be `MESSAGE_REQUEST`.
+The user then needs to approve or deny the request to be able to send/receive messages.
 ```json
 {
   "o": 0,
   "e": "MESSAGE",
   "d": {
+    "thread_id": "a2d40043-9282-45dd-9eab-b72588c3a6d6",
     "from": {
-        "first_name": "First name",
-        "last_name": "Last name",
-        "id": "$UUID"
+      "id": "sender's ID",
+      "first_name": "First Name",
+      "last_name": "Last Name"
     },
-    "message": "message content",
-    "timestamp": "when message was sent (received by server)"
+    "message": "Message content",
+    "timestamp": "time of message"
   }
 }
 ```
+
+## To approve/deny a message request
+POST to `/thread/$thread_id/$state`, where `$state` is either `approve` or `block`.
+Only users with the `TUTOR` role can approve messages.
+
+
+## To get a list of threads
+GET `/thread`
+
+## To get a messages from a thread with `$ID`
+GET `/thread/$ID`
