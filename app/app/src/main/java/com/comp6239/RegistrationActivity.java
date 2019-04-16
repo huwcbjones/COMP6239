@@ -29,13 +29,19 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.Gender;
+import com.comp6239.Backend.Model.Role;
+import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.User;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -107,6 +113,15 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        Button mGoLoginView = findViewById(R.id.go_login);
+
+        mGoLoginView.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
     }
 
     private void populateAutoComplete() {
@@ -327,14 +342,24 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            User newUser = new User();
+            User newUser = new Student(mEmail, mFirstName, mLastName, Gender.MALE, "lol", mPassword);
 
             Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
+
             call.enqueue(new Callback<User>() {
 
                 @Override
                 public void onResponse(Call<User> call, Response<User> response) {
                     Log.d("Registration", "Response received");
+                    Log.d("Registration", response.message());
+                    if(response.message().equals("Conflict")) { //Account exists
+                        Toast toast = Toast.makeText(getApplicationContext(), "That account already exists!", Toast.LENGTH_LONG);
+                        toast.show();
+                    } else if(response.message().equals("Created")) {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Successfully registered!", Toast.LENGTH_LONG);
+                        toast.show();
+                    }
+
                 }
 
                 @Override
@@ -348,14 +373,6 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 return false;
-            }
-
-            for (String credential : DUMMY_CREDENTIALS) {
-                String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
-                    // Account exists, return true if the password matches.
-                    return pieces[1].equals(mPassword);
-                }
             }
 
             // TODO: register the new account here.

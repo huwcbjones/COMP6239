@@ -30,7 +30,6 @@ public class User  {
     @SerializedName("password")
     private String password;
 
-
     public UUID getId() {
         return id;
     }
