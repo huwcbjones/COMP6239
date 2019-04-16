@@ -2,22 +2,147 @@ import asyncio
 import time
 import uuid
 from asyncio import Future
+from http import HTTPStatus
 from typing import Union, Dict, Coroutine, List, Optional
 from uuid import UUID
 
 from sqlalchemy.orm import Session
 
 from backend import log
-from backend.controller import WebSocketController, Payload, OpCode
+from backend.controller import WebSocketController, Payload, OpCode, Controller
 from backend.database import sql_session
-from backend.models import Message, UserRole
+from backend.exc import NotFoundException, AccessDeniedException
+from backend.models import Message, UserRole, MessageThread, ThreadState, MessageState
+from backend.models.messages import get_unread_thread_count, get_recent_threads, get_thread_by_user_ids, \
+    get_thread_by_id, get_recent_messages_by_thread
 from backend.models.user import get_user_by_id
-from backend.oauth import server
+from backend.oauth import server, protected
+from backend.utils.regex import uuid as uuid_regex
 
 connect_payload = Payload(
     OpCode.HELLO,
     {}
 )
+
+
+class MessageController(Controller):
+    route = [r"/thread"]
+
+    @protected(roles=[UserRole.STUDENT, UserRole.TUTOR])
+    async def get(self):
+        with self.app.db.session() as s:
+            threads = get_recent_threads(self.current_user.id, session=s, number=None)
+
+            content = []
+
+            for thread in threads:
+                if thread.student_id == self.current_user.id:
+                    recipient = get_user_by_id(thread.tutor_id)
+                else:
+                    recipient = get_user_by_id(thread.student_id)
+
+                m = thread.message
+
+                state = thread.state
+                if self.current_user.role == UserRole.STUDENT and state == ThreadState.BLOCKED:
+                    state = ThreadState.REQUESTED
+
+                content.append({
+                    "id": thread.id,
+                    "recipient": {
+                        "id": recipient.id,
+                        "first_name": recipient.first_name,
+                        "last_name": recipient.last_name
+                    },
+                    "messages": {
+                        "id": m.id,
+                        "sender_id": m.sender_id,
+                        "timestamp": m.created_at,
+                        "message": m.message,
+                        "state": m.state
+                    },
+                    "state": state
+                })
+            self.write(content)
+
+
+class MessageThreadController(Controller):
+    route = [r"/thread/(" + uuid_regex + ")"]
+
+    @protected(roles=[UserRole.STUDENT, UserRole.TUTOR])
+    async def get(self, thread_id: UUID):
+        with self.app.db.session() as s:
+            thread = get_thread_by_id(thread_id, session=s)
+
+            if thread.student_id != self.current_user.id and thread.tutor_id != self.current_user.id:
+                raise NotFoundException()
+
+            state = thread.request_state
+            if self.current_user.role == UserRole.STUDENT and state == ThreadState.BLOCKED:
+                state = ThreadState.REQUESTED
+
+            if thread.student_id == self.current_user.id:
+                recipient = get_user_by_id(thread.tutor_id)
+            else:
+                recipient = get_user_by_id(thread.student_id)
+
+            messages = get_recent_messages_by_thread(thread_id, session=s, number=None)
+
+            self.write({
+                "id": thread.id,
+                "recipient": {
+                    "id": recipient.id,
+                    "first_name": recipient.first_name,
+                    "last_name": recipient.last_name
+                },
+                "messages": [{
+                    "id": m.id,
+                    "sender_id": m.sender_id,
+                    "timestamp": m.created_at,
+                    "message": m.message,
+                    "state": m.state
+                } for m in messages],
+                "state": state
+            })
+
+
+class MessageBlockRequestController(Controller):
+    route = [r"/thread/(" + uuid_regex + ")/block"]
+
+    @protected(roles=[UserRole.STUDENT, UserRole.TUTOR])
+    async def post(self, thread_id: UUID):
+        with self.app.db.session() as s:
+            thread = get_thread_by_id(thread_id, session=s, lock_update=True)
+
+            if thread.student_id != self.current_user.id and thread.tutor_id != self.current_user.id:
+                raise NotFoundException()
+
+            thread.request_state = ThreadState.BLOCKED
+
+            s.add(thread)
+            s.commit()
+        self.set_status(HTTPStatus.NO_CONTENT)
+
+
+class MessageApproveRequestController(Controller):
+    route = [r"/thread/(" + uuid_regex + ")/approve"]
+
+    @protected(roles=[UserRole.STUDENT, UserRole.TUTOR])
+    async def post(self, thread_id: UUID):
+        with self.app.db.session() as s:
+            thread = get_thread_by_id(thread_id, session=s, lock_update=True)
+
+            if thread.student_id != self.current_user.id and thread.tutor_id != self.current_user.id:
+                raise NotFoundException()
+
+            if self.current_user.role != UserRole.TUTOR:
+                raise AccessDeniedException()
+
+            thread.request_state = ThreadState.ALLOWED
+
+            s.add(thread)
+            s.commit()
+        self.set_status(HTTPStatus.NO_CONTENT)
 
 
 class MessageSocket(WebSocketController):
@@ -156,16 +281,46 @@ def identify(socket: MessageSocket, payload: Payload):
     if socket.identify_task:
         socket.identify_task.cancel()
 
+    unread_thread_count = get_unread_thread_count(user.id)
+    recent_threads = get_recent_threads(user.id)
+    threads = []
+    for thread in recent_threads:
+        state = thread.request_state
+        if user.role == UserRole.STUDENT:
+            recipient_id = thread.tutor_id
+            if state == ThreadState.BLOCKED:
+                state = ThreadState.REQUESTED
+        else:
+            recipient_id = thread.student_id
+        recipient = get_user_by_id(recipient_id)
+
+        threads.append({
+            "id": thread.id,
+            "recipient": {
+                "id": recipient.id,
+                "first_name": recipient.first_name,
+                "last_name": recipient.last_name
+            },
+            "messages": [
+                {
+                    "id": thread.message.id,
+                    "sender_id": thread.message.sender_id,
+                    "message": thread.message.message,
+                    "state": thread.message.state,
+                    "timestamp": thread.message.created_at
+                }
+            ],
+            "state": state
+        })
+
     socket.send_payload(Payload.dispatch(
         "READY",
         {
             "id": user.id,
             "first_name": user.first_name,
             "last_name": user.last_name,
-            "unread_threads": 0,
-            "recent_threads": [
-                {}
-            ]
+            "unread_threads": unread_thread_count,
+            "recent_threads": threads
         }
     ))
 
@@ -188,6 +343,7 @@ def send_message(socket: MessageSocket, payload: Payload, session: Session):
 
     sender = get_user_by_id(socket.current_user.id, session)
     recipient = get_user_by_id(data["to"], session)
+
     if not recipient:
         log.info("Not sending message to {} - does not exist".format(data["to"]))
         return
@@ -198,36 +354,71 @@ def send_message(socket: MessageSocket, payload: Payload, session: Session):
         ))
         return
 
+    if sender.role == UserRole.STUDENT:
+        student = sender
+        tutor = recipient
+        thread = get_thread_by_user_ids(student_id=sender.id, tutor_id=recipient.id, session=session)
+    else:
+        student = recipient
+        tutor = sender
+        thread = get_thread_by_user_ids(student_id=recipient.id, tutor_id=sender.id, session=session)
+
+    if thread is None:
+        is_new_thread = True
+        if sender.role != UserRole.STUDENT:
+            log.warning("Not allowing non-student to send first message")
+            return
+
+        thread = MessageThread(
+            id=uuid.uuid4(),
+            student_id=student.id,
+            tutor_id=tutor.id,
+        )
+        session.add(thread)
+    else:
+        is_new_thread = False
+        if thread.request_state == ThreadState.BLOCKED:
+            log.warning("Not sending message as thread is blocked!")
+            return
+
     message = Message(
         id=uuid.uuid1(int(time.time())),
-        from_id=sender.id,
-        to_id=recipient.id,
+        sender_id=sender.id,
+        thread_id=thread.id,
         message=data["message"]
     )
+    thread.state = MessageState.SENT
 
-    with session as s:  # type: Session
-        s.add(message)
-        s.commit()
+    session.add(message)
+    session.commit()
 
     # TODO: send message with FCM
-    # TODO: prevent tutors from messaging students first
-    # TODO: add message request before unfiltered communication
+    if is_new_thread:
+        event_type = "MESSAGE_REQUEST"
+    else:
+        event_type = "MESSAGE"
+
+    if not is_new_thread and thread.request_state != ThreadState.ALLOWED:
+        log.info("Not broadcasting message")
+        return
+
     socket.broadcast(
         recipient.id,
         Payload.dispatch(
-            "MESSAGE",
+            event_type,
             {
+                "thread_id": thread.id,
                 "from": {
                     "id": sender.id,
                     "first_name": sender.first_name,
                     "last_name": sender.last_name
                 },
                 "message": message.message,
-                "timestamp": message.created_at.utcnow()
+                "timestamp": message.created_at
             }
         )
     )
-    log.info("Sent message to {}".format(message.to_id))
+    log.info("Sent message to {}".format(recipient.id))
 
 
 async def identify_timeout(socket: MessageSocket, timeout: int = 45):

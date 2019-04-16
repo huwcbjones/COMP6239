@@ -18,5 +18,6 @@ debug = main_logger.debug
 info = main_logger.info
 warning = main_logger.warning
 error = main_logger.error
+fatal = main_logger.fatal
 exception = main_logger.exception
 log = main_logger.log

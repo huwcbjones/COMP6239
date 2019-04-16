@@ -44,6 +44,12 @@ class MessageState(enum.Enum):
     READ = "r"
 
 
+class ThreadState(enum.Enum):
+    REQUESTED = "r"
+    BLOCKED = "b"
+    ALLOWED = "a"
+
+
 class OAuthGrantType(enum.Enum):
     AUTHORIZATION_CODE = "authorization_code"
     IMPLICIT = "implicit"
@@ -238,15 +244,23 @@ class Rating(TimestampModifiedMixin, Base):
     date = Column(DateTime, nullable=False)
 
 
+class MessageThread(TimestampModifiedMixin, Base):
+    __tablename__ = "message_threads"
+    id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
+    student_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    request_state = Column(Enum(ThreadState), default=ThreadState.REQUESTED, nullable=False)  # type: ThreadState
+    state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
+
+
 class Message(TimestampMixin, Base):
     __tablename__ = "messages"
 
     id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
-    from_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
-    to_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
-
+    thread_id = Column(UUIDType, ForeignKey(MessageThread.id, ondelete="CASCADE"))  # type: uuid.UUID
+    sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
     message = Column(String)  # type: str
-    state = Column(Enum(MessageState), default=MessageState.SENT)  # type: MessageState
+    state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
 
 
 # region OAuth Classes
