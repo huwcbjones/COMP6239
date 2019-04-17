@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.Gender;
 import com.comp6239.Backend.Model.Role;
 import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
 
 import java.io.IOException;
@@ -78,6 +80,11 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
     private EditText mLastNameView;
     private View mProgressView;
     private View mLoginFormView;
+    private RadioGroup mRoleChoose;
+    private RadioGroup mGenderChoose;
+
+    private String currentRole;
+    private Gender currentGender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +99,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         mLastNameView = (EditText) findViewById(R.id.lastName);
         mFirstNameView = (EditText) findViewById(R.id.firstName);
         mPasswordView = (EditText) findViewById(R.id.password);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -100,6 +108,34 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                     return true;
                 }
                 return false;
+            }
+        });
+
+        mRoleChoose = findViewById(R.id.radioRole);
+        mRoleChoose.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.studentButton) {
+                    currentRole = "s";
+                } else if(checkedId == R.id.tutorButton) {
+                    currentRole = "t";
+                }
+            }
+        });
+
+        mGenderChoose = findViewById(R.id.radioGender);
+        mGenderChoose.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.maleButton) {
+                    currentGender = Gender.MALE;
+                } else if(checkedId == R.id.femaleButton) {
+                    currentGender = Gender.FEMALE;
+                } else if(checkedId == R.id.notSayButton) {
+                    currentGender = Gender.NOT_SAY;
+                }
             }
         });
 
@@ -113,6 +149,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
         Button mGoLoginView = findViewById(R.id.go_login);
 
         mGoLoginView.setOnClickListener(new OnClickListener() {
@@ -220,7 +257,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName);
+            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName, currentGender, currentRole);
             mAuthTask.execute((Void) null);
         }
     }
@@ -331,18 +368,29 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         private final String mPassword;
         private final String mFirstName;
         private final String mLastName;
+        private final String mRole;
+        private final Gender mGender;
 
 
-        UserRegistrationTask(String email, String password, String firstName, String lastName) {
+        UserRegistrationTask(String email, String password, String firstName, String lastName, Gender gender, String role) {
             mEmail = email;
             mPassword = password;
             mFirstName = firstName;
             mLastName = lastName;
+            mRole = role;
+            mGender = gender;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            User newUser = new Student(mEmail, mFirstName, mLastName, Gender.MALE, "lol", mPassword);
+            User newUser;
+
+            if(mRole.equals("s")) {
+                newUser = new Student(mEmail, mFirstName, mLastName, mGender, "lol", mPassword);
+            } else {
+                newUser = new Tutor(mEmail, mFirstName, mLastName, mGender, "lol", mPassword);
+            }
+
 
             Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
 
