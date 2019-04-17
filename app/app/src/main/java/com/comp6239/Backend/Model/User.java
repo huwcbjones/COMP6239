@@ -21,26 +21,14 @@ public class User  {
     @SerializedName("gender")
     private Gender gender;
 
-    @SerializedName("role")
-    private Role role;
-
     @SerializedName("location")
     private String location;
 
     @SerializedName("password")
     private String password;
 
-
     public UUID getId() {
         return id;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
     }
 
     public String getLocation() {

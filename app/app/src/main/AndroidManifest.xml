@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -30,11 +31,11 @@
             android:name=".Tutor.TutorHomeActivity"
             android:label="@string/title_activity_tutor_home" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".Student.StudentHomeActivity"
             android:label="@string/title_activity_student_home" />
         <activity android:name=".Tutor.WaitForApprovalActivity" />
         <activity
-            android:name=".Student.StudentHomeActivity"
+            android:name=".LoginActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
