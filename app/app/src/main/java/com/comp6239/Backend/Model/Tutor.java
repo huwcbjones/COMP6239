@@ -29,7 +29,6 @@ public class Tutor extends User {
         this.setLastName(lastName);
         this.setGender(gender);
         this.setLocation(location);
-        this.setRole(Role.TUTOR);
         this.setPassword(password);
     }
 

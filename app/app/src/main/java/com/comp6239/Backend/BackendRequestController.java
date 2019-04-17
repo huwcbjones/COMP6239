@@ -47,10 +47,10 @@ public class BackendRequestController {
         this.context = context;
         //Basically this is meant to make GSON support the polymorphism of our model
         final RuntimeTypeAdapterFactory<User> typeFactory = RuntimeTypeAdapterFactory
-                .of(User.class, "type")
-                .registerSubtype(Student.class, "Student")
-                .registerSubtype(Tutor.class, "Tutor")
-                .registerSubtype(Admin.class, "Admin");
+                .of(User.class, "role", false)
+                .registerSubtype(Student.class, "s")
+                .registerSubtype(Tutor.class, "t")
+                .registerSubtype(Admin.class, "a");
 
         //The GSON converter itself, with the polymorphism factory added in
         Gson gson = new GsonBuilder()
@@ -62,6 +62,7 @@ public class BackendRequestController {
                 .setPrettyPrinting()
                 .setVersion(1.0)
                 .create();
+
 
         //The retrofit itself
         Retrofit retrofitAsync = new Retrofit.Builder()

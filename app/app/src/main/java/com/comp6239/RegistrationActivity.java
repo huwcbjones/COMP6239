@@ -365,6 +365,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                 @Override
                 public void onFailure(Call<User> call, Throwable t) {
                     Log.d("Registration", "Failed to register");
+                    t.printStackTrace();
                 }
             });
 

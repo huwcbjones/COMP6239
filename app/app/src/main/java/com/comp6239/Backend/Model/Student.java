@@ -20,7 +20,6 @@ public class Student extends User {
         this.setLastName(lastName);
         this.setGender(gender);
         this.setLocation(location);
-        this.setRole(Role.STUDENT);
         this.setPassword(password);
     }
 
