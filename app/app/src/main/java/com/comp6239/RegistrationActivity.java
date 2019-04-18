@@ -1,11 +1,21 @@
 package com.comp6239;
 
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
 
@@ -28,6 +38,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,11 +46,16 @@ import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.Gender;
 import com.comp6239.Backend.Model.Role;
 import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -58,6 +74,9 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
      */
     private static final int REQUEST_READ_CONTACTS = 0;
     public static BackendRequestController backendApi;
+    private FusedLocationProviderClient fusedLocationClient;
+    private Location mLocation;
+    LocationListener locationListener;
 
     /**
      * A dummy authentication store containing known user names and passwords.
@@ -78,6 +97,11 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
     private EditText mLastNameView;
     private View mProgressView;
     private View mLoginFormView;
+    private RadioGroup mRoleChoose;
+    private RadioGroup mGenderChoose;
+
+    private String currentRole;
+    private Gender currentGender;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +116,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         mLastNameView = (EditText) findViewById(R.id.lastName);
         mFirstNameView = (EditText) findViewById(R.id.firstName);
         mPasswordView = (EditText) findViewById(R.id.password);
+
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -100,6 +125,34 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                     return true;
                 }
                 return false;
+            }
+        });
+
+        mRoleChoose = findViewById(R.id.radioRole);
+        mRoleChoose.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.studentButton) {
+                    currentRole = "s";
+                } else if(checkedId == R.id.tutorButton) {
+                    currentRole = "t";
+                }
+            }
+        });
+
+        mGenderChoose = findViewById(R.id.radioGender);
+        mGenderChoose.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // find which radio button is selected
+                if(checkedId == R.id.maleButton) {
+                    currentGender = Gender.MALE;
+                } else if(checkedId == R.id.femaleButton) {
+                    currentGender = Gender.FEMALE;
+                } else if(checkedId == R.id.notSayButton) {
+                    currentGender = Gender.NOT_SAY;
+                }
             }
         });
 
@@ -113,7 +166,51 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+
         Button mGoLoginView = findViewById(R.id.go_login);
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        locationListener  = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                mLocation = location;
+                Log.d("Location Changes", location.toString());
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                Log.d("Status Changed", String.valueOf(status));
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+                Log.d("Provider Enabled", provider);
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+                Log.d("Provider Disabled", provider);
+            }
+        };
+
+        Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_COARSE);
+        criteria.setPowerRequirement(Criteria.POWER_LOW);
+        criteria.setAltitudeRequired(false);
+        criteria.setBearingRequired(false);
+        criteria.setSpeedRequired(false);
+        criteria.setCostAllowed(true);
+        criteria.setHorizontalAccuracy(Criteria.ACCURACY_HIGH);
+        criteria.setVerticalAccuracy(Criteria.ACCURACY_HIGH);
+
+        if(ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+            final LocationManager locationManager = (LocationManager)getSystemService(Context.LOCATION_SERVICE);
+            final Looper looper = null;
+            locationManager.requestSingleUpdate(criteria, locationListener, looper);
+        }
 
         mGoLoginView.setOnClickListener(new OnClickListener() {
             @Override
@@ -220,7 +317,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName);
+            mAuthTask = new UserRegistrationTask(email, password, firstName, lastName, currentGender, currentRole);
             mAuthTask.execute((Void) null);
         }
     }
@@ -331,20 +428,59 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         private final String mPassword;
         private final String mFirstName;
         private final String mLastName;
+        private final String mRole;
+        private final Gender mGender;
 
 
-        UserRegistrationTask(String email, String password, String firstName, String lastName) {
+
+        UserRegistrationTask(String email, String password, String firstName, String lastName, Gender gender, String role) {
             mEmail = email;
             mPassword = password;
             mFirstName = firstName;
             mLastName = lastName;
+            mRole = role;
+            mGender = gender;
+
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            User newUser = new Student(mEmail, mFirstName, mLastName, Gender.MALE, "lol", mPassword);
+            User newUser;
+            final String[] loc = {""};
+            Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+
+            try {
+                List<Address> addresses = geocoder.getFromLocation(
+                        mLocation.getLatitude(),
+                        mLocation.getLongitude(),
+                        // In this sample, get just a single address.
+                        1);
+                loc[0] = addresses.get(0).getSubAdminArea();
+            } catch (IOException e) {
+                // Catch network or other I/O problems.
+                Log.e("Registration-GEOCODER", "Network unavailable", e);
+            } catch (IllegalArgumentException e) {
+                // Catch invalid latitude or longitude values.
+                Log.e("Registration-GEOCODER", "Invalid location passed.", e);
+            }
+
+            try {
+                // Simulate network access.
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                return false;
+            }
+
+
+            if(mRole.equals("s")) {
+                newUser = new Student(mEmail, mFirstName, mLastName, mGender, loc[0], mPassword);
+            } else {
+                newUser = new Tutor(mEmail, mFirstName, mLastName, mGender, loc[0], mPassword);
+            }
+
 
             Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
+
 
             call.enqueue(new Callback<User>() {
 
@@ -355,7 +491,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                     if(response.message().equals("Conflict")) { //Account exists
                         Toast toast = Toast.makeText(getApplicationContext(), "That account already exists!", Toast.LENGTH_LONG);
                         toast.show();
-                    } else if(response.message().equals("Created")) {
+                    } else if(response.message().equals("Created")) { //Success
                         Toast toast = Toast.makeText(getApplicationContext(), "Successfully registered!", Toast.LENGTH_LONG);
                         toast.show();
                     }
@@ -369,14 +505,6 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                 }
             });
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            // TODO: register the new account here.
             return true;
         }
 

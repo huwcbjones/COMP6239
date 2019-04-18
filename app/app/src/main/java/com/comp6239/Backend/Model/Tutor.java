@@ -32,6 +32,15 @@ public class Tutor extends User {
         this.setPassword(password);
     }
 
+    public Tutor(String email, String firstName, String lastName, Gender gender, String location, String password) {
+        this.setEmail(email);
+        this.setFirstName(firstName);
+        this.setLastName(lastName);
+        this.setGender(gender);
+        this.setLocation(location);
+        this.setPassword(password);
+    }
+
     public String getBio() {
         return bio;
     }
