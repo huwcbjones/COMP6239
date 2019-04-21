@@ -53,7 +53,7 @@ class StudentProfileController(Controller):
             "location"
         ]
 
-        if student_id is not None:
+        if student_id is not None and student_id != self.current_user.id:
             raise BadRequestException()
 
         with self.app.db.session() as s:
