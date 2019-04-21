@@ -79,7 +79,7 @@ class TutorProfileController(Controller):
             "price",
         ]
 
-        if tutor_id is not None:
+        if tutor_id is not None and tutor_id != self.current_user.id:
             raise BadRequestException()
 
         with self.app.db.session() as s:  # type: Session
