@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 
 import com.comp6239.Backend.AuthInterceptors.AuthorisationInterceptor;
-import com.comp6239.Backend.AuthInterceptors.RenewTokenInterceptor;
 import com.comp6239.Backend.Model.Admin;
 import com.comp6239.Backend.Model.RuntimeTypeAdapterFactory;
 import com.comp6239.Backend.Model.Student;
@@ -14,21 +13,13 @@ import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
 import com.comp6239.LoginActivity;
 import com.comp6239.R;
-import com.comp6239.Student.StudentHomeActivity;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.io.IOException;
 import java.text.DateFormat;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 
-import okhttp3.Cache;
-import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -40,7 +31,7 @@ public class BackendRequestController {
 
     private final static String BASE_URL = "https://comp6239.biggy.hcbj.io";
     private static BackendRequestController instance;
-    public static BackEndService apiServiceAsync;
+    public static BackEndService apiService;
     private Context context;
     private Session session;
     private AuthenticationListener authenticationListener;
@@ -87,7 +78,7 @@ public class BackendRequestController {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        apiServiceAsync = retrofitAsync.create(BackEndService.class);
+        apiService = retrofitAsync.create(BackEndService.class);
 
         sharedPreferences = context.getSharedPreferences(context.getResources().getString(R.string.preference_file_key) , Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();

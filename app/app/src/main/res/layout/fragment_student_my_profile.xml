@@ -51,8 +51,19 @@
             android:text="Test Text" />
 
         <Button
-            android:id="@+id/sign_out_button"
+            android:id="@+id/edit_profile_button"
             android:layout_marginTop="25sp"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EDIT PROFILE"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+        <Button
+            android:id="@+id/sign_out_button"
+            android:layout_marginTop="75sp"
             style="?android:textAppearanceSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

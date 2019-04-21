@@ -1,6 +1,7 @@
 package com.comp6239.Backend;
 
 import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Model.Subject;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
 
@@ -18,17 +19,17 @@ public interface BackEndService {
     @POST("/register")
     Call<User> createUser(@Body User user);
 
-    @GET("/student/{ID}/profile")
-    Call<Student> getUser(@Path("ID") String ID);
+    @GET("/student/{id}/profile")
+    Call<Student> getUser(@Path("id") String ID);
 
-    @POST("/student/{ID}/profile")
-    Call<Student> updateStudent(@Path("ID") @Body Student user);
+    @POST("/student/{id}/profile")
+    Call<Student> updateStudent(@Path("id") String id, @Body Student user);
 
-    @GET("/tutor/{ID}/profile")
-    Call<Tutor> getTutor(@Path("ID") String ID);
+    @GET("/tutor/{id}/profile")
+    Call<Tutor> getTutor(@Path("id") String ID);
 
-    @POST("/tutor/{ID}/profile")
-    Call<Tutor> updateTutor(@Path("ID") @Body Tutor tutor);
+    @POST("/tutor/{id}/profile")
+    Call<Tutor> updateTutor(@Path("id") @Body Tutor tutor);
 
     @POST("/oauth/token")
     Call<Authorisation> loginAccount(@Body AuthorisationRequest request);
@@ -38,6 +39,9 @@ public interface BackEndService {
 
     @GET("/profile")
     Call<User> getProfile();
+
+    @GET("/subject")
+    Call<List<Subject>> getAllSubjects();
     /* TODO: Implement these
     @GET("/search/tutors")
     Call<List<User>> groupList(@Path("id") int groupId, @Query("sort") String sort);

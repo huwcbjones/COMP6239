@@ -1,10 +1,15 @@
 package com.comp6239.Student;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -79,9 +84,9 @@ public class StudentMyProfileFragment extends Fragment {
 
         mName = view.findViewById(R.id.nameView);
         mEmail = view.findViewById(R.id.emailView);
-        //String name = backend.getSession().getUser().getFirstName() + " " + backend.getSession().getUser().getLastName();
+        String name = backend.getSession().getUser().getFirstName() + " " + backend.getSession().getUser().getLastName();
         mEmail.setText(backend.getSession().getEmail());
-        //mName.setText(name);
+        mName.setText(name);
 
 
         view.findViewById(R.id.sign_out_button).setOnClickListener(new View.OnClickListener() {
@@ -91,9 +96,16 @@ public class StudentMyProfileFragment extends Fragment {
 
                 if(logOut) {
                     backend.getSession().invalidate();
-
                 }
 
+            }
+        });
+
+        view.findViewById(R.id.edit_profile_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getContext(), StudentEditProfileActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -161,4 +173,8 @@ public class StudentMyProfileFragment extends Fragment {
 
         builder.show();
     }
+
+
+
+
 }

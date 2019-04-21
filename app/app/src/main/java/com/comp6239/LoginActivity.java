@@ -20,7 +20,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -47,9 +46,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import okhttp3.Request;
-import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -169,7 +165,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid email, missing fields, etc.), the
@@ -192,7 +187,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !User.isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
@@ -220,13 +215,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     /**
@@ -349,7 +337,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             Response<Authorisation> loginResponse;
 
             try {
-                loginResponse = backendApi.apiServiceAsync.loginAccount(authRequest).execute();
+                loginResponse = backendApi.apiService.loginAccount(authRequest).execute();
 
                 if (loginResponse.isSuccessful()) {
                     // login request succeed, new token generated
@@ -359,8 +347,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     backendApi.getSession().saveRefreshToken(authorization.getRefreshToken());
                     backendApi.getSession().saveEmail(mEmail);
 
-
-                    Response<User> profileResponse = backendApi.apiServiceAsync.getProfile().execute();
+                    Response<User> profileResponse = backendApi.apiService.getProfile().execute();
                     if (profileResponse.isSuccessful()) {
                         backendApi.getSession().setUser(profileResponse.body());
                         return true;

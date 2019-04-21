@@ -44,20 +44,17 @@ import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.Gender;
-import com.comp6239.Backend.Model.Role;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -479,7 +476,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             }
 
 
-            Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
+            Call<User> call = backendApi.apiService.createUser(newUser);
 
 
             call.enqueue(new Callback<User>() {
