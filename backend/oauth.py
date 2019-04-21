@@ -3,6 +3,7 @@ import functools
 import os
 import uuid
 from asyncio import iscoroutinefunction
+from http import HTTPStatus
 from typing import Tuple, Optional
 
 import basicauth
@@ -14,7 +15,7 @@ from sqlalchemy.orm import Session
 
 from backend import log
 from backend.database import Database
-from backend.exc import UnauthorisedException
+from backend.exc import UnauthorisedException, ProcessingException
 from backend.models import UserRole
 from backend.models.oauth import client_exists_by_id, get_client_by_id, get_grant_token_by_code, \
     get_bearer_token_by_refresh_token, delete_grant_token_by_code, save_grant_token, save_bearer_token, \
@@ -86,6 +87,8 @@ class AppRequestValidator(RequestValidator):
 
         client = get_client_by_id(client_id)
         if not client:
+            request.error_code = HTTPStatus.BAD_REQUEST
+            request.error_message = "invalid_client"
             log.debug('Authenticating client failed, client not found.')
             return False
 
@@ -94,6 +97,8 @@ class AppRequestValidator(RequestValidator):
         # http://tools.ietf.org/html/rfc6749#section-2
         # The client MAY omit the parameter if the client secret is an empty string.
         if hasattr(client, 'client_secret') and not client.verify_client_secret(client_secret):
+            request.error_code = HTTPStatus.UNAUTHORIZED
+            request.error_message = "invalid_client_secret"
             log.debug('Authenticating client failed, secret not match.')
             return False
 
@@ -112,6 +117,8 @@ class AppRequestValidator(RequestValidator):
         client = request.client or get_client_by_id(client_id)
 
         if not client:
+            request.error_code = HTTPStatus.BAD_REQUEST
+            request.error_message = "invalid_client"
             log.debug('Authenticating client failed, client not found.')
             return False
 
@@ -238,23 +245,26 @@ class AppRequestValidator(RequestValidator):
         log.debug('Validate bearer token %r', token)
         tok = get_bearer_token_by_access_token(token)
         if not tok:
-            msg = 'Bearer token not found.'
+            msg = 'invalid_token'
             request.error_message = msg
+            request.error_code = HTTPStatus.UNAUTHORIZED
             log.debug(msg)
             return False
 
         # validate expires
         if tok.expires is not None and \
                 datetime.datetime.utcnow() > tok.expires:
-            msg = 'Bearer token is expired.'
+            msg = 'token_expired'
             request.error_message = msg
+            request.error_code = HTTPStatus.UNAUTHORIZED
             log.debug(msg)
             return False
 
         # validate scopes
         if scopes and not set(tok.scopes) & set(scopes):
             msg = 'Bearer token scope not valid.'
-            request.error_message = msg
+            request.error_message = "unauthorized_client"
+            request.error_code = HTTPStatus.BAD_REQUEST
             log.debug(msg)
             return False
 
@@ -381,14 +391,25 @@ def protected(method=None, scopes=None, roles=None):
             body=self.request.body,
             headers=self.request.headers,
             scopes=scopes
-        )
-        if v and r.user.role in roles:
+        )  # type: bool, Request
+        if v and r.user.role not in roles:
+            v = False
+            r.error_code = HTTPStatus.FORBIDDEN
+            r.error_message = "Forbidden"
+
+        if v:
             self.current_user = r.user
             if iscoroutinefunction(method):
                 return await method(*args, **kwargs)
             else:
                 return method(*args, **kwargs)
         else:
-            raise UnauthorisedException()
+            error_msg = None
+            error_code = 403
+            if hasattr(r, "error_message"):
+                error_msg = r.error_message
+            if hasattr(r, "error_code"):
+                error_code = r.error_code
+            raise ProcessingException(error_code, message=error_msg)
 
     return wrapper
