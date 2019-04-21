@@ -3,8 +3,12 @@ import functools
 import os
 import uuid
 from asyncio import iscoroutinefunction
+from typing import Tuple, Optional
 
 import basicauth
+import oauthlib.common as oauthlib_common
+from oauthlib.common import Request
+from oauthlib.common import extract_params as _extract_params
 from oauthlib.oauth2 import RequestValidator, Server
 from sqlalchemy.orm import Session
 
@@ -17,11 +21,33 @@ from backend.models.oauth import client_exists_by_id, get_client_by_id, get_gran
     get_bearer_token_by_access_token
 from backend.models.user import get_user_by_email, user_exists_by_email, get_user_by_id
 from backend.utils import convert_to_uuid
+from backend.utils.json import loads
+
+
+def extract_params(raw):
+    """Extract parameters and return them as a list of 2-tuples.
+
+    Will successfully extract parameters from urlencoded query strings,
+    dicts, or lists of 2-tuples. Empty strings/dicts/lists will return an
+    empty list of parameters. Any other input will result in a return
+    value of None.
+    """
+    params = _extract_params(raw)
+    if params is None:
+        try:
+            params = [(k, v) for k, v in loads(raw).items()]
+        except:
+            params = None
+
+    return params
+
+
+oauthlib_common.extract_params = extract_params
 
 
 class AppRequestValidator(RequestValidator):
 
-    def _get_client_credentials_from_request(self, request):
+    def _get_client_credentials_from_request(self, request: Request) -> Tuple[Optional[str], Optional[str]]:
         """Return client credentials based on the current request.
                 According to the rfc6749, client MAY use the HTTP Basic authentication
                 scheme as defined in [RFC2617] to authenticate with the authorization
