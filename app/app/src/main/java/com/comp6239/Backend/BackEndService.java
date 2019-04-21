@@ -9,6 +9,7 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
+import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -29,6 +30,14 @@ public interface BackEndService {
     @POST("/tutor/{ID}/profile")
     Call<Tutor> updateTutor(@Path("ID") @Body Tutor tutor);
 
+    @POST("/oauth/token")
+    Call<Authorisation> loginAccount(@Body AuthorisationRequest request);
+
+    @GET("/student/profile")
+    Call<Student> getStudentProfile();
+
+    @GET("/profile")
+    Call<User> getProfile();
     /* TODO: Implement these
     @GET("/search/tutors")
     Call<List<User>> groupList(@Path("id") int groupId, @Query("sort") String sort);

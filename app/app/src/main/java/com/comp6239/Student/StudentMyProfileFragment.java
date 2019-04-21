@@ -1,13 +1,18 @@
 package com.comp6239.Student;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.R;
 
 /**
@@ -21,14 +26,15 @@ import com.comp6239.R;
 public class StudentMyProfileFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    //private static final String ARG_PARAM1 = "param1";
+    //private static final String ARG_PARAM2 = "param2";
+    private TextView mName;
+    private TextView mEmail;
+    private boolean logOut;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private BackendRequestController backend;
 
     public StudentMyProfileFragment() {
         // Required empty public constructor
@@ -46,8 +52,8 @@ public class StudentMyProfileFragment extends Fragment {
     public static StudentMyProfileFragment newInstance(String param1, String param2) {
         StudentMyProfileFragment fragment = new StudentMyProfileFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        //args.putString(ARG_PARAM1, param1);
+        //args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,16 +62,42 @@ public class StudentMyProfileFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            //mParam1 = getArguments().getString(ARG_PARAM1);
+           // mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+        backend = BackendRequestController.getInstance(getContext());
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_student_my_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_student_my_profile, container, false);
+
+        mName = view.findViewById(R.id.nameView);
+        mEmail = view.findViewById(R.id.emailView);
+        //String name = backend.getSession().getUser().getFirstName() + " " + backend.getSession().getUser().getLastName();
+        mEmail.setText(backend.getSession().getEmail());
+        //mName.setText(name);
+
+
+        view.findViewById(R.id.sign_out_button).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutDialog();
+
+                if(logOut) {
+                    backend.getSession().invalidate();
+
+                }
+
+            }
+        });
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,5 +137,28 @@ public class StudentMyProfileFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+
+    private void logoutDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setTitle("Are you sure?");
+        builder.setMessage("You are about to sign out. Do you want to proceed ?");
+        builder.setCancelable(false);
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                logOut = true;
+
+            }
+        });
+
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                logOut = false;
+            }
+        });
+
+        builder.show();
     }
 }

@@ -30,13 +30,24 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.comp6239.Admin.AdminHomeActivity;
+import com.comp6239.Backend.Authorisation;
+import com.comp6239.Backend.AuthorisationRequest;
 import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.Admin;
+import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
+import com.comp6239.Student.StudentHomeActivity;
+import com.comp6239.Tutor.TutorHomeActivity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -76,12 +87,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        backendApi = BackendRequestController.getInstance(this);
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
-
-        backendApi = BackendRequestController.getInstance(this);
 
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -327,26 +337,43 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+            //SET THE SESSION EMAIL AND PASSWORD, THEN USE INTERCEPTOR TO GRAB TOKEN
+            //GET PROFILE, USE INTERCEPTOR TO LOG IN
+            //IF WE CANT GET PERMISSION TO GRAB PROFILE, THEN FAIL
 
-            /*
-            //Call<User> call = backendApi.apiServiceAsync.createUser(newUser);
-            call.enqueue(new Callback<User>() {
+            AuthorisationRequest authRequest = new AuthorisationRequest();
+            authRequest.setGrant_type("password");
+            authRequest.setUsername(mEmail);
+            authRequest.setPassword(mPassword);
 
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    Log.d("Login", "Response received");
+            Response<Authorisation> loginResponse;
 
+            try {
+                loginResponse = backendApi.apiServiceAsync.loginAccount(authRequest).execute();
+
+                if (loginResponse.isSuccessful()) {
+                    // login request succeed, new token generated
+                    Authorisation authorization = loginResponse.body();
+                    // save the new tokens
+                    backendApi.getSession().saveToken(authorization.getToken());
+                    backendApi.getSession().saveRefreshToken(authorization.getRefreshToken());
+                    backendApi.getSession().saveEmail(mEmail);
+
+
+                    Response<User> profileResponse = backendApi.apiServiceAsync.getProfile().execute();
+                    if (profileResponse.isSuccessful()) {
+                        backendApi.getSession().setUser(profileResponse.body());
+                        return true;
+                    }
                 }
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Log.d("Login", "Failed to get response");
-                }
-            });
-            */
+            } catch (IOException e) {
+                //e.printStackTrace();
+                Toast toast = Toast.makeText(getApplicationContext(), "Failed to access the server!", Toast.LENGTH_LONG);
+                toast.show();
+            }
 
-            // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
@@ -355,7 +382,22 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                //TODO: Decide to go to any of the homepages
+                Intent i;
+
+                if(backendApi.getSession().getUser() instanceof Student) {
+                    i = new Intent(getApplicationContext(), StudentHomeActivity.class);
+                } else if(backendApi.getSession().getUser() instanceof Tutor) {
+                    i = new Intent(getApplicationContext(), TutorHomeActivity.class);
+                } else if(backendApi.getSession().getUser() instanceof Admin) {
+                    i = new Intent(getApplicationContext(), AdminHomeActivity.class);
+                } else {
+                    i = new Intent(getApplicationContext(), LoginActivity.class);
+                    Toast toast = Toast.makeText(getApplicationContext(), "Something went wrong with the server!", Toast.LENGTH_LONG);
+                    toast.show();
+                }
+
+                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); //No return to login screen after!
+                startActivity(i);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
