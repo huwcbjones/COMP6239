@@ -67,3 +67,6 @@ class OAuthBearerTokenTest(unittest.TestCase):
 
         t = get_bearer_token_by_refresh_token(refresh_token)
         self.assertIsNotNone(t)
+
+        self.s.delete(u)
+        self.s.commit()

@@ -94,7 +94,7 @@ class TestStudentEditProfile(APITestCase):
             self.assertDictEqual(expected, j)
 
         with self.delete("/student/profile", json={"password": edit_data["password"]}) as r:
-            self.assertEqual(r.status_code, HTTPStatus.BAD_REQUEST)
+            self.assertEqual(r.status_code, HTTPStatus.UNAUTHORIZED)
 
         with self.delete("/student/profile", json={"password": data["password"]}) as r:
             self.assertEqual(r.status_code, HTTPStatus.NO_CONTENT)

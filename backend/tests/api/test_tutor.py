@@ -47,7 +47,6 @@ class TestTutorRegister(APITestCase):
 class TestTutorProfileEdit(APITestCase):
     def test_profile_edit(self):
         data = {
-            "approved_at": None,
             "bio": None,
             "email": "tutor@" + self.test_time,
             "password": "Test1!",
@@ -74,10 +73,16 @@ class TestTutorProfileEdit(APITestCase):
             expected = data.copy()
             del expected["password"]
             expected["gender"] = UserGender.PREFER_NOT_TO_SAY.value
+            expected["price"] = None
+            expected["reason"] = None
+            expected["reviewed_at"] = None
+
             self.assertDictEqual(expected, j)
 
         edit_data = {
             "approved_at": None,
+            # "reviewed_at": None,
+            # "reason": None,
             "bio": "Test Bio",
             "email": "test-tutor@" + self.test_time,
             "password": "failed",
@@ -101,7 +106,7 @@ class TestTutorProfileEdit(APITestCase):
             self.assertDictEqual(expected, j)
 
         with self.delete("/tutor/profile", json={"password": edit_data["password"]}) as r:
-            self.assertEqual(r.status_code, HTTPStatus.BAD_REQUEST)
+            self.assertEqual(r.status_code, HTTPStatus.UNAUTHORIZED)
 
         with self.delete("/tutor/profile", json={"password": data["password"]}) as r:
             self.assertEqual(r.status_code, HTTPStatus.NO_CONTENT)
