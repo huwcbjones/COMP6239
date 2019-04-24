@@ -7,8 +7,18 @@ public class Tutor extends User {
     private String bio;
 
     @SerializedName("price")
-    private float price;
+    private double price;
 
+    @SerializedName("subjects")
+    Subject[] subjects;
+
+    public Subject[] getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(Subject[] subjects) {
+        this.subjects = subjects;
+    }
 
     /**
      * Registration constructor for Tutor
@@ -41,6 +51,10 @@ public class Tutor extends User {
         this.setPassword(password);
     }
 
+    public Tutor() {
+        //Empty constructor
+    }
+
     public String getBio() {
         return bio;
     }
@@ -49,11 +63,11 @@ public class Tutor extends User {
         this.bio = bio;
     }
 
-    public float getPrice() {
+    public double getPrice() {
         return price;
     }
 
-    public void setPrice(float price) {
+    public void setPrice(double price) {
         this.price = price;
     }
 

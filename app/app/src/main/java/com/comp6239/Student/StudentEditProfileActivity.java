@@ -400,8 +400,9 @@ public class StudentEditProfileActivity extends AppCompatActivity {
                 toast.show();
                 finish();
             } else {
-                mFirstNameView.setError(getString(R.string.error_incorrect_password));
-                mFirstNameView.requestFocus();
+                Toast toast = Toast.makeText(getApplicationContext(), "There was a network error updating your profile!", Toast.LENGTH_LONG);
+                toast.show();
+                //mFirstNameView.requestFocus();
             }
         }
 
