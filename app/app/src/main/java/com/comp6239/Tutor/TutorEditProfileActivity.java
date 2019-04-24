@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Subject;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 import com.comp6239.Student.StudentEditProfileActivity;
 
@@ -200,8 +201,8 @@ public class TutorEditProfileActivity extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            Student oldUser = (Student) apiBackend.getSession().getUser();
-            Response<Student> studentUpdate;
+            Tutor oldUser = (Tutor) apiBackend.getSession().getUser();
+            Response<Tutor> tutorUpdate;
 
             if(TextUtils.isEmpty(mEmail))
                 mEmail = oldUser.getEmail();
@@ -240,19 +241,17 @@ public class TutorEditProfileActivity extends AppCompatActivity {
                 return false;
             }
 
-            Student updatedUser = new Student(mEmail, mFirstName, mLastName, oldUser.getGender(), loc[0], "password");
+            Tutor updatedUser = new Tutor(mEmail, mFirstName, mLastName, oldUser.getGender(), loc[0], "password");
             updatedUser.setId(oldUser.getId());
+            //TODO: dont serialise password
 
             try {
-                studentUpdate = apiBackend.apiService.updateStudent(oldUser.getId().toString(), updatedUser).execute();
+                tutorUpdate = apiBackend.apiService.updateTutor(oldUser.getId().toString(), updatedUser).execute();
 
-                if(studentUpdate.isSuccessful()) {
-                    apiBackend.getSession().setUser(studentUpdate.body());
+                if(tutorUpdate.isSuccessful()) {
+                    apiBackend.getSession().setUser(tutorUpdate.body());
                     return true;
                 }
-
-
-
 
             } catch(IOException e) {
                 Toast toast = Toast.makeText(getApplicationContext(), "Failed to access the server!", Toast.LENGTH_LONG);

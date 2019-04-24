@@ -63,7 +63,6 @@ public class BackendRequestController {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapterFactory(typeFactory)
                 .enableComplexMapKeySerialization()
-                .serializeNulls()
                 .setDateFormat(DateFormat.LONG)
                 .setFieldNamingPolicy(FieldNamingPolicy.UPPER_CAMEL_CASE)
                 .setPrettyPrinting()

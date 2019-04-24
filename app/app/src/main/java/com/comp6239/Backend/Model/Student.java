@@ -37,6 +37,11 @@ public class Student extends User {
         this.subjects = subjects;
     }
 
+    //Empty constructor for editing
+    public Student() {
+
+    }
+
     public Subject[] getSubjects() {
         return subjects;
     }

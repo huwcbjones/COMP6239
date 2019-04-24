@@ -29,7 +29,7 @@ public interface BackEndService {
     Call<Tutor> getTutor(@Path("id") String ID);
 
     @POST("/tutor/{id}/profile")
-    Call<Tutor> updateTutor(@Path("id") @Body Tutor tutor);
+    Call<Tutor> updateTutor(@Path("id") String id, @Body Tutor tutor);
 
     @POST("/oauth/token")
     Call<Authorisation> loginAccount(@Body AuthorisationRequest request);
@@ -39,6 +39,8 @@ public interface BackEndService {
 
     @GET("/profile")
     Call<User> getProfile();
+
+
 
     @GET("/subject")
     Call<List<Subject>> getAllSubjects();
