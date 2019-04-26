@@ -57,6 +57,8 @@ class TutorProfileController(Controller):
             data["reviewed_at"] = tutor.reviewed_at
             data["reason"] = tutor.reason
             data["revision"] = tutor.profile.created_at
+            data["status"] = tutor.profile.state
+
         if self.current_user.role == UserRole.ADMIN:
             data["email"] = tutor.email
             data["reviewed_at"] = tutor.reviwed_at
@@ -129,7 +131,8 @@ class TutorProfileController(Controller):
                 "location": user.location,
                 "subjects": profile.subjects,
                 "bio": profile.bio,
-                "price": profile.price
+                "price": profile.price,
+                "status": profile.state
             }
             if user.id == self.current_user.id:
                 data["email"] = user.email
