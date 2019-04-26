@@ -40,7 +40,9 @@ import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
 import com.comp6239.Student.StudentHomeActivity;
+import com.comp6239.Tutor.TutorEditProfileActivity;
 import com.comp6239.Tutor.TutorHomeActivity;
+import com.comp6239.Tutor.WaitForApprovalActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -315,6 +317,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mEmail;
         private final String mPassword;
+        private int isTutorValid;
 
 
         UserLoginTask(String email, String password) {
@@ -350,7 +353,34 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     Response<User> profileResponse = backendApi.apiService.getProfile().execute();
                     if (profileResponse.isSuccessful()) {
                         backendApi.getSession().setUser(profileResponse.body());
-                        return true;
+
+                        if(!(backendApi.getSession().getUser() instanceof Tutor)) {
+                            //Successful login as Student or Admin
+                            return true;
+                        }
+
+                        Response<Tutor> tutorFullProfile = backendApi.apiService.getTutor(backendApi.getSession().getUser().getId().toString()).execute();
+                        if(tutorFullProfile.isSuccessful()) {
+                            Tutor loggedTutor = tutorFullProfile.body();
+                            if(loggedTutor.getPrice() == null && loggedTutor.getBio() != null) { //Does a profile exist?
+                                isTutorValid = 0; //Profile hasnt even been made
+                                return true;
+                            } else if(loggedTutor.isApproved() == null) {
+                                isTutorValid = 1; //Tutor hasnt been reviewed
+                                return true;
+                            } else if(loggedTutor.isApproved() == false) {
+                                isTutorValid = 2; //Tutor has been rejected
+                                return true;
+                            } else {
+                                isTutorValid = 3; //isApproved is true, take Tutor home
+                                return true;
+                            }
+                        } else {
+                            return false; //Somehow getting the full profile for the tutor failed
+                        }
+
+                    } else {
+                        return false;
                     }
                 }
 
@@ -369,16 +399,32 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                Intent i;
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);;
 
                 if(backendApi.getSession().getUser() instanceof Student) {
                     i = new Intent(getApplicationContext(), StudentHomeActivity.class);
                 } else if(backendApi.getSession().getUser() instanceof Tutor) {
-                    i = new Intent(getApplicationContext(), TutorHomeActivity.class);
+                        switch(isTutorValid) {
+                            case 0:
+                                i = new Intent(getApplicationContext(), TutorEditProfileActivity.class);
+                                Toast toast = Toast.makeText(getApplicationContext(), "Create your profile as a tutor!", Toast.LENGTH_LONG);
+                                toast.show();
+                                break;
+                            case 1:
+                                i = new Intent(getApplicationContext(), WaitForApprovalActivity.class);
+                                break;
+                            case 2:
+                                i = new Intent(getApplicationContext(), TutorEditProfileActivity.class);
+                                Toast toast1 = Toast.makeText(getApplicationContext(), "Your application was rejected, please resubmit a profile!", Toast.LENGTH_LONG);
+                                toast1.show();
+                                break;
+                            case 3:
+                                i = new Intent(getApplicationContext(), TutorHomeActivity.class);
+                                break;
+                        }
                 } else if(backendApi.getSession().getUser() instanceof Admin) {
                     i = new Intent(getApplicationContext(), AdminHomeActivity.class);
                 } else {
-                    i = new Intent(getApplicationContext(), LoginActivity.class);
                     Toast toast = Toast.makeText(getApplicationContext(), "Something went wrong with the server!", Toast.LENGTH_LONG);
                     toast.show();
                 }

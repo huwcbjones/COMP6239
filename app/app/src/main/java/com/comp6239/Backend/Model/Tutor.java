@@ -2,15 +2,29 @@ package com.comp6239.Backend.Model;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.time.LocalDateTime;
+
 public class Tutor extends User {
     @SerializedName("bio")
     private String bio;
 
+    @SerializedName("status")
+    private Boolean isApproved;
+
     @SerializedName("price")
-    private double price;
+    private Double price;
 
     @SerializedName("subjects")
     Subject[] subjects;
+
+    @SerializedName("reason")
+    String reasonForRejection;
+
+    @SerializedName("revision")
+    LocalDateTime dateOfLastRevision;
+
+    @SerializedName("reviewed_at")
+    LocalDateTime lastTimeReviewed;
 
     public Subject[] getSubjects() {
         return subjects;
@@ -31,7 +45,7 @@ public class Tutor extends User {
      * @param bio
      * @param price
      */
-    public Tutor(String email, String firstName, String lastName, Gender gender, String location, String password, String bio, float price) {
+    public Tutor(String email, String firstName, String lastName, Gender gender, String location, String password, String bio, Double price) {
         this.bio = bio;
         this.price = price;
         this.setEmail(email);
@@ -55,6 +69,14 @@ public class Tutor extends User {
         //Empty constructor
     }
 
+    public Boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(Boolean approved) {
+        isApproved = approved;
+    }
+
     public String getBio() {
         return bio;
     }
@@ -63,12 +85,35 @@ public class Tutor extends User {
         this.bio = bio;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
+    public String getReasonForRejection() {
+        return reasonForRejection;
+    }
+
+    public void setReasonForRejection(String reasonForRejection) {
+        this.reasonForRejection = reasonForRejection;
+    }
+
+    public LocalDateTime getDateOfLastRevision() {
+        return dateOfLastRevision;
+    }
+
+    public void setDateOfLastRevision(LocalDateTime dateOfLastRevision) {
+        this.dateOfLastRevision = dateOfLastRevision;
+    }
+
+    public LocalDateTime getLastTimeReviewed() {
+        return lastTimeReviewed;
+    }
+
+    public void setLastTimeReviewed(LocalDateTime lastTimeReviewed) {
+        this.lastTimeReviewed = lastTimeReviewed;
+    }
 }
