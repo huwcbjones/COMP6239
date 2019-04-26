@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Admin.AdminReviewTutor">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="706dp"
+
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="413dp"
+
+            tools:srcCompat="@tools:sample/avatars" />
+
+
+        <TextView
+            android:id="@+id/tutorName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="8dp"
+            android:text="Tutor Name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="24sp"
+            tools:text="Tutor Name" />
+
+        <TextView
+            android:id="@+id/tutorEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Tutor Email"
+            android:textSize="18sp"
+            tools:text="Tutor Email" />
+
+        <TextView
+            android:id="@+id/tutorSubjects"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Tutor Subjects"
+            android:textSize="18sp"
+            tools:text="Tutor Subjects" />
+
+        <EditText
+            android:id="@+id/reason_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="30dp"
+            android:ems="10"
+            android:gravity="start|top"
+            android:hint="If rejected, type reason for rejection of application."
+            android:inputType="textMultiLine"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/accept_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="ACCEPT" />
+
+            <Button
+                android:id="@+id/reject_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="REJECT" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+
+
+</android.support.design.widget.CoordinatorLayout>

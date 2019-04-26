@@ -26,6 +26,8 @@
             android:layout_marginTop="8dp"
 
             android:text="Tutor Name"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large"
+            android:textSize="24sp"
             tools:text="Tutor Name" />
 
         <TextView
