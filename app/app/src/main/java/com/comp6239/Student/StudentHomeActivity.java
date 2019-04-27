@@ -1,6 +1,5 @@
 package com.comp6239.Student;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,7 +12,6 @@ import android.view.MenuItem;
 
 import com.comp6239.R;
 import com.comp6239.Student.dummy.DummyContent;
-import com.comp6239.Tutor.WaitForApprovalActivity;
 
 public class StudentHomeActivity extends AppCompatActivity implements StudentMyProfileFragment.OnFragmentInteractionListener, StudentMyTutorsFragment.OnListFragmentInteractionListener, StudentSearchTutorsFragment.OnListFragmentInteractionListener {
 
@@ -57,9 +55,6 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //TODO: If profile for tutor not validated, then go to WaitingForApprovalActivity
-        //Intent waiting = new Intent(this, WaitForApprovalActivity.class);
-        //startActivity(waiting);
 
         setContentView(R.layout.activity_student_home);
 

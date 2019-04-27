@@ -21,10 +21,10 @@ public class Tutor extends User {
     String reasonForRejection;
 
     @SerializedName("revision")
-    LocalDateTime dateOfLastRevision;
+    String dateOfLastRevision;
 
     @SerializedName("reviewed_at")
-    LocalDateTime lastTimeReviewed;
+    String lastTimeReviewed;
 
     public Subject[] getSubjects() {
         return subjects;
@@ -101,19 +101,19 @@ public class Tutor extends User {
         this.reasonForRejection = reasonForRejection;
     }
 
-    public LocalDateTime getDateOfLastRevision() {
+    public String getDateOfLastRevision() {
         return dateOfLastRevision;
     }
 
-    public void setDateOfLastRevision(LocalDateTime dateOfLastRevision) {
+    public void setDateOfLastRevision(String dateOfLastRevision) {
         this.dateOfLastRevision = dateOfLastRevision;
     }
 
-    public LocalDateTime getLastTimeReviewed() {
+    public String getLastTimeReviewed() {
         return lastTimeReviewed;
     }
 
-    public void setLastTimeReviewed(LocalDateTime lastTimeReviewed) {
+    public void setLastTimeReviewed(String lastTimeReviewed) {
         this.lastTimeReviewed = lastTimeReviewed;
     }
 }

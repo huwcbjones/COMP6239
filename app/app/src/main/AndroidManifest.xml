@@ -35,7 +35,6 @@
         <activity
             android:name=".Student.StudentHomeActivity"
             android:label="@string/title_activity_student_home" />
-        <activity android:name=".Tutor.WaitForApprovalActivity" />
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name">

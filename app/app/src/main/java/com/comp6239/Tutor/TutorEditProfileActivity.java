@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -32,6 +33,7 @@ import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Subject;
 import com.comp6239.Backend.Model.Tutor;
+import com.comp6239.LoginActivity;
 import com.comp6239.R;
 import com.comp6239.Student.StudentEditProfileActivity;
 
@@ -68,25 +70,11 @@ public class TutorEditProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_student_edit_profile);
+        setContentView(R.layout.activity_tutor_edit_profile);
         apiBackend = BackendRequestController.getInstance(this);
 
-        //grab the big list of subjects
-        Call<List<Subject>> subjectList = apiBackend.apiService.getAllSubjects();
-        subjectList.enqueue(new Callback<List<Subject>>() {
-
-            @Override
-            public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                allSubjects = (Subject[])response.body().toArray();
-            }
-
-            @Override
-            public void onFailure(Call<List<Subject>> call, Throwable t) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Could not retrieve user data!", Toast.LENGTH_LONG);
-                toast.show(); //If you cant grab the subject list, then just go back since you cant fill out subjects
-                finish();
-            }
-        });
+        chosenSubjects = new HashSet<Subject>();
+        setupSpinner();
 
         mStudentUpdateForm = findViewById(R.id.student_update_form);
         mProgressView = findViewById(R.id.login_progress);
@@ -97,7 +85,7 @@ public class TutorEditProfileActivity extends AppCompatActivity {
         mBio = findViewById(R.id.bio_update_tutor);
         mPassword = findViewById(R.id.password_update_tutor);
 
-        findViewById(R.id.update_details_button).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.update_details_button_tutor).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 attemptUpdate();
@@ -436,9 +424,9 @@ public class TutorEditProfileActivity extends AppCompatActivity {
             showProgress(false);
 
             if (success) {
-                Toast toast = Toast.makeText(getApplicationContext(), "Profile has been updated!", Toast.LENGTH_LONG);
-                toast.show();
-                finish();
+                Intent i = new Intent(getApplicationContext(), TutorHomeActivity.class);
+                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
             } else {
                 Toast toast = Toast.makeText(getApplicationContext(), "There was a network error updating your profile!", Toast.LENGTH_LONG);
                 toast.show();

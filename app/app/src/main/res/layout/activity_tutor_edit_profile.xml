@@ -43,7 +43,7 @@
                 android:id="@+id/email_update_tutor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New Email"
+                android:hint="New Email (optional)"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
                 android:singleLine="true" />
@@ -59,7 +59,7 @@
                 android:id="@+id/firstName_update_tutor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New First Name"
+                android:hint="New First Name (optional)"
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
@@ -76,7 +76,7 @@
                 android:id="@+id/lastName_update_tutor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New Last Name"
+                android:hint="New Last Name (optional)"
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
@@ -93,7 +93,7 @@
                 android:id="@+id/password_update_tutor"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="New Last Password"
+                android:hint="New Password (optional)"
                 android:imeActionId="6"
                 android:imeActionLabel="@string/action_sign_in_short"
                 android:imeOptions="actionUnspecified"
@@ -112,7 +112,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="New Bio"
+                android:hint="New Bio (required)"
                 android:ems="10"
                 android:gravity="start|top"
                 android:inputType="textMultiLine" />
@@ -130,7 +130,7 @@
                 android:layout_weight="1"
                 android:ems="10"
                 android:digits="0123456789."
-                android:hint="New Price (£)"
+                android:hint="New Price (£) (required)"
                 android:inputType="numberDecimal" />
 
         </android.support.design.widget.TextInputLayout>
@@ -139,15 +139,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="10dp"
-            android:background="@drawable/rectangle_back"
+            android:layout_marginTop="20dp"
             android:text="Taught Subjects:" />
 
         <Spinner
             android:id="@+id/subject_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="20dp"
             android:spinnerMode="dropdown" />
 
         <LinearLayout

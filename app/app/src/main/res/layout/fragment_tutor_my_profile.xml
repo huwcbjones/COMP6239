@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Student.StudentMyProfileFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginRight="8dp"
+
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
+
+        <TextView
+            android:id="@+id/nameView"
+            android:layout_marginTop="150sp"
+            style="@style/centeredProfile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Text" />
+
+        <TextView
+            android:id="@+id/emailView"
+            android:layout_marginTop="25sp"
+            style="@style/centeredProfileSmaller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Text" />
+
+        <TextView
+            android:id="@+id/subjectsView"
+            android:layout_marginTop="25sp"
+            style="@style/centeredProfileSmaller"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Test Text" />
+
+        <Button
+            android:id="@+id/edit_profile_button"
+            android:layout_marginTop="25sp"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="EDIT PROFILE"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+        <Button
+            android:id="@+id/sign_out_button"
+            android:layout_marginTop="75sp"
+            style="?android:textAppearanceSmall"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SIGN OUT"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+/>
+
+    </LinearLayout>
+
+
+
+</android.support.constraint.ConstraintLayout>

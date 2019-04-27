@@ -42,7 +42,6 @@ import com.comp6239.Backend.Model.User;
 import com.comp6239.Student.StudentHomeActivity;
 import com.comp6239.Tutor.TutorEditProfileActivity;
 import com.comp6239.Tutor.TutorHomeActivity;
-import com.comp6239.Tutor.WaitForApprovalActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -362,7 +361,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         Response<Tutor> tutorFullProfile = backendApi.apiService.getTutor(backendApi.getSession().getUser().getId().toString()).execute();
                         if(tutorFullProfile.isSuccessful()) {
                             Tutor loggedTutor = tutorFullProfile.body();
-                            if(loggedTutor.getPrice() == null && loggedTutor.getBio() != null) { //Does a profile exist?
+                            if(loggedTutor.getPrice() == null && loggedTutor.getBio() == null) { //Does a profile exist?
                                 isTutorValid = 0; //Profile hasnt even been made
                                 return true;
                             } else if(loggedTutor.isApproved() == null) {
@@ -411,7 +410,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                                 toast.show();
                                 break;
                             case 1:
-                                i = new Intent(getApplicationContext(), WaitForApprovalActivity.class);
+                                i = new Intent(getApplicationContext(), TutorHomeActivity.class); //Tutor hasnt been reviewed
                                 break;
                             case 2:
                                 i = new Intent(getApplicationContext(), TutorEditProfileActivity.class);
