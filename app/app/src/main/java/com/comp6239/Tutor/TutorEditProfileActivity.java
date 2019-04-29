@@ -389,11 +389,11 @@ public class TutorEditProfileActivity extends AppCompatActivity {
             if(!TextUtils.isEmpty(mBio)) updatedUser.setBio(mBio);
             if(mPrice > 0) updatedUser.setPrice(mPrice);
             if(!chosenSubjects.isEmpty()) {
-                Subject[] finalSub = new Subject[chosenSubjects.size()];
+                String[] finalSub = new String[chosenSubjects.size()];
                 int i = 0;
                 for(Object s : chosenSubjects.toArray()) {
                     if(s instanceof Subject) {
-                        finalSub[i] = (Subject) s;
+                        finalSub[i] = ((Subject) s).getId().toString();
                         i++;
                     }
                 }

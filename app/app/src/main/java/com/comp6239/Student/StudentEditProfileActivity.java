@@ -360,11 +360,11 @@ public class StudentEditProfileActivity extends AppCompatActivity {
             if(!TextUtils.isEmpty(mEmail)) updatedUser.setLastName(mEmail);
             if(!TextUtils.isEmpty(mPassword)) updatedUser.setPassword(mPassword);
             if(!chosenSubjects.isEmpty()) {
-                Subject[] finalSub = new Subject[chosenSubjects.size()];
+                String[] finalSub = new String[chosenSubjects.size()];
                 int i = 0;
                 for(Object s : chosenSubjects.toArray()) {
                     if(s instanceof Subject) {
-                        finalSub[i] = (Subject) s;
+                        finalSub[i] = ((Subject) s).getId().toString();
                         i++;
                     }
                 }

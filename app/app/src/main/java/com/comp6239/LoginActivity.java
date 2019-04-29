@@ -385,8 +385,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             } catch (IOException e) {
                 //e.printStackTrace();
-                Toast toast = Toast.makeText(getApplicationContext(), "Failed to access the server!", Toast.LENGTH_LONG);
-                toast.show();
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Unable to connect to the server, please try again later!", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
 
             return false;
@@ -424,8 +427,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 } else if(backendApi.getSession().getUser() instanceof Admin) {
                     i = new Intent(getApplicationContext(), AdminHomeActivity.class);
                 } else {
-                    Toast toast = Toast.makeText(getApplicationContext(), "Something went wrong with the server!", Toast.LENGTH_LONG);
-                    toast.show();
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), "Unable to connect to the server, please try again later!", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
 
                 i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); //No return to login screen after!
