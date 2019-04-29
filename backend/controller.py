@@ -27,7 +27,7 @@ class Controller(RequestHandler):
 
     def __init__(self, application, request, **kwargs):
         self.current_user = None  # type: Optional[User]
-        self.json_args = None
+        self.json_args = None  # type: Dict[str, Any]
         self.options = {}  # type: Dict
         self.remote_ip = request.remote_ip  # type: str
         super().__init__(application, request, **kwargs)
