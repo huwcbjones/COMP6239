@@ -61,7 +61,7 @@ class StudentProfileController(Controller):
             if student is None:
                 raise NotFoundException("Student not found!")
 
-            if not UserGender.contains(self.json_args["gender"]):
+            if self.json_args.get("gender") is not None and not UserGender.contains(self.json_args.get("gender")):
                 raise BadRequestException("Invalid gender provided: must be in: {}".format(
                     ", ".join(UserGender.values())
                 ))
