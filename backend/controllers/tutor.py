@@ -33,7 +33,7 @@ class TutorProfileController(Controller):
     ]
 
     @protected
-    async def get(self, tutor_id: Optional[UUID] = None):
+    async def get(self, tutor_id: Optional[str] = None):
         if tutor_id is None and self.current_user.role == UserRole.TUTOR:
             tutor_id = self.current_user.id
         with self.app.db.session() as s:
@@ -68,7 +68,7 @@ class TutorProfileController(Controller):
         self.write(data)
 
     @protected(roles=[UserRole.TUTOR])
-    async def post(self, tutor_id: Optional[UUID] = None):
+    async def post(self, tutor_id: Optional[str] = None):
         user_fields = [
             "email",
             "first_name",
@@ -81,7 +81,7 @@ class TutorProfileController(Controller):
             "price",
         ]
 
-        if tutor_id is not None and tutor_id != self.current_user.id:
+        if tutor_id is not None and UUID(tutor_id) != self.current_user.id:
             raise BadRequestException()
 
         with self.app.db.session() as s:  # type: Session
@@ -146,7 +146,7 @@ class TutorProfileController(Controller):
             self.write(data)
 
     @protected(roles=[UserRole.TUTOR])
-    async def delete(self, tutor_id: Optional[UUID] = None):
+    async def delete(self, tutor_id: Optional[str] = None):
         permissible_fields = [
             "password",
         ]
@@ -176,7 +176,7 @@ class TutorSubjectProfileController(Controller):
     ]
 
     @protected
-    async def get(self, tutor_id: Optional[UUID] = None):
+    async def get(self, tutor_id: Optional[str] = None):
         if tutor_id is None:
             tutor_id = self.current_user.id
         if not user_exists_by_id(tutor_id):
@@ -187,7 +187,7 @@ class TutorSubjectProfileController(Controller):
         self.write(subjects)
 
     @protected
-    async def post(self, tutor_id: Optional[UUID] = None):
+    async def post(self, tutor_id: Optional[str] = None):
         if tutor_id is not None:
             raise BadRequestException()
         tutor_id = self.current_user.id
@@ -228,7 +228,7 @@ class TutorSubjectProfileController(Controller):
             self.write(profile.subjects)
 
     @protected
-    async def delete(self, tutor_id: Optional[UUID] = None):
+    async def delete(self, tutor_id: Optional[str] = None):
         if tutor_id is not None:
             raise BadRequestException()
         tutor_id = self.current_user.id
