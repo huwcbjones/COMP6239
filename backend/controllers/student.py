@@ -61,12 +61,13 @@ class StudentProfileController(Controller):
             if student is None:
                 raise NotFoundException("Student not found!")
 
-            if self.json_args.get("gender") is not None and not UserGender.contains(self.json_args.get("gender")):
-                raise BadRequestException("Invalid gender provided: must be in: {}".format(
-                    ", ".join(UserGender.values())
-                ))
-            else:
-                self.json_args["gender"] = UserGender(self.json_args["gender"])
+            if self.json_args.get("gender") is not None:
+                if not UserGender.contains(self.json_args.get("gender")):
+                    raise BadRequestException("Invalid gender provided: must be in: {}".format(
+                        ", ".join(UserGender.values())
+                    ))
+                else:
+                    self.json_args["gender"] = UserGender(self.json_args["gender"])
 
             self.merge_fields(student, *permissible_fields)
             if "subjects" in self.json_args:
