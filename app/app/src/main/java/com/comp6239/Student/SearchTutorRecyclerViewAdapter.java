@@ -6,23 +6,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
-import com.comp6239.Student.StudentSearchTutorsFragment.OnListFragmentInteractionListener;
-import com.comp6239.Student.dummy.DummyContent.DummyItem;
+import com.comp6239.Student.StudentSearchTutorsFragment.OnSearchTutorFragmentInteractionListener;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * {@link RecyclerView.Adapter} that can display a {@link } and makes a call to the
+ * specified {@link OnSearchTutorFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchTutorRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final List<Tutor> mValues;
+    private final OnSearchTutorFragmentInteractionListener mListener;
 
-    public SearchTutorRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public SearchTutorRecyclerViewAdapter(List<Tutor> items, OnSearchTutorFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -30,15 +30,15 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_item, parent, false);
+                .inflate(R.layout.fragment_tutor, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(mValues.get(position).getFirstName());
+        holder.mContentView.setText(mValues.get(position).getLastName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +46,7 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onSearchTutorsFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -61,7 +61,7 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Tutor mItem;
 
         public ViewHolder(View view) {
             super(view);

@@ -15,7 +15,7 @@ public class Tutor extends User {
     private Double price;
 
     @SerializedName("subjects")
-    String[] subjects;
+    Subject[] subjects;
 
     @SerializedName("reason")
     String reasonForRejection;
@@ -26,11 +26,11 @@ public class Tutor extends User {
     @SerializedName("reviewed_at")
     String lastTimeReviewed;
 
-    public String[] getSubjects() {
+    public Subject[] getSubjects() {
         return subjects;
     }
 
-    public void setSubjects(String[] subjects) {
+    public void setSubjects(Subject[] subjects) {
         this.subjects = subjects;
     }
 

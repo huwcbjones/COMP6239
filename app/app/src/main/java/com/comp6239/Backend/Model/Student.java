@@ -15,7 +15,7 @@ public class Student extends User {
      */
 
     @SerializedName("subjects")
-    String[] subjects;
+    Subject[] subjects;
 
     public Student(String email, String firstName, String lastName, Gender gender, String location, String password) {
         this.setEmail(email);
@@ -24,10 +24,10 @@ public class Student extends User {
         this.setGender(gender);
         this.setLocation(location);
         this.setPassword(password);
-        subjects = new String[0];
+        subjects = new Subject[0];
     }
 
-    public Student(String email, String firstName, String lastName, Gender gender, String location, String password, String[] subjects) {
+    public Student(String email, String firstName, String lastName, Gender gender, String location, String password, Subject[] subjects) {
         this.setEmail(email);
         this.setFirstName(firstName);
         this.setLastName(lastName);
@@ -42,11 +42,11 @@ public class Student extends User {
 
     }
 
-    public String[] getSubjects() {
+    public Subject[] getSubjects() {
         return subjects;
     }
 
-    public void setSubjects(String[] subjects) {
+    public void setSubjects(Subject[] subjects) {
         this.subjects = subjects;
     }
 }

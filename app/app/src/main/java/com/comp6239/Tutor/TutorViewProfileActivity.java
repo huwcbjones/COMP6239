@@ -7,15 +7,38 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.comp6239.Backend.BackEndService;
+import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class TutorViewProfileActivity extends AppCompatActivity {
+
+    BackendRequestController backendApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutor_view_profile);
 
+        if(getIntent().hasExtra("tutorID")) {
+            Call<Tutor> getTutor = backendApi.apiService.getTutor(getIntent().getStringExtra("tutorID"));
+            getTutor.enqueue(new Callback<Tutor>() {
+                @Override
+                public void onResponse(Call<Tutor> call, Response<Tutor> response) {
+                    updateUIWithDetails(response.body());
+                }
+
+                @Override
+                public void onFailure(Call<Tutor> call, Throwable t) {
+
+                }
+            });
+        }
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -25,6 +48,10 @@ public class TutorViewProfileActivity extends AppCompatActivity {
                         .setAction("Action", null).show();
             }
         });
+    }
+
+    private void updateUIWithDetails(Tutor tutor) {
+
     }
 
 }

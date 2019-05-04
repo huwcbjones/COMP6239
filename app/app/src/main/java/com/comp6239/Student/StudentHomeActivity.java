@@ -1,5 +1,6 @@
 package com.comp6239.Student;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,10 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
-import com.comp6239.Student.dummy.DummyContent;
+import com.comp6239.Tutor.TutorViewProfileActivity;
 
-public class StudentHomeActivity extends AppCompatActivity implements StudentMyProfileFragment.OnFragmentInteractionListener, StudentMyTutorsFragment.OnListFragmentInteractionListener, StudentSearchTutorsFragment.OnListFragmentInteractionListener {
+public class StudentHomeActivity extends AppCompatActivity implements StudentMyProfileFragment.OnFragmentInteractionListener, StudentMyTutorsFragment.OnMyTutorsFragmentInteractionListener, StudentSearchTutorsFragment.OnSearchTutorFragmentInteractionListener {
 
 
     //Keeps the Fragments persistent rather than loading and creating them fresh every time
@@ -73,7 +75,14 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onMyTutorsFragmentInteraction(Tutor item) {
+        Intent i = new Intent(getApplicationContext(), TutorViewProfileActivity.class);
+        i.putExtra("tutorID", item.getId().toString());
+    }
 
+    @Override
+    public void onSearchTutorsFragmentInteraction(Tutor item) {
+        Intent i = new Intent(getApplicationContext(), TutorViewProfileActivity.class);
+        i.putExtra("tutorID", item.getId().toString());
     }
 }

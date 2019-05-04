@@ -40,14 +40,20 @@ public interface BackEndService {
     @GET("/profile")
     Call<User> getProfile();
 
-
-
     @GET("/subject")
     Call<List<Subject>> getAllSubjects();
-    /* TODO: Implement these
-    @GET("/search/tutors")
-    Call<List<User>> groupList(@Path("id") int groupId, @Query("sort") String sort);
 
+    @GET("/search/tutors")
+    Call<List<Tutor>> getAvailableTutors();
+
+    @GET("/student/tutors")
+    Call<List<Tutor>> getLoggedStudentsTutors();
+
+    @GET("/admin/tutors")
+    Call<List<Tutor>> getAwaitingApprovalTutors();
+
+
+    /* TODO: Implement these
     @GET("/student/tutors")
 
     @GET("/student/requests")

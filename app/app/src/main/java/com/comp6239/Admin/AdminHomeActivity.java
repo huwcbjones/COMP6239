@@ -9,12 +9,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.comp6239.Admin.dummy.DummyContent;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
-import com.comp6239.Student.StudentMyTutorsFragment;
-import com.comp6239.Student.StudentSearchTutorsFragment;
-
-import javax.security.auth.Subject;
 
 //Home Activity, containing two tabs
 public class AdminHomeActivity extends AppCompatActivity implements SubjectListFragment.OnFragmentInteractionListener, AdminApprovalFragment.OnListFragmentInteractionListener {
@@ -62,7 +58,7 @@ public class AdminHomeActivity extends AppCompatActivity implements SubjectListF
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onListFragmentInteraction(Tutor item) {
 
     }
 }

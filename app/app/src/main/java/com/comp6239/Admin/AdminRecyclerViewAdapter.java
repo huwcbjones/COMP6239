@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.comp6239.Admin.AdminApprovalFragment.OnListFragmentInteractionListener;
 import com.comp6239.Admin.dummy.DummyContent.DummyItem;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
  */
 public class AdminRecyclerViewAdapter extends RecyclerView.Adapter<AdminRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Tutor> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public AdminRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public AdminRecyclerViewAdapter(List<Tutor> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,8 +38,8 @@ public class AdminRecyclerViewAdapter extends RecyclerView.Adapter<AdminRecycler
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(mValues.get(position).getFirstName());
+        holder.mContentView.setText(mValues.get(position).getLastName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,7 +62,7 @@ public class AdminRecyclerViewAdapter extends RecyclerView.Adapter<AdminRecycler
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Tutor mItem;
 
         public ViewHolder(View view) {
             super(view);

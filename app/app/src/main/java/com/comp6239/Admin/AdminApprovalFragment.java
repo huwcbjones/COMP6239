@@ -9,12 +9,19 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 import com.comp6239.Admin.dummy.DummyContent;
-import com.comp6239.Admin.dummy.DummyContent.DummyItem;
+import com.comp6239.Student.MyTutorsRecyclerViewAdapter;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
@@ -29,6 +36,7 @@ public class AdminApprovalFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private BackendRequestController apiBackend;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,6 +59,8 @@ public class AdminApprovalFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        apiBackend = BackendRequestController.getInstance(getContext());
+        
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
@@ -70,9 +80,26 @@ public class AdminApprovalFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new AdminRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+
+            refreshTutorList(recyclerView);
         }
         return view;
+    }
+
+    private void refreshTutorList(final RecyclerView recyclerView) {
+        Call<List<Tutor>> tutorList = apiBackend.apiService.getAwaitingApprovalTutors();
+        tutorList.enqueue(new Callback<List<Tutor>>() {
+            @Override
+            public void onResponse(Call<List<Tutor>> call, Response<List<Tutor>> response) {
+                recyclerView.setAdapter(new AdminRecyclerViewAdapter(response.body(), mListener));
+            }
+
+            @Override
+            public void onFailure(Call<List<Tutor>> call, Throwable t) {
+                Toast toast = Toast.makeText(getContext(), "There was a network error searching for tutors! Try again later!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
     }
 
 
@@ -83,7 +110,7 @@ public class AdminApprovalFragment extends Fragment {
             mListener = (OnListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnMyTutorsFragmentInteractionListener");
         }
     }
 
@@ -105,6 +132,6 @@ public class AdminApprovalFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(Tutor item);
     }
 }
