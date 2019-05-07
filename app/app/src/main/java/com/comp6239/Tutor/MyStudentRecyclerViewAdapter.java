@@ -6,23 +6,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.comp6239.Backend.Model.Student;
 import com.comp6239.R;
-import com.comp6239.Tutor.StudentListFragment.OnListFragmentInteractionListener;
-import com.comp6239.Tutor.dummy.DummyContent.DummyItem;
+import com.comp6239.Tutor.TutorMyStudentsFragment.OnMyStudentFragmentInteractionListener;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * {@link RecyclerView.Adapter} that can display a {@link Student} and makes a call to the
+ * specified {@link OnMyStudentFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudentRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final List<Student> mValues;
+    private final OnMyStudentFragmentInteractionListener mListener;
 
-    public MyStudentRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyStudentRecyclerViewAdapter(List<Student> items, OnMyStudentFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -37,8 +37,8 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
+        holder.mIdView.setText(mValues.get(position).getFirstName());
+        holder.mContentView.setText(mValues.get(position).getLastName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +46,7 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onMyStudentFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -61,7 +61,7 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public DummyItem mItem;
+        public Student mItem;
 
         public ViewHolder(View view) {
             super(view);

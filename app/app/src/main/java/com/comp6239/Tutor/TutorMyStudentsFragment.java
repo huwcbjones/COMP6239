@@ -9,38 +9,44 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.Student;
 import com.comp6239.R;
-import com.comp6239.Tutor.dummy.DummyContent;
-import com.comp6239.Tutor.dummy.DummyContent.DummyItem;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * A fragment representing a list of Items.
  * <p/>
- * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
+ * Activities containing this fragment MUST implement the {@link OnMyStudentFragmentInteractionListener}
  * interface.
  */
-public class StudentListFragment extends Fragment {
+public class TutorMyStudentsFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private OnListFragmentInteractionListener mListener;
+    private OnMyStudentFragmentInteractionListener mListener;
+    private BackendRequestController apiBackend;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public StudentListFragment() {
+    public TutorMyStudentsFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static StudentListFragment newInstance(int columnCount) {
-        StudentListFragment fragment = new StudentListFragment();
+    public static TutorMyStudentsFragment newInstance(int columnCount) {
+        TutorMyStudentsFragment fragment = new TutorMyStudentsFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -54,6 +60,8 @@ public class StudentListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+
+        apiBackend = BackendRequestController.getInstance(getContext());
     }
 
     @Override
@@ -70,17 +78,33 @@ public class StudentListFragment extends Fragment {
             } else {
                 recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new MyStudentRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            refreshStudentList(recyclerView);
         }
         return view;
+    }
+
+    private void refreshStudentList(final RecyclerView recyclerView) {
+        Call<List<Student>> tutorList = apiBackend.apiService.getTutorsTutees();
+        tutorList.enqueue(new Callback<List<Student>>() {
+            @Override
+            public void onResponse(Call<List<Student>> call, Response<List<Student>> response) {
+                recyclerView.setAdapter(new MyStudentRecyclerViewAdapter(response.body(), mListener));
+            }
+
+            @Override
+            public void onFailure(Call<List<Student>> call, Throwable t) {
+                Toast toast = Toast.makeText(getContext(), "There was a network error searching for tutors! Try again later!", Toast.LENGTH_LONG);
+                toast.show();
+            }
+        });
     }
 
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            mListener = (OnListFragmentInteractionListener) context;
+        if (context instanceof OnMyStudentFragmentInteractionListener) {
+            mListener = (OnMyStudentFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnMyTutorsFragmentInteractionListener");
@@ -103,8 +127,8 @@ public class StudentListFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnListFragmentInteractionListener {
+    public interface OnMyStudentFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onMyStudentFragmentInteraction(Student item);
     }
 }

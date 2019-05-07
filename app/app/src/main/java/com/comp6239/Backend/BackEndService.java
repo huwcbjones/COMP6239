@@ -49,8 +49,14 @@ public interface BackEndService {
     @GET("/student/tutors")
     Call<List<Tutor>> getLoggedStudentsTutors();
 
+    @GET("/tutor/tutees")
+    Call<List<Student>> getTutorsTutees();
+
     @GET("/admin/tutors")
     Call<List<Tutor>> getAwaitingApprovalTutors();
+
+    @GET("/tutor/requests")
+    Call<List<Student>> getStudentRequests();
 
 
     /* TODO: Implement these

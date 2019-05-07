@@ -19,6 +19,7 @@ import retrofit2.Response;
 public class TutorViewProfileActivity extends AppCompatActivity {
 
     BackendRequestController backendApi;
+    FloatingActionButton fab;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class TutorViewProfileActivity extends AppCompatActivity {
             });
         }
 
-        FloatingActionButton fab = findViewById(R.id.fab);
+        fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -51,6 +52,7 @@ public class TutorViewProfileActivity extends AppCompatActivity {
     }
 
     private void updateUIWithDetails(Tutor tutor) {
+        //TODO: fill in tutor details on page on update
 
     }
 

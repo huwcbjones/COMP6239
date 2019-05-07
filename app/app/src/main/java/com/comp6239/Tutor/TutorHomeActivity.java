@@ -9,15 +9,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
-import com.comp6239.Student.StudentMyTutorsFragment;
-import com.comp6239.Student.StudentSearchTutorsFragment;
-import com.comp6239.Tutor.dummy.DummyContent;
 
-public class TutorHomeActivity extends AppCompatActivity implements MyStudentsFragment.OnListFragmentInteractionListener, StudentListFragment.OnListFragmentInteractionListener {
+public class TutorHomeActivity extends AppCompatActivity implements TutorMyStudentsFragment.OnMyStudentFragmentInteractionListener, TutorStudentRequestsFragment.OnSearchStudentFragmentInteractionListener {
 
-    final Fragment myTutees = new MyStudentsFragment();
+    final Fragment myTutees = new TutorMyStudentsFragment();
     Fragment myRequests;
     final Fragment myProfile = new TutorMyProfileFragment();
     final FragmentManager fm = getSupportFragmentManager();
@@ -57,7 +55,7 @@ public class TutorHomeActivity extends AppCompatActivity implements MyStudentsFr
 
         Tutor loggedTutor = (Tutor) backendApi.getSession().getUser();
         if(loggedTutor.isApproved()) {
-            myRequests = new StudentListFragment();
+            myRequests = new TutorStudentRequestsFragment();
         } else {
             myRequests = new WaitForApprovalFragment();
         }
@@ -73,7 +71,12 @@ public class TutorHomeActivity extends AppCompatActivity implements MyStudentsFr
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem item) {
+    public void onSearchStudentFragmentInteraction(Student item) {
+
+    }
+
+    @Override
+    public void onMyStudentFragmentInteraction(Student item) {
 
     }
 }
