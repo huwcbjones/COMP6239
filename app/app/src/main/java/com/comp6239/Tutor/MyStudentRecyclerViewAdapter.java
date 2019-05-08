@@ -30,7 +30,7 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_student, parent, false);
+                .inflate(R.layout.fragment_student_requests, parent, false);
         return new ViewHolder(view);
     }
 

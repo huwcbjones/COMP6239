@@ -9,14 +9,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.comp6239.Backend.Model.Subject;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 
 //Home Activity, containing two tabs
-public class AdminHomeActivity extends AppCompatActivity implements SubjectListFragment.OnFragmentInteractionListener, AdminApprovalFragment.OnListFragmentInteractionListener {
+public class AdminHomeActivity extends AppCompatActivity implements SubjectFragment.OnListFragmentInteractionListener, AdminApprovalFragment.OnApproveTutorFragmentInteractionListener {
 
     final Fragment tutorApproval = new AdminApprovalFragment();
-    final Fragment subjects = new SubjectListFragment();
+    final Fragment subjects = new SubjectFragment();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment activeFrag = tutorApproval;
 
@@ -46,19 +47,20 @@ public class AdminHomeActivity extends AppCompatActivity implements SubjectListF
         setContentView(R.layout.activity_admin_home);
 
         fm.beginTransaction().add(R.id.main_container, subjects, "2").hide(subjects).commit();
-        fm.beginTransaction().add(R.id.main_container,tutorApproval, "1").commit();
+        fm.beginTransaction().add(R.id.main_container, tutorApproval, "1").commit();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onApproveTutorFragmentInteraction(Tutor item) {
 
     }
 
     @Override
-    public void onListFragmentInteraction(Tutor item) {
+    public void onSubjectListFragmentInteraction(Subject item) {
 
     }
 }

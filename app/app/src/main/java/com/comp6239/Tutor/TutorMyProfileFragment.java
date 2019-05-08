@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.LoginActivity;
 import com.comp6239.R;
 import com.comp6239.Student.StudentEditProfileActivity;
 
@@ -91,7 +92,7 @@ public class TutorMyProfileFragment extends Fragment {
                 logoutDialog();
 
                 if(logOut) {
-                    backend.getSession().invalidate();
+                    backend.getSession().invalidate(); //Invalidate also logs out the user and moves them to login
                 }
 
             }

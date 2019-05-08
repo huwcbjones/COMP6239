@@ -1,4 +1,4 @@
-package com.comp6239.Tutor;
+package com.comp6239.Admin;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,23 +6,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.comp6239.Backend.Model.Student;
+import com.comp6239.Admin.SubjectFragment.OnListFragmentInteractionListener;
+import com.comp6239.Backend.Model.Subject;
 import com.comp6239.R;
-import com.comp6239.Tutor.TutorStudentRequestsFragment.OnSearchStudentFragmentInteractionListener;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link Student} and makes a call to the
- * specified {@link OnSearchStudentFragmentInteractionListener}.
+ * {@link RecyclerView.Adapter} that can display a {@link Subject} and makes a call to the
+ * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<StudentRequestRecyclerViewAdapter.ViewHolder> {
+public class MySubjectRecyclerViewAdapter extends RecyclerView.Adapter<MySubjectRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Student> mValues;
-    private final OnSearchStudentFragmentInteractionListener mListener;
+    private final List<Subject> mValues;
+    private final OnListFragmentInteractionListener mListener;
 
-    public StudentRequestRecyclerViewAdapter(List<Student> items, OnSearchStudentFragmentInteractionListener listener) {
+    public MySubjectRecyclerViewAdapter(List<Subject> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -30,15 +30,15 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_student_requests, parent, false);
+                .inflate(R.layout.fragment_subject, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getFirstName());
-        holder.mContentView.setText(mValues.get(position).getLastName());
+        holder.mIdView.setText(mValues.get(position).getId().toString());
+        holder.mContentView.setText(mValues.get(position).getName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,7 +46,7 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onSearchStudentFragmentInteraction(holder.mItem);
+                    mListener.onSubjectListFragmentInteraction(holder.mItem);
                 }
             }
         });
@@ -61,7 +61,7 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
         public final View mView;
         public final TextView mIdView;
         public final TextView mContentView;
-        public Student mItem;
+        public Subject mItem;
 
         public ViewHolder(View view) {
             super(view);
