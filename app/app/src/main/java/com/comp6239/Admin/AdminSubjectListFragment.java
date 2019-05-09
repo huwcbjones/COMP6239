@@ -27,7 +27,7 @@ import retrofit2.Response;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class SubjectFragment extends Fragment {
+public class AdminSubjectListFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -40,13 +40,13 @@ public class SubjectFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public SubjectFragment() {
+    public AdminSubjectListFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static SubjectFragment newInstance(int columnCount) {
-        SubjectFragment fragment = new SubjectFragment();
+    public static AdminSubjectListFragment newInstance(int columnCount) {
+        AdminSubjectListFragment fragment = new AdminSubjectListFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);

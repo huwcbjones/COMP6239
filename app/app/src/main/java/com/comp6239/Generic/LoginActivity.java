@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Generic;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -39,6 +39,7 @@ import com.comp6239.Backend.Model.Admin;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
+import com.comp6239.R;
 import com.comp6239.Student.StudentHomeActivity;
 import com.comp6239.Tutor.TutorEditProfileActivity;
 import com.comp6239.Tutor.TutorHomeActivity;

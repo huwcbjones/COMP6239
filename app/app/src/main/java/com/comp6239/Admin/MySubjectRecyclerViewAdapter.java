@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.comp6239.Admin.SubjectFragment.OnListFragmentInteractionListener;
+import com.comp6239.Admin.AdminSubjectListFragment.OnListFragmentInteractionListener;
 import com.comp6239.Backend.Model.Subject;
 import com.comp6239.R;
 

@@ -1,4 +1,4 @@
-package com.comp6239;
+package com.comp6239.Generic;
 
 import android.Manifest;
 import android.animation.Animator;
@@ -47,6 +47,7 @@ import com.comp6239.Backend.Model.Gender;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
+import com.comp6239.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 

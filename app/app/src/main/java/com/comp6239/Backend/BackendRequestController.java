@@ -11,7 +11,7 @@ import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 
 import com.comp6239.Backend.Model.User;
-import com.comp6239.LoginActivity;
+import com.comp6239.Generic.LoginActivity;
 import com.comp6239.R;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;

@@ -13,9 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.comp6239.Backend.BackendRequestController;
-import com.comp6239.LoginActivity;
 import com.comp6239.R;
-import com.comp6239.Student.StudentEditProfileActivity;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -30,12 +30,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
-import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Subject;
 import com.comp6239.Backend.Model.Tutor;
-import com.comp6239.LoginActivity;
 import com.comp6239.R;
-import com.comp6239.Student.StudentEditProfileActivity;
 
 import java.io.IOException;
 import java.util.ArrayList;

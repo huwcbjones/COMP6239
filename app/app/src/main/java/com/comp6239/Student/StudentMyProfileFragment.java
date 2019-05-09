@@ -1,15 +1,10 @@
 package com.comp6239.Student;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.comp6239.Backend.BackendRequestController;
-import com.comp6239.LoginActivity;
 import com.comp6239.R;
 
 /**

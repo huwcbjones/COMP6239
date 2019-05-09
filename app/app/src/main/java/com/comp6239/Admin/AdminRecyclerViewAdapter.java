@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class AdminRecyclerViewAdapter extends RecyclerView.Adapter<AdminRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Tutor> mValues;
+    private List<Tutor> mValues;
     private final OnApproveTutorFragmentInteractionListener mListener;
 
     public AdminRecyclerViewAdapter(List<Tutor> items, OnApproveTutorFragmentInteractionListener listener) {

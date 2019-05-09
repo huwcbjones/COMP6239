@@ -1,6 +1,5 @@
 package com.comp6239.Admin;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,12 +13,12 @@ import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 
 //Home Activity, containing two tabs
-public class AdminHomeActivity extends AppCompatActivity implements SubjectFragment.OnListFragmentInteractionListener, AdminApprovalFragment.OnApproveTutorFragmentInteractionListener {
+public class AdminHomeActivity extends AppCompatActivity implements AdminSubjectListFragment.OnListFragmentInteractionListener, AdminApprovalFragment.OnApproveTutorFragmentInteractionListener {
 
-    final Fragment tutorApproval = new AdminApprovalFragment();
-    final Fragment subjects = new SubjectFragment();
+    //sfinal Fragment tutorApproval = new AdminApprovalFragment();
+    final Fragment subjects = new AdminSubjectListFragment();
     final FragmentManager fm = getSupportFragmentManager();
-    Fragment activeFrag = tutorApproval;
+    Fragment activeFrag = subjects;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -27,10 +26,10 @@ public class AdminHomeActivity extends AppCompatActivity implements SubjectFragm
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                case R.id.navigation_tutor_approval:
+                /*case R.id.navigation_tutor_approval:
                     fm.beginTransaction().hide(activeFrag).show(tutorApproval).commit();
                     activeFrag = tutorApproval;
-                    return true;
+                    return true;*/
                 case R.id.navigation_subjects:
                     fm.beginTransaction().hide(activeFrag).show(subjects).commit();
                     activeFrag = subjects;
@@ -47,7 +46,7 @@ public class AdminHomeActivity extends AppCompatActivity implements SubjectFragm
         setContentView(R.layout.activity_admin_home);
 
         fm.beginTransaction().add(R.id.main_container, subjects, "2").hide(subjects).commit();
-        fm.beginTransaction().add(R.id.main_container, tutorApproval, "1").commit();
+        //fm.beginTransaction().add(R.id.main_container, tutorApproval, "1").commit();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
