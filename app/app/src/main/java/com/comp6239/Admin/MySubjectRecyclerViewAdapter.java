@@ -37,8 +37,8 @@ public class MySubjectRecyclerViewAdapter extends RecyclerView.Adapter<MySubject
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getId().toString());
-        holder.mContentView.setText(mValues.get(position).getName());
+        holder.mSubjectNameView.setText(mValues.get(position).getId().toString());
+        holder.mSubjectIDView.setText(mValues.get(position).getName());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,20 +59,20 @@ public class MySubjectRecyclerViewAdapter extends RecyclerView.Adapter<MySubject
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mSubjectNameView;
+        public final TextView mSubjectIDView;
         public Subject mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mSubjectNameView = (TextView) view.findViewById(R.id.subject_name);
+            mSubjectIDView = (TextView) view.findViewById(R.id.subject_id);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mSubjectIDView.getText() + "'";
         }
     }
 }

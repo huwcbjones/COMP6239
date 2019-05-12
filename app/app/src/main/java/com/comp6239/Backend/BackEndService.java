@@ -1,5 +1,6 @@
 package com.comp6239.Backend;
 
+import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Subject;
 import com.comp6239.Backend.Model.Tutor;
@@ -58,13 +59,12 @@ public interface BackEndService {
     @GET("/tutor/requests")
     Call<List<Student>> getStudentRequests();
 
+    @GET("/thread/{id}")
+    Call<MessageThread> getConversationThread(@Path("id") String threadId);
 
-    /* TODO: Implement these
-    @GET("/student/tutors")
+    @GET("/thread")
+    Call<List<MessageThread>> getAllConversations();
 
-    @GET("/student/requests")
 
-    @GET("/tutor/requests")
-    */
 
 }
