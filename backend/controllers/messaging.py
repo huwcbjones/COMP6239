@@ -10,8 +10,8 @@ from sqlalchemy.orm import Session
 
 from backend import log
 from backend.controller import WebSocketController, Payload, OpCode, Controller
-from backend.database import sql_session
-from backend.exc import NotFoundException, AccessDeniedException
+from backend.database import sql_session, Database
+from backend.exc import NotFoundException, AccessDeniedException, BadRequestException
 from backend.models import Message, UserRole, MessageThread, ThreadState, MessageState
 from backend.models.messages import get_unread_thread_count, get_recent_threads, get_thread_by_user_ids, \
     get_thread_by_id, get_recent_messages_by_thread
@@ -105,6 +105,84 @@ class MessageThreadController(Controller):
                 "state": state
             })
 
+    @protected(roles=[UserRole.STUDENT, UserRole.TUTOR])
+    async def post(self, thread_id: UUID):
+        if "message" not in self.json_args:
+            raise BadRequestException("Message not found")
+
+        thread = get_thread_by_id(thread_id)
+        if thread is None:
+            raise NotFoundException()
+
+        if self.current_user.id not in (thread.student_id, thread.tutor_id):
+            raise NotFoundException()
+
+        sender = get_user_by_id(self.current_user.id)
+        recipient_id = thread.tutor_id if sender.id == thread.student_id else thread.student_id
+
+        # if recipient.role == sender.role:
+        #     log.info("Not sending message to {} - cannot send message to users of same role ({})".format(
+        #         data["to"], recipient.role
+        #     ))
+        #     return
+        #
+        # if sender.role == UserRole.STUDENT:
+        #     student = sender
+        #     tutor = recipient
+        #     thread = get_thread_by_user_ids(student_id=sender.id, tutor_id=recipient.id, session=session)
+        # else:
+        #     student = recipient
+        #     tutor = sender
+        #     thread = get_thread_by_user_ids(student_id=recipient.id, tutor_id=sender.id, session=session)
+
+        if thread.request_state == ThreadState.BLOCKED:
+            log.warning("Not sending message as thread is blocked!")
+            return
+
+        message = Message(
+            id=uuid.uuid1(int(time.time())),
+            sender_id=sender.id,
+            thread_id=thread.id,
+            message=self.json_args["message"]
+        )
+        thread.state = MessageState.SENT
+        with Database.instance.session() as session:
+            session.add(message)
+            session.commit()
+
+        # TODO: send message with FCM
+        event_type = "MESSAGE"
+
+        if thread.request_state != ThreadState.ALLOWED:
+            log.info("Not broadcasting message")
+            return
+
+        MessageSocket.broadcast(
+            Payload.dispatch(
+                event_type,
+                {
+                    "thread_id": thread.id,
+                    "from": {
+                        "id": sender.id,
+                        "first_name": sender.first_name,
+                        "last_name": sender.last_name
+                    },
+                    "message": message.message,
+                    "timestamp": message.created_at
+                }
+            ),
+            recipient_id
+        )
+        MessageSocket.broadcast(
+            Payload.dispatch(
+                "MESSAGE_SENT",
+                {
+                    "message_id": message.id
+                }
+            ),
+            sender.id
+        )
+
 
 class MessageBlockRequestController(Controller):
     route = [r"/thread/(" + uuid_regex + ")/block"]
@@ -181,10 +259,15 @@ class MessageSocket(WebSocketController):
 
         return wrapper
 
-    def broadcast(self, user_id: UUID, payload: Payload):
-        if user_id not in self.client_maps:
+    @classmethod
+    def broadcast(cls, payload: Payload, user_id: UUID = None):
+        if user_id is None:
+            [c.send_payload(payload) for u in cls.client_maps.values() for c in u]
             return
-        [c.send_payload(payload) for c in self.client_maps[user_id]]
+
+        if user_id not in cls.client_maps:
+            return
+        [c.send_payload(payload) for c in cls.client_maps[user_id]]
 
     def open(self, *args: str, **kwargs: str):
         self.send_payload(connect_payload)
