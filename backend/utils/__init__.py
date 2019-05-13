@@ -46,3 +46,9 @@ def str_to_bool(s: str) -> bool:
         return False
     else:
         raise ValueError("'{}' is not a valid boolean value".format(s))
+
+
+def str_to_int(s: str) -> int:
+    if isinstance(s, int):
+        return s
+    return int(s)

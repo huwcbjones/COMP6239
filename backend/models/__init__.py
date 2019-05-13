@@ -252,6 +252,12 @@ class MessageThread(TimestampModifiedMixin, Base):
     request_state = Column(Enum(ThreadState), default=ThreadState.REQUESTED, nullable=False)  # type: ThreadState
     state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
 
+    def get_recipient_id(self, user_id: uuid.UUID):
+        if user_id == self.student_id:
+            return self.tutor_id
+        else:
+            return self.student_id
+
 
 class Message(TimestampMixin, Base):
     __tablename__ = "messages"

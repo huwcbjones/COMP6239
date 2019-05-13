@@ -19,7 +19,7 @@ def get_recent_threads(user_id: UUID, session: Session, number: Optional[int] = 
     threads = thread_query.all()
 
     for thread in threads:
-        message = get_recent_messages_by_thread(thread.id, session=session, number=1)[0]
+        message = get_recent_messages_by_thread(thread.id, session=session, page_size=1)[0]
         thread.message = message
 
     return threads
@@ -44,11 +44,13 @@ def get_thread_by_id(thread_id: UUID, session: Session, lock_update: bool = Fals
 
 
 @sql_session
-def get_recent_messages_by_thread(thread_id: UUID, session: Session, number: Optional[int] = 10) -> List[Message]:
+def get_recent_messages_by_thread(thread_id: UUID, session: Session, page: Optional[int] = 0, page_size: Optional[int] = 10) -> List[Message]:
     query = session.query(Message).filter_by(thread_id=thread_id).order_by(Message.created_at)  # type: Query
 
-    if number is not None:
-        query = query.limit(number)
+    if page_size:
+        query = query.limit(page_size)
+        if page:
+            query = query.offset(page * page_size)
 
     return query.all()
 
