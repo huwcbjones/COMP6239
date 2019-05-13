@@ -102,9 +102,10 @@ class TutorProfileController(Controller):
             self.merge_fields(profile, *tutor_fields)
             if "subjects" in self.json_args:
                 profile.subjects.clear()
-                subject_ids = [UUID(s_id) for s_id in self.json_args["subjects"] if _uuid_regex.match(s_id)]
+
+                subject_ids = [UUID(s["id"]) for s in self.json_args["subjects"] if _uuid_regex.match(s.get("id"))]
                 for s_id in subject_ids:
-                    subject = get_subject_by_id(s_id, session=s)
+                    subject = get_subject_by_id(s_id, s)
                     if subject is None:
                         continue
                     profile.subjects.append(subject)
