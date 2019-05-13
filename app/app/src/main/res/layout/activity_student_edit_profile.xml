@@ -112,6 +112,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -120,6 +121,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -128,6 +130,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
         </LinearLayout>
@@ -140,18 +143,11 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/subject_name6"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:background="@drawable/rectangle_back"
-                android:text="" />
-
-            <TextView
                 android:id="@+id/subject_name4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -160,6 +156,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
+                android:background="@drawable/rectangle_back"
+                android:text="" />
+
+            <TextView
+                android:id="@+id/subject_name6"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
         </LinearLayout>
@@ -176,6 +182,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -184,6 +191,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -192,6 +200,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:padding="8dp"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
         </LinearLayout>
