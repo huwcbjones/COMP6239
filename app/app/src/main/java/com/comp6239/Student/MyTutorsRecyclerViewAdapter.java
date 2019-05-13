@@ -53,6 +53,7 @@ public class MyTutorsRecyclerViewAdapter extends RecyclerView.Adapter<MyTutorsRe
 
     @Override
     public int getItemCount() {
+        if (mValues == null) return 0;
         return mValues.size();
     }
 

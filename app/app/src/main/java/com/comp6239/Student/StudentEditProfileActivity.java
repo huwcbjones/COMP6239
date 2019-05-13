@@ -330,12 +330,14 @@ public class StudentEditProfileActivity extends AppCompatActivity {
             final String[] loc = {""};
             Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
             try {
-                List<Address> addresses = geocoder.getFromLocation(
-                        mLocation.getLatitude(),
-                        mLocation.getLongitude(),
-                        // In this sample, get just a single address.
-                        1);
-                loc[0] = addresses.get(0).getSubAdminArea();
+                if(mLocation != null) {
+                    List<Address> addresses = geocoder.getFromLocation(
+                            mLocation.getLatitude(),
+                            mLocation.getLongitude(),
+                            // In this sample, get just a single address.
+                            1);
+                    loc[0] = addresses.get(0).getSubAdminArea();
+                }
             } catch (IOException e) {
                 // Catch network or other I/O problems.
                 Log.e("Registration-GEOCODER", "Network unavailable, location will not be updated.", e);
