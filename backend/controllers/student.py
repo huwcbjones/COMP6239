@@ -72,9 +72,9 @@ class StudentProfileController(Controller):
             self.merge_fields(student, *permissible_fields)
             if "subjects" in self.json_args:
                 student.subjects.clear()
-                subject_ids = [UUID(s_id) for s_id in self.json_args["subjects"] if _uuid_regex.match(s_id)]
+                subject_ids = [UUID(s["id"]) for s in self.json_args["subjects"] if _uuid_regex.match(s.get("id"))]
                 for s_id in subject_ids:
-                    subject = get_subject_by_id(s_id)
+                    subject = get_subject_by_id(s_id, s)
                     if subject is None:
                         continue
                     student.subjects.append(subject)
@@ -151,7 +151,7 @@ class StudentSubjectProfileController(Controller):
                 self.write(student.subjects)
                 return
 
-            subject_ids = [UUID(s_id) for s_id in self.json_args if _uuid_regex.match(s_id)]
+            subject_ids = [UUID(s_id.get("id")) for s_id in self.json_args if _uuid_regex.match(s_id.get("id"))]
             for s_id in subject_ids:
                 subject = get_subject_by_id(s_id, session=s)
                 if subject is None:
