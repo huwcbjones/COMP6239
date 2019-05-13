@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
-from backend.models import TutorProfile, Tutor, Subject
+from backend.models import TutorProfile, Tutor, Subject, Student, MessageThread, ThreadState
 from backend.models.user import get_user_by_id
 
 
@@ -30,7 +30,8 @@ def get_unapproved_tutors(session: Session) -> List[Tutor]:
     with session:
         subquery = session.query(
             func.max(TutorProfile.id)
-        ).group_by(TutorProfile.tutor_id).filter(TutorProfile.reason.is_(None)).filter(TutorProfile.reviewed_at.is_(None))
+        ).group_by(TutorProfile.tutor_id).filter(TutorProfile.reason.is_(None)).filter(
+            TutorProfile.reviewed_at.is_(None))
         query = session.query(TutorProfile).options(
             joinedload(TutorProfile.tutor),
             joinedload(TutorProfile.subjects)
@@ -78,3 +79,33 @@ def get_subjects_by_tutor_id(id: UUID, session: Session, is_approved: bool = Fal
         return None
         # raise NotFoundException("User not found")
     return subjects
+
+
+@sql_session
+def get_tutees_by_tutor_id(tutor_id: UUID, session: Session) -> List[Student]:
+    subquery = session.query(
+        MessageThread.student_id
+    ).filter_by(
+        tutor_id=tutor_id,
+        request_state=ThreadState.ALLOWED
+    )
+
+    query = session.query(Student).options(
+        joinedload(Student.subjects)
+    ).filter(Student.id.in_(subquery))
+    return query.all()
+
+
+@sql_session
+def get_tutee_requests_by_tutor_id(tutor_id: UUID, session: Session) -> List[Student]:
+    subquery = session.query(
+        MessageThread.student_id
+    ).filter_by(
+        tutor_id=tutor_id,
+        request_state=ThreadState.REQUESTED
+    )
+
+    query = session.query(Student).options(
+        joinedload(Student.subjects)
+    ).filter(Student.id.in_(subquery))
+    return query.all()

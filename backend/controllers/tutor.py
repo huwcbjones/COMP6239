@@ -9,7 +9,8 @@ from backend.controller import Controller
 from backend.exc import NotFoundException, BadRequestException, UnauthorisedException
 from backend.models import UserRole, UserGender, TutorProfile
 from backend.models.subject import get_subject_by_id
-from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_tutor_id, get_subjects_by_tutor_id
+from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_tutor_id, get_subjects_by_tutor_id, \
+    get_tutees_by_tutor_id, get_tutee_requests_by_tutor_id
 from backend.models.user import user_exists_by_id, user_is_role, get_user_by_id
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
@@ -269,3 +270,39 @@ class TutorSubjectProfileController(Controller):
                 s.merge(profile)
             s.commit()
             self.write(profile.subjects)
+
+
+class Tutees(Controller):
+    route = [r"/tutor/tutees"]
+
+    @protected(roles=[UserRole.TUTOR])
+    async def get(self):
+        tutees = get_tutees_by_tutor_id(self.current_user.id)
+        self.write([{
+            "id": student.id,
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "email": student.email,
+            "gender": student.gender,
+            "role": student.role,
+            "location": student.location,
+            "subjects": student.subjects,
+        } for student in tutees])
+
+
+class TuteeRequests(Controller):
+    route = [r"/tutor/requests"]
+
+    @protected(roles=[UserRole.TUTOR])
+    async def get(self):
+        tutees = get_tutee_requests_by_tutor_id(self.current_user.id)
+        self.write([{
+            "id": student.id,
+            "first_name": student.first_name,
+            "last_name": student.last_name,
+            "email": student.email,
+            "gender": student.gender,
+            "role": student.role,
+            "location": student.location,
+            "subjects": student.subjects,
+        } for student in tutees])
