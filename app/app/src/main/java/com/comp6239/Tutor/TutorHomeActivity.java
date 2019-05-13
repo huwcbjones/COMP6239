@@ -1,6 +1,7 @@
 package com.comp6239.Tutor;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -14,7 +15,8 @@ import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 
-public class TutorHomeActivity extends AppCompatActivity implements TutorMyStudentsFragment.OnMyStudentFragmentInteractionListener, TutorStudentRequestsFragment.OnSearchStudentFragmentInteractionListener {
+public class TutorHomeActivity extends AppCompatActivity implements
+        TutorMyStudentsFragment.OnMyStudentFragmentInteractionListener, TutorStudentRequestsFragment.OnSearchStudentFragmentInteractionListener, WaitForApprovalFragment.OnFragmentInteractionListener, TutorMyProfileFragment.OnFragmentInteractionListener{
 
     final Fragment myTutees = new TutorMyStudentsFragment();
     Fragment myRequests;
@@ -40,7 +42,7 @@ public class TutorHomeActivity extends AppCompatActivity implements TutorMyStude
 
                 case R.id.navigation_my_profile:
                     fm.beginTransaction().hide(activeFrag).show(myProfile).commit();
-                    activeFrag = myRequests;
+                    activeFrag = myProfile;
                     return true;
             }
             return false;
@@ -55,10 +57,10 @@ public class TutorHomeActivity extends AppCompatActivity implements TutorMyStude
         backendApi = BackendRequestController.getInstance(this);
 
         Tutor loggedTutor = (Tutor) backendApi.getSession().getUser();
-        if(loggedTutor.isApproved()) {
-            myRequests = new TutorStudentRequestsFragment();
-        } else {
+        if(loggedTutor.isApproved() == null || !loggedTutor.isApproved()) {
             myRequests = new WaitForApprovalFragment();
+        } else if(!loggedTutor.isApproved()) {
+            myRequests = new TutorStudentRequestsFragment();
         }
 
 
@@ -78,6 +80,16 @@ public class TutorHomeActivity extends AppCompatActivity implements TutorMyStude
 
     @Override
     public void onMyStudentFragmentInteraction(Student item) {
+
+    }
+
+    @Override
+    public void onWaitingApprovalFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
     }
 }

@@ -48,7 +48,7 @@ import retrofit2.Response;
 public class TutorEditProfileActivity extends AppCompatActivity {
 
     private TutorProfileUpdateTask mAuthTask;
-    private View mStudentUpdateForm;
+    private View mTutorUpdateForm;
     private View mProgressView;
     private EditText mEmailView;
     private EditText mFirstNameView;
@@ -73,7 +73,7 @@ public class TutorEditProfileActivity extends AppCompatActivity {
         chosenSubjects = new HashSet<Subject>();
         setupSpinner();
 
-        mStudentUpdateForm = findViewById(R.id.student_update_form);
+        mTutorUpdateForm = findViewById(R.id.tutor_update_form);
         mProgressView = findViewById(R.id.login_progress);
         mEmailView = findViewById(R.id.email_update_tutor);
         mFirstNameView = findViewById(R.id.firstName_update_tutor);
@@ -292,12 +292,12 @@ public class TutorEditProfileActivity extends AppCompatActivity {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
-            mStudentUpdateForm.setVisibility(show ? View.GONE : View.VISIBLE);
-            mStudentUpdateForm.animate().setDuration(shortAnimTime).alpha(
+            mTutorUpdateForm.setVisibility(show ? View.GONE : View.VISIBLE);
+            mTutorUpdateForm.animate().setDuration(shortAnimTime).alpha(
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mStudentUpdateForm.setVisibility(show ? View.GONE : View.VISIBLE);
+                    mTutorUpdateForm.setVisibility(show ? View.GONE : View.VISIBLE);
                 }
             });
 
@@ -313,7 +313,7 @@ public class TutorEditProfileActivity extends AppCompatActivity {
             // The ViewPropertyAnimator APIs are not available, so simply show
             // and hide the relevant UI components.
             mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mStudentUpdateForm.setVisibility(show ? View.GONE : View.VISIBLE);
+            mTutorUpdateForm.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
 

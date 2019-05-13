@@ -161,6 +161,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -169,6 +170,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -177,6 +179,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
         </LinearLayout>
@@ -186,6 +189,8 @@
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
+
+            android:textColor="#ffffff"
             android:orientation="horizontal">
 
             <TextView
@@ -193,6 +198,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -201,6 +207,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -209,6 +216,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
         </LinearLayout>
@@ -218,6 +226,7 @@
             android:layout_height="match_parent"
             android:layout_marginTop="8dp"
             android:layout_marginRight="8dp"
+            android:textColor="#ffffff"
             android:orientation="horizontal">
 
             <TextView
@@ -225,6 +234,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -233,6 +243,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
 
@@ -241,6 +252,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="8dp"
+                android:textColor="#ffffff"
                 android:background="@drawable/rectangle_back"
                 android:text="" />
         </LinearLayout>

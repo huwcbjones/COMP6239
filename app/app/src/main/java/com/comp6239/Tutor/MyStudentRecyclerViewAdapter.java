@@ -54,6 +54,9 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
 
     @Override
     public int getItemCount() {
+        if(mValues == null) {
+            return 0;
+        }
         return mValues.size();
     }
 
