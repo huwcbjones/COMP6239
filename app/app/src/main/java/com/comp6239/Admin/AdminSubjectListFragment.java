@@ -1,7 +1,10 @@
 package com.comp6239.Admin;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
@@ -34,7 +38,9 @@ public class AdminSubjectListFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private RecyclerView mRecyclerView;
     private BackendRequestController apiBackend;
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -65,12 +71,12 @@ public class AdminSubjectListFragment extends Fragment {
     }
 
 
-    private void refreshTutorList(final RecyclerView recyclerView) {
-        Call<List<Subject>> tutorList = apiBackend.apiService.getAllSubjects();
-        tutorList.enqueue(new Callback<List<Subject>>() {
+    public void createSubjectList() {
+        Call<List<Subject>> subjectList = apiBackend.apiService.getAllSubjects();
+        subjectList.enqueue(new Callback<List<Subject>>() {
             @Override
             public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                recyclerView.setAdapter(new MySubjectRecyclerViewAdapter(response.body(), mListener));
+                mRecyclerView.setAdapter(new MySubjectRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override
@@ -86,18 +92,67 @@ public class AdminSubjectListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_subject_list, container, false);
 
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            refreshTutorList(recyclerView);
+        Context context = view.getContext();
+        mRecyclerView = view.findViewById(R.id.subject_list);
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+
+        FloatingActionButton fab = view.findViewById(R.id.addSubjectFab);
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                triggerAddSubject();
+            }
+        });
+
+        createSubjectList();
+
         return view;
+    }
+
+    public void triggerAddSubject() {
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        View promptView = layoutInflater.inflate(R.layout.add_subject_dialog, null);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+        alertDialogBuilder.setView(promptView);
+
+        final EditText editText = promptView.findViewById(R.id.subject_name_edittext);
+        // setup a dialog window
+        alertDialogBuilder.setCancelable(false)
+                .setPositiveButton("Add Subject", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        Call<Void> createSub = apiBackend.apiService.createNewSubject(new Subject(editText.getText().toString()));
+                        createSub.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Toast toast = Toast.makeText(getContext(), "Successfully created new subject!", Toast.LENGTH_LONG);
+                                toast.show();
+                                createSubjectList();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast toast = Toast.makeText(getContext(), "Failed to access the server!", Toast.LENGTH_LONG);
+                                toast.show();
+                            }
+                        });
+
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alert = alertDialogBuilder.create();
+        alert.show();
     }
 
 
@@ -129,7 +184,6 @@ public class AdminSubjectListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnListFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onSubjectListFragmentInteraction(Subject item);
     }
 }

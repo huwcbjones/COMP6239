@@ -7,8 +7,13 @@ import java.util.UUID;
 public class Subject {
     @SerializedName("name")
     String name;
+
     @SerializedName("id")
     UUID id;
+
+    public Subject(String toString) {
+        name = toString;
+    }
 
     public String getName() {
         return name;
