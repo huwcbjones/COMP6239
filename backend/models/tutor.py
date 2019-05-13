@@ -82,30 +82,30 @@ def get_subjects_by_tutor_id(id: UUID, session: Session, is_approved: bool = Fal
 
 
 @sql_session
-def get_tutees_by_tutor_id(tutor_id: UUID, session: Session) -> List[Student]:
-    subquery = session.query(
-        MessageThread.student_id
+def get_tutees_threads_by_tutor_id(tutor_id: UUID, session: Session) -> List[MessageThread]:
+    query = session.query(
+        MessageThread
     ).filter_by(
         tutor_id=tutor_id,
         request_state=ThreadState.ALLOWED
+    ).options(
+        joinedload(MessageThread.student),
+        joinedload(MessageThread.tutor)
     )
 
-    query = session.query(Student).options(
-        joinedload(Student.subjects)
-    ).filter(Student.id.in_(subquery))
     return query.all()
 
 
 @sql_session
-def get_tutee_requests_by_tutor_id(tutor_id: UUID, session: Session) -> List[Student]:
-    subquery = session.query(
-        MessageThread.student_id
+def get_tutee_request_threads_by_tutor_id(tutor_id: UUID, session: Session) -> List[MessageThread]:
+    query = session.query(
+        MessageThread
     ).filter_by(
         tutor_id=tutor_id,
         request_state=ThreadState.REQUESTED
+    ).options(
+        joinedload(MessageThread.student),
+        joinedload(MessageThread.tutor)
     )
 
-    query = session.query(Student).options(
-        joinedload(Student.subjects)
-    ).filter(Student.id.in_(subquery))
     return query.all()

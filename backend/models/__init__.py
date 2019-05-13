@@ -3,10 +3,11 @@ import uuid
 from typing import List, Optional
 
 from bcrypt import hashpw, gensalt, checkpw
-from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Numeric, func, inspect
+from sqlalchemy import Column, String, LargeBinary, ForeignKey, Enum, DateTime, Table, Integer, Numeric, func, inspect, \
+    select
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, column_property
 from sqlalchemy_utils import UUIDType, EmailType
 
 from backend.utils import enum
@@ -244,13 +245,33 @@ class Rating(TimestampModifiedMixin, Base):
     date = Column(DateTime, nullable=False)
 
 
+class Message(TimestampMixin, Base):
+    __tablename__ = "messages"
+
+    id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
+    thread_id = Column(UUIDType, ForeignKey("MessageThread.id", ondelete="CASCADE"))  # type: uuid.UUID
+    sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    message = Column(String)  # type: str
+    state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
+
+
 class MessageThread(TimestampModifiedMixin, Base):
     __tablename__ = "message_threads"
     id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
     student_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    student = relationship(Student, foreign_keys=[student_id])
+
     tutor_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    tutor = relationship(User, foreign_keys=[tutor_id])
+
     request_state = Column(Enum(ThreadState), default=ThreadState.REQUESTED, nullable=False)  # type: ThreadState
     state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
+
+    message_count = column_property(
+        select([func.count(Message.id)]). \
+            where(Message.thread_id == id). \
+            correlate_except(Message)
+    )
 
     def get_recipient_id(self, user_id: uuid.UUID):
         if user_id == self.student_id:
@@ -258,15 +279,11 @@ class MessageThread(TimestampModifiedMixin, Base):
         else:
             return self.student_id
 
-
-class Message(TimestampMixin, Base):
-    __tablename__ = "messages"
-
-    id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
-    thread_id = Column(UUIDType, ForeignKey(MessageThread.id, ondelete="CASCADE"))  # type: uuid.UUID
-    sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
-    message = Column(String)  # type: str
-    state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
+    def get_recipient(self, user_id: uuid.UUID):
+        if user_id == self.student.id:
+            return self.tutor
+        else:
+            return self.student
 
 
 # region OAuth Classes

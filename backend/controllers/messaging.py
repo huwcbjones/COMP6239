@@ -161,13 +161,14 @@ class MessageController(Controller):
                         "first_name": recipient.first_name,
                         "last_name": recipient.last_name
                     },
-                    "messages": {
+                    "message_count": thread.message_count,
+                    "messages": [{
                         "id": m.id,
                         "sender_id": m.sender_id,
                         "timestamp": m.created_at,
                         "message": m.message,
                         "state": m.state
-                    },
+                    }],
                     "state": state
                 })
             self.write(content)
@@ -201,13 +202,14 @@ class MessageController(Controller):
                 "first_name": recipient.first_name,
                 "last_name": recipient.last_name
             },
-            "messages": {
+            "message_count": thread.message_count,
+            "messages": [{
                 "id": m.id,
                 "sender_id": m.sender_id,
                 "timestamp": m.created_at,
                 "message": m.message,
                 "state": m.state
-            },
+            }],
             "state": thread.state
         })
 
@@ -246,6 +248,7 @@ class MessageThreadController(Controller):
                     "first_name": recipient.first_name,
                     "last_name": recipient.last_name
                 },
+                "message_count": thread.message_count,
                 "messages": [{
                     "id": m.id,
                     "sender_id": m.sender_id,

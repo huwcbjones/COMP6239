@@ -1,10 +1,10 @@
 from typing import List
 from uuid import UUID
 
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
-from backend.models import Subject
+from backend.models import Subject, MessageThread, ThreadState
 
 
 @sql_session
@@ -39,3 +39,33 @@ def get_subject_by_id(id: UUID, session: Session, lock_update: bool = False) -> 
             return None
             # raise NotFoundException("User not found")
         return subject
+
+
+@sql_session
+def get_tutor_threads_by_student_id(student_id: UUID, session: Session) -> List[MessageThread]:
+    query = session.query(
+        MessageThread
+    ).filter_by(
+        student_id=student_id,
+        request_state=ThreadState.ALLOWED
+    ).options(
+        joinedload(MessageThread.student),
+        joinedload(MessageThread.tutor)
+    )
+
+    return query.all()
+
+
+@sql_session
+def get_tutor_request_threads_by_student_id(student_it: UUID, session: Session) -> List[MessageThread]:
+    query = session.query(
+        MessageThread
+    ).filter_by(
+        student_id=student_it,
+        request_state=ThreadState.REQUESTED
+    ).options(
+        joinedload(MessageThread.student),
+        joinedload(MessageThread.tutor)
+    )
+
+    return query.all()

@@ -7,7 +7,8 @@ from backend.controller import Controller
 from backend.exc import NotFoundException, BadRequestException, UnauthorisedException
 from backend.models import UserRole, UserGender
 from backend.models.student import get_student_by_id, get_subjects_by_student_id
-from backend.models.subject import get_subject_by_id
+from backend.models.subject import get_subject_by_id, get_tutor_threads_by_student_id, \
+    get_tutor_request_threads_by_student_id
 from backend.models.user import user_exists_by_id, user_is_role
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
@@ -187,3 +188,41 @@ class StudentSubjectProfileController(Controller):
             s.merge(student)
             s.commit()
             self.write(student.subjects)
+
+
+class Tutors(Controller):
+    route = [r"/student/tutors"]
+
+    @protected(roles=[UserRole.STUDENT])
+    async def get(self):
+        tutees = get_tutor_threads_by_student_id(self.current_user.id)
+        self.write([{
+            "id": thread.id,
+            "recipient": {
+                "id": thread.get_recipient(self.current_user.id).id,
+                "first_name": thread.get_recipient(self.current_user.id).first_name,
+                "last_name": thread.get_recipient(self.current_user.id).last_name
+            },
+            "message_count": thread.message_count,
+            "messages": [],
+            "state": thread.state
+        } for thread in tutees])
+
+
+class TutorRequests(Controller):
+    route = [r"/student/requests"]
+
+    @protected(roles=[UserRole.STUDENT])
+    async def get(self):
+        tutees = get_tutor_request_threads_by_student_id(self.current_user.id)
+        self.write([{
+            "id": thread.id,
+            "recipient": {
+                "id": thread.get_recipient(self.current_user.id).id,
+                "first_name": thread.get_recipient(self.current_user.id).first_name,
+                "last_name": thread.get_recipient(self.current_user.id).last_name
+            },
+            "message_count": thread.message_count,
+            "messages": [],
+            "state": thread.state
+        } for thread in tutees])
