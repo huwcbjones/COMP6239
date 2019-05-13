@@ -55,7 +55,7 @@ public interface BackEndService {
     @GET("/tutor/tutees")
     Call<List<Student>> getTutorsTutees();
 
-    @GET("/admin/tutors")
+    @GET("/admin/tutor")
     Call<List<Tutor>> getAwaitingApprovalTutors();
 
     @GET("/tutor/requests")

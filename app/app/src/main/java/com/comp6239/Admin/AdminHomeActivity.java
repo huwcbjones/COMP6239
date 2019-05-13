@@ -23,7 +23,7 @@ import retrofit2.Response;
 //Home Activity, containing two tabs
 public class AdminHomeActivity extends AppCompatActivity implements AdminSubjectListFragment.OnListFragmentInteractionListener, AdminApprovalFragment.OnApproveTutorFragmentInteractionListener {
 
-    //final Fragment tutorApproval = new AdminApprovalFragment();
+    final Fragment tutorApproval = new AdminApprovalFragment();
     final Fragment subjects = new AdminSubjectListFragment();
     final FragmentManager fm = getSupportFragmentManager();
     Fragment activeFrag = subjects;
@@ -35,10 +35,10 @@ public class AdminHomeActivity extends AppCompatActivity implements AdminSubject
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
-                /*case R.id.navigation_tutor_approval:
+                case R.id.navigation_tutor_approval:
                     fm.beginTransaction().hide(activeFrag).show(tutorApproval).commit();
                     activeFrag = tutorApproval;
-                    return true;*/
+                    return true;
                 case R.id.navigation_subjects:
                     fm.beginTransaction().hide(activeFrag).show(subjects).commit();
                     activeFrag = subjects;
@@ -57,7 +57,7 @@ public class AdminHomeActivity extends AppCompatActivity implements AdminSubject
         apiBackend = BackendRequestController.getInstance(this);
 
         fm.beginTransaction().add(R.id.main_container, subjects, "2").hide(subjects).commit();
-        //fm.beginTransaction().add(R.id.main_container, tutorApproval, "1").commit();
+        fm.beginTransaction().add(R.id.main_container, tutorApproval, "1").commit();
 
         BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
@@ -71,8 +71,6 @@ public class AdminHomeActivity extends AppCompatActivity implements AdminSubject
 
     @Override
     public void onSubjectListFragmentInteraction(final Subject item) {
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Are you sure?");
         builder.setMessage("You are about to delete the subject " + item.getName() +  ". Do you want to proceed?");

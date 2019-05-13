@@ -35,6 +35,7 @@ public class AdminApprovalFragment extends Fragment {
     private int mColumnCount = 1;
     private OnApproveTutorFragmentInteractionListener mListener;
     private BackendRequestController apiBackend;
+    private RecyclerView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -70,26 +71,26 @@ public class AdminApprovalFragment extends Fragment {
         View view = inflater.inflate(R.layout.admin_approval_list_layout, container, false);
 
         // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
 
-            refreshTutorList(recyclerView);
+        Context context = view.getContext();
+        mRecyclerView = (RecyclerView) view;
+        if (mColumnCount <= 1) {
+            mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
+        } else {
+            mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
+
+        refreshTutorList();
+
         return view;
     }
 
-    private void refreshTutorList(final RecyclerView recyclerView) {
+    private void refreshTutorList() {
         Call<List<Tutor>> tutorList = apiBackend.apiService.getAwaitingApprovalTutors();
         tutorList.enqueue(new Callback<List<Tutor>>() {
             @Override
             public void onResponse(Call<List<Tutor>> call, Response<List<Tutor>> response) {
-                recyclerView.setAdapter(new AdminRecyclerViewAdapter(response.body(), mListener));
+                mRecyclerView.setAdapter(new AdminRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override
@@ -129,7 +130,6 @@ public class AdminApprovalFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnApproveTutorFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onApproveTutorFragmentInteraction(Tutor item);
     }
 }
