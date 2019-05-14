@@ -70,7 +70,7 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.subject_name);
-            mContentView = (TextView) view.findViewById(R.id.subject_id);
+            mContentView = (TextView) view.findViewById(R.id.subject_number);
         }
 
         @Override

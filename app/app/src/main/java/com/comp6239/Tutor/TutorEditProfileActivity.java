@@ -163,7 +163,7 @@ public class TutorEditProfileActivity extends AppCompatActivity {
         for(TextView tv : subjectViews.values()) {
             if(tv.toString().equals(subjectName)) {
                 tv.setText("");
-                tv.setVisibility(View.INVISIBLE);
+                tv.setVisibility(View.GONE);
                 break;
             }
         }
@@ -202,7 +202,7 @@ public class TutorEditProfileActivity extends AppCompatActivity {
         currentViewIndex = 0;
 
         for(TextView tv : subjectViews.values()) {
-            tv.setVisibility(View.INVISIBLE);
+            tv.setVisibility(View.GONE);
             tv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

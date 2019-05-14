@@ -26,6 +26,13 @@ public class Tutor extends User {
     @SerializedName("reviewed_at")
     String lastTimeReviewed;
 
+    //Constructor used to approve a tutor through the REST API
+    public Tutor(boolean b, String reason) {
+        super();
+        reasonForRejection = reason;
+        isApproved = b;
+    }
+
     public Subject[] getSubjects() {
         return subjects;
     }

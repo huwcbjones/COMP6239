@@ -7,88 +7,246 @@
     tools:context=".Admin.AdminReviewTutor">
 
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="706dp"
-
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="match_parent"
-            android:layout_height="413dp"
-
-            tools:srcCompat="@tools:sample/avatars" />
-
-
-        <TextView
-            android:id="@+id/tutorName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginLeft="8dp"
-            android:text="Tutor Name"
-            android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:textSize="24sp"
-            tools:text="Tutor Name" />
-
-        <TextView
-            android:id="@+id/tutorEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Tutor Email"
-            android:textSize="18sp"
-            tools:text="Tutor Email" />
-
-        <TextView
-            android:id="@+id/tutorSubjects"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:text="Tutor Subjects"
-            android:textSize="18sp"
-            tools:text="Tutor Subjects" />
-
-        <EditText
-            android:id="@+id/reason_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="30dp"
-            android:ems="10"
-            android:gravity="start|top"
-            android:hint="If rejected, type reason for rejection of application."
-            android:inputType="textMultiLine"
-            android:textSize="16sp" />
+        android:layout_height="match_parent">
 
         <LinearLayout
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="706dp"
 
-            <Button
-                android:id="@+id/accept_button"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:layout_height="413dp"
+
+                tools:srcCompat="@tools:sample/avatars" />
+
+
+            <TextView
+                android:id="@+id/tutorName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Tutor Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                android:textSize="24sp"
+                tools:text="Tutor Name" />
+
+            <TextView
+                android:id="@+id/tutorEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="6dp"
+                android:text="Tutor Email"
+                android:textSize="18sp"
+                tools:text="Tutor Email" />
+
+            <TextView
+                android:id="@+id/tutorPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="6dp"
+                android:text="example@email.com"
+                android:textSize="18sp"
+                tools:text="$99 per hour" />
+
+            <TextView
+                android:id="@+id/tutorBio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="18dp"
+                android:text="This is an example biography that takes up multiple lines. This is an example biography that takes up multiple lines."
+                android:textSize="20sp" />
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="ACCEPT" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/reject_button"
+                <TextView
+                    android:id="@+id/tutorSubject"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+                <TextView
+                    android:id="@+id/tutorSubject2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+                <TextView
+                    android:id="@+id/tutorSubject3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="REJECT" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tutorSubject4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+                <TextView
+                    android:id="@+id/tutorSubject5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+                <TextView
+                    android:id="@+id/tutorSubject6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tutorSubject7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+                <TextView
+                    android:id="@+id/tutorSubject8"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+                <TextView
+                    android:id="@+id/tutorSubject9"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/rectangle_back"
+                    android:padding="8dp"
+                    android:text="Tutor Subjects"
+                    android:textColor="#ffffff"
+                    android:textSize="18sp"
+                    android:visibility="gone"
+                    tools:text="Subject" />
+
+            </LinearLayout>
+
+
+            <EditText
+                android:id="@+id/reason_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="30dp"
+                android:ems="10"
+                android:gravity="start|top"
+                android:hint="If rejected, type reason for rejection of application."
+                android:inputType="textMultiLine"
+                android:textSize="16sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/accept_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="ACCEPT" />
+
+                <Button
+                    android:id="@+id/reject_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="REJECT" />
+            </LinearLayout>
+
         </LinearLayout>
-
-    </LinearLayout>
-
-
-
-
+    </ScrollView>
 </android.support.design.widget.CoordinatorLayout>

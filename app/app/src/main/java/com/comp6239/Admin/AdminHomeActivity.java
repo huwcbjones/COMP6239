@@ -2,6 +2,7 @@ package com.comp6239.Admin;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -66,7 +67,10 @@ public class AdminHomeActivity extends AppCompatActivity implements AdminSubject
 
     @Override
     public void onApproveTutorFragmentInteraction(Tutor item) {
-
+        //Go to the tutor approval page, and pass in the ID so it can get all necessary information updated
+        Intent i = new Intent(this, AdminReviewTutor.class);
+        i.putExtra("tutorId", item.getId().toString());
+        startActivity(i);
     }
 
     @Override

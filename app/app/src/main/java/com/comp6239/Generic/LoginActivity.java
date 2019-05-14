@@ -320,7 +320,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
             //SET THE SESSION EMAIL AND PASSWORD, THEN USE INTERCEPTOR TO GRAB TOKEN
             //GET PROFILE, USE INTERCEPTOR TO LOG IN
             //IF WE CANT GET PERMISSION TO GRAB PROFILE, THEN FAIL

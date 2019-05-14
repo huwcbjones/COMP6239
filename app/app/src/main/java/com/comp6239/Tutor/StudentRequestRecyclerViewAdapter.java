@@ -67,7 +67,7 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
             super(view);
             mView = view;
             mIdView = (TextView) view.findViewById(R.id.subject_name);
-            mContentView = (TextView) view.findViewById(R.id.subject_id);
+            mContentView = (TextView) view.findViewById(R.id.subject_number);
         }
 
         @Override

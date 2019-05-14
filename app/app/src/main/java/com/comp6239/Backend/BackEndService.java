@@ -58,6 +58,9 @@ public interface BackEndService {
     @GET("/admin/tutor")
     Call<List<Tutor>> getAwaitingApprovalTutors();
 
+    @POST("/admin/tutor/{id}")
+    Call<Void> approveTutor(@Path("id") String tutorId, @Body Tutor tutor);
+
     @GET("/tutor/requests")
     Call<List<Student>> getStudentRequests();
 

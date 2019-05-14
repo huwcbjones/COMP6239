@@ -90,7 +90,7 @@ public class AdminApprovalFragment extends Fragment {
         tutorList.enqueue(new Callback<List<Tutor>>() {
             @Override
             public void onResponse(Call<List<Tutor>> call, Response<List<Tutor>> response) {
-                mRecyclerView.setAdapter(new AdminRecyclerViewAdapter(response.body(), mListener));
+                mRecyclerView.setAdapter(new AdminTutorApprovalRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override

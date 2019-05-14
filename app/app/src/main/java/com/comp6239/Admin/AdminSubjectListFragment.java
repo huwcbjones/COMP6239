@@ -76,7 +76,7 @@ public class AdminSubjectListFragment extends Fragment {
         subjectList.enqueue(new Callback<List<Subject>>() {
             @Override
             public void onResponse(Call<List<Subject>> call, Response<List<Subject>> response) {
-                mRecyclerView.setAdapter(new MySubjectRecyclerViewAdapter(response.body(), mListener));
+                mRecyclerView.setAdapter(new AdminMySubjectRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override
