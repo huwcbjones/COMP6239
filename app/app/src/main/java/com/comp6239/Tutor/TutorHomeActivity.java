@@ -8,6 +8,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.comp6239.Backend.BackendRequestController;
@@ -57,9 +58,10 @@ public class TutorHomeActivity extends AppCompatActivity implements
         backendApi = BackendRequestController.getInstance(this);
 
         Tutor loggedTutor = (Tutor) backendApi.getSession().getUser();
+        Log.d("Tutor Login", "IsApproved?:" + loggedTutor.isApproved());
         if(loggedTutor.isApproved() == null || !loggedTutor.isApproved()) {
             myRequests = new WaitForApprovalFragment();
-        } else if(!loggedTutor.isApproved()) {
+        } else {
             myRequests = new TutorStudentRequestsFragment();
         }
 

@@ -354,6 +354,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                         Response<Tutor> tutorFullProfile = backendApi.apiService.getTutor(backendApi.getSession().getUser().getId().toString()).execute();
                         if(tutorFullProfile.isSuccessful()) {
                             Tutor loggedTutor = tutorFullProfile.body();
+                            backendApi.getSession().setUser(loggedTutor);
                             if(loggedTutor.getPrice() == null && loggedTutor.getBio() == null) { //Does a profile exist?
                                 isTutorValid = 0; //Profile hasnt even been made
                                 return true;
