@@ -40,6 +40,8 @@ def convert_string_to_uuid(uuid_obj: str) -> Optional[uuid.UUID]:
 
 
 def str_to_bool(s: str) -> bool:
+    if isinstace(s, bool):
+        return s
     if s.lower() in ("true", "t", "yes", "y"):
         return True
     elif s.lower() in ("false", "f", "no", "n"):
