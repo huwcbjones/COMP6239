@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
-import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.R;
 
 import java.util.List;
@@ -67,7 +67,7 @@ public class TutorMyStudentsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_my_student_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_conversation_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -84,15 +84,15 @@ public class TutorMyStudentsFragment extends Fragment {
     }
 
     private void refreshStudentList(final RecyclerView recyclerView) {
-        Call<List<Student>> tutorList = apiBackend.apiService.getTutorsTutees();
-        tutorList.enqueue(new Callback<List<Student>>() {
+        Call<List<MessageThread>> tutorList = apiBackend.apiService.getTutorsTuteesConversations();
+        tutorList.enqueue(new Callback<List<MessageThread>>() {
             @Override
-            public void onResponse(Call<List<Student>> call, Response<List<Student>> response) {
+            public void onResponse(Call<List<MessageThread>> call, Response<List<MessageThread>> response) {
                 recyclerView.setAdapter(new MyStudentRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override
-            public void onFailure(Call<List<Student>> call, Throwable t) {
+            public void onFailure(Call<List<MessageThread>> call, Throwable t) {
                 Toast toast = Toast.makeText(getContext(), "There was a network error searching for tutors! Try again later!", Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -128,7 +128,6 @@ public class TutorMyStudentsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnMyStudentFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onMyStudentFragmentInteraction(Student item);
+        void onMyStudentFragmentInteraction(MessageThread item);
     }
 }

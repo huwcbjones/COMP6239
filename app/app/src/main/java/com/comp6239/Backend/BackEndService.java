@@ -51,19 +51,22 @@ public interface BackEndService {
     Call<List<Tutor>> getAvailableTutors();
 
     @GET("/student/tutors")
-    Call<List<Tutor>> getLoggedStudentsTutors();
+    Call<List<MessageThread>> getStudentsTutorConversations();
+
+    @GET("/student/requests")
+    Call<List<MessageThread>> getStudentTutorRequests();
 
     @GET("/tutor/tutees")
-    Call<List<Student>> getTutorsTutees();
+    Call<List<MessageThread>> getTutorsTuteesConversations();
+
+    @GET("/tutor/requests")
+    Call<List<MessageThread>> getTutorsStudentRequests();
 
     @GET("/admin/tutor")
     Call<List<Tutor>> getAwaitingApprovalTutors();
 
     @POST("/admin/tutor/{id}")
     Call<Void> approveTutor(@Path("id") String tutorId, @Body Tutor tutor);
-
-    @GET("/tutor/requests")
-    Call<List<Student>> getStudentRequests();
 
     @GET("/thread/{id}")
     Call<MessageThread> getConversationThread(@Path("id") String threadId);
@@ -79,5 +82,8 @@ public interface BackEndService {
 
     @PUT("/subject")
     Call<Void> createNewSubject(@Body Subject subject);
+
+    @POST("/thread/{id}/block")
+    Call<Void> blockConversationById(@Path("id") String id);
 
 }

@@ -7,14 +7,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/subject_list"
+        android:id="@+id/tutor_search_list"
         android:name="com.comp6239.Admin.SubjectFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layoutManager="LinearLayoutManager"
         tools:context=".Admin.AdminSubjectListFragment"
-        tools:layout_editor_absoluteX="4dp"
-        tools:layout_editor_absoluteY="0dp"
         tools:listitem="@layout/fragment_subject">
 
 

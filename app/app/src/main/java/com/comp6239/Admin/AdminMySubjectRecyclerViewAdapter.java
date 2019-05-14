@@ -66,7 +66,7 @@ public class AdminMySubjectRecyclerViewAdapter extends RecyclerView.Adapter<Admi
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mSubjectNameView = (TextView) view.findViewById(R.id.subject_name);
+            mSubjectNameView = (TextView) view.findViewById(R.id.recipient_name);
             mSubjectIDView = (TextView) view.findViewById(R.id.subject_number);
         }
 

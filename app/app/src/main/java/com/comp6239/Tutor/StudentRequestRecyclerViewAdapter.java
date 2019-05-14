@@ -6,6 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.comp6239.Backend.Messaging.Message;
+import com.comp6239.Backend.Messaging.MessageState;
+import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.R;
 import com.comp6239.Tutor.TutorStudentRequestsFragment.OnSearchStudentFragmentInteractionListener;
@@ -19,10 +22,10 @@ import java.util.List;
  */
 public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<StudentRequestRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Student> mValues;
+    private final List<MessageThread> mValues;
     private final OnSearchStudentFragmentInteractionListener mListener;
 
-    public StudentRequestRecyclerViewAdapter(List<Student> items, OnSearchStudentFragmentInteractionListener listener) {
+    public StudentRequestRecyclerViewAdapter(List<MessageThread> items, OnSearchStudentFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -30,15 +33,24 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_student_requests, parent, false);
+                .inflate(R.layout.conversation_item, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getFirstName());
-        holder.mContentView.setText(mValues.get(position).getLastName());
+        holder.mNameView.setText(mValues.get(position).getRecipient().getFirstName() + " " + mValues.get(position).getRecipient().getLastName()); //Get name
+        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[mValues.get(position).getMessages().length].getMessage()); //Get the last messages text
+
+        int unreadMessages = 0;
+        for(Message m : mValues.get(position).getMessages()) {
+            if(m.getState() == MessageState.DELIVERED ) {
+                unreadMessages++;
+            }
+        }
+
+        holder.mNotifNumberView.setText(unreadMessages);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,25 +66,30 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
 
     @Override
     public int getItemCount() {
+        if(mValues == null ) {
+            return 0;
+        }
         return mValues.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public Student mItem;
+        public final TextView mNameView;
+        public final TextView mRecentMessageView;
+        public final TextView mNotifNumberView;
+        public MessageThread mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.subject_name);
-            mContentView = (TextView) view.findViewById(R.id.subject_number);
+            mNameView = (TextView) view.findViewById(R.id.recipient_name);
+            mRecentMessageView = (TextView) view.findViewById(R.id.subject_number);
+            mNotifNumberView = (TextView) view.findViewById(R.id.notification_number);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mRecentMessageView.getText() + "'";
         }
     }
 }

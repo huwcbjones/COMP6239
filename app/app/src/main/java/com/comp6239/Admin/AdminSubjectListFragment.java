@@ -93,7 +93,7 @@ public class AdminSubjectListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_subject_list, container, false);
 
         Context context = view.getContext();
-        mRecyclerView = view.findViewById(R.id.subject_list);
+        mRecyclerView = view.findViewById(R.id.tutor_search_list);
         if (mColumnCount <= 1) {
             mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         } else {

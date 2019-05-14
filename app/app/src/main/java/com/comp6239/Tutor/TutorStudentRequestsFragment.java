@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
-import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.R;
 
 import java.util.List;
@@ -35,6 +35,7 @@ public class TutorStudentRequestsFragment extends Fragment {
     private int mColumnCount = 1;
     private OnSearchStudentFragmentInteractionListener mListener;
     private BackendRequestController apiBackend;
+    private RecyclerView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -67,32 +68,32 @@ public class TutorStudentRequestsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_student_requests, container, false);
+        View view = inflater.inflate(R.layout.fragment_conversation_list, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            refreshStudentList(recyclerView);
+            refreshStudentList();
         }
         return view;
     }
 
-    private void refreshStudentList(final RecyclerView recyclerView) {
-        Call<List<Student>> tutorList = apiBackend.apiService.getStudentRequests();
-        tutorList.enqueue(new Callback<List<Student>>() {
+    private void refreshStudentList() {
+        Call<List<MessageThread>> tutorList = apiBackend.apiService.getTutorsStudentRequests();
+        tutorList.enqueue(new Callback<List<MessageThread>>() {
             @Override
-            public void onResponse(Call<List<Student>> call, Response<List<Student>> response) {
-                recyclerView.setAdapter(new StudentRequestRecyclerViewAdapter(response.body(), mListener));
+            public void onResponse(Call<List<MessageThread>> call, Response<List<MessageThread>> response) {
+                mRecyclerView.setAdapter(new StudentRequestRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override
-            public void onFailure(Call<List<Student>> call, Throwable t) {
+            public void onFailure(Call<List<MessageThread>> call, Throwable t) {
                 Toast toast = Toast.makeText(getContext(), "There was a network error searching for tutors! Try again later!", Toast.LENGTH_LONG);
                 toast.show();
             }
@@ -128,7 +129,6 @@ public class TutorStudentRequestsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSearchStudentFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onSearchStudentFragmentInteraction(Student item);
+        void onSearchStudentFragmentInteraction(MessageThread item);
     }
 }

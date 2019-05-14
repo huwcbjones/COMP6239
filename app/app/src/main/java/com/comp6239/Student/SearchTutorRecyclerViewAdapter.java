@@ -30,7 +30,7 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_tutor, parent, false);
+                .inflate(R.layout.fragment_tutor_search, parent, false);
         return new ViewHolder(view);
     }
 
@@ -67,7 +67,7 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.subject_name);
+            mIdView = (TextView) view.findViewById(R.id.recipient_name);
             mContentView = (TextView) view.findViewById(R.id.subject_number);
         }
 

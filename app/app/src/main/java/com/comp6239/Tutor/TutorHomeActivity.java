@@ -1,6 +1,5 @@
 package com.comp6239.Tutor;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,7 +11,7 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.comp6239.Backend.BackendRequestController;
-import com.comp6239.Backend.Model.Student;
+import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
 
@@ -76,12 +75,12 @@ public class TutorHomeActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onSearchStudentFragmentInteraction(Student item) {
+    public void onSearchStudentFragmentInteraction(MessageThread item) {
         
     }
 
     @Override
-    public void onMyStudentFragmentInteraction(Student item) {
+    public void onMyStudentFragmentInteraction(MessageThread item) {
 
     }
 

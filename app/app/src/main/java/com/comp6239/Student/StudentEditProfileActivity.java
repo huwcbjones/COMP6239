@@ -25,8 +25,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -189,7 +187,7 @@ public class StudentEditProfileActivity extends AppCompatActivity {
     private void setupSpinner() {
         spinner = (Spinner) findViewById(R.id.subject_spinner);
         subjectViews = new HashMap<>();
-        subjectViews.put(0, (TextView) findViewById(R.id.subject_name));
+        subjectViews.put(0, (TextView) findViewById(R.id.recipient_name));
         subjectViews.put(1, (TextView) findViewById(R.id.subject_name2));
         subjectViews.put(2, (TextView) findViewById(R.id.subject_name3));
         subjectViews.put(3, (TextView) findViewById(R.id.subject_name4));
