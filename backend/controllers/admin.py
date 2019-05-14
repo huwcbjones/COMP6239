@@ -24,11 +24,11 @@ class TutorApprovalController(Controller):
     @protected(roles=[UserRole.ADMIN])
     async def post(self, tutor_id: UUID):
         permissible_fields = [
-            "approved"
+            "status"
         ]
         self.check_required_fields(*permissible_fields)
 
-        approved = str_to_bool(self.json_args["approved"])
+        approved = str_to_bool(self.json_args["status"])
         reason = None
         if not approved:
             permissible_fields.append("reason")
