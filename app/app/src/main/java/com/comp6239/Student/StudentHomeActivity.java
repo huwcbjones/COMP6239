@@ -77,12 +77,16 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
     @Override
     public void onMyTutorsFragmentInteraction(Tutor item) {
         Intent i = new Intent(getApplicationContext(), TutorViewProfileActivity.class);
-        i.putExtra("tutorID", item.getId().toString());
+        i.putExtra("tutorId", item.getId().toString());
+        i.putExtra("isMyTutor", true);
+        startActivity(i);
     }
 
     @Override
     public void onSearchTutorsFragmentInteraction(Tutor item) {
         Intent i = new Intent(getApplicationContext(), TutorViewProfileActivity.class);
-        i.putExtra("tutorID", item.getId().toString());
+        i.putExtra("tutorId", item.getId().toString());
+        i.putExtra("isMyTutor", false);
+        startActivity(i);
     }
 }

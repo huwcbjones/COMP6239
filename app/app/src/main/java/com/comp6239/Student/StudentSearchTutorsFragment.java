@@ -130,7 +130,6 @@ public class StudentSearchTutorsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSearchTutorFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onSearchTutorsFragmentInteraction(Tutor item);
     }
 

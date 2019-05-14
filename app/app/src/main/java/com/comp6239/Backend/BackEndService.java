@@ -1,5 +1,6 @@
 package com.comp6239.Backend;
 
+import com.comp6239.Backend.Messaging.MessageRequest;
 import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Subject;
@@ -69,6 +70,9 @@ public interface BackEndService {
 
     @GET("/thread")
     Call<List<MessageThread>> getAllConversations();
+
+    @POST("/thread")
+    Call<Void> startConversation(@Body MessageRequest messageRequest);
 
     @DELETE("/subject/{id}")
     Call<Void> deleteSubject(@Path("id") String subjectId);

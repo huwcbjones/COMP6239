@@ -6,46 +6,190 @@
     android:layout_height="match_parent"
     tools:context=".Tutor.TutorViewProfileActivity">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="413dp"
-        tools:srcCompat="@tools:sample/avatars" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="450dp"
-        android:layout_marginLeft="8dp"
+        android:layout_height="706dp"
+        android:paddingTop="8dp"
+
         android:orientation="vertical">
+
 
         <TextView
             android:id="@+id/tutorName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
-
             android:text="Tutor Name"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
             android:textSize="24sp"
             tools:text="Tutor Name" />
 
         <TextView
-            android:id="@+id/tutorEmail"
+            android:id="@+id/tutorPrice"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tutor Email"
-            tools:text="Tutor Email" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="6dp"
+            android:text="example@email.com"
+            android:textSize="18sp"
+            tools:text="$99 per hour" />
 
         <TextView
-            android:id="@+id/tutorSubjects"
+            android:id="@+id/tutorBio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Tutor Subjects"
-            tools:text="Tutor Subjects" />
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="18dp"
+            android:text="This is an example biography that takes up multiple lines. This is an example biography that takes up multiple lines."
+            android:textSize="20sp" />
 
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tutorSubject"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+            <TextView
+                android:id="@+id/tutorSubject2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+            <TextView
+                android:id="@+id/tutorSubject3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tutorSubject4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+            <TextView
+                android:id="@+id/tutorSubject5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+            <TextView
+                android:id="@+id/tutorSubject6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tutorSubject7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+            <TextView
+                android:id="@+id/tutorSubject8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+            <TextView
+                android:id="@+id/tutorSubject9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/rectangle_back"
+                android:padding="8dp"
+                android:text="Tutor Subjects"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:visibility="gone"
+                tools:text="Subject" />
+
+        </LinearLayout>
     </LinearLayout>
 
     <android.support.design.widget.FloatingActionButton
