@@ -427,7 +427,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     });
                 }
 
-                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY); //No return to login screen after!
                 startActivity(i);
                 finish();
             } else {
