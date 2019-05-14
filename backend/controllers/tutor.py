@@ -62,7 +62,7 @@ class TutorProfileController(Controller):
 
         if self.current_user.role == UserRole.ADMIN:
             data["email"] = tutor.email
-            data["reviewed_at"] = tutor.reviwed_at
+            data["reviewed_at"] = tutor.reviewed_at
             data["revision"] = tutor.profile.created_at
             data["reviewed_by"] = tutor.reviewed_id
             data["reason"] = tutor.reason
