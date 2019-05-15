@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
 from backend.models import TutorProfile, Tutor, Subject, MessageThread, ThreadState, User, UserRole
+from backend.models.messages import get_recent_messages_by_thread
 from backend.models.user import get_user_by_id
 
 
@@ -97,7 +98,11 @@ def get_tutees_threads_by_tutor_id(tutor_id: UUID, session: Session) -> List[Mes
         joinedload(MessageThread.tutor)
     )
 
-    return query.all()
+    threads = query.all()
+    for t in threads:
+        t.messages = get_recent_messages_by_thread(thread_id=t.id, session=session, page_size=2)
+
+    return threads
 
 
 @sql_session
@@ -112,7 +117,11 @@ def get_tutee_request_threads_by_tutor_id(tutor_id: UUID, session: Session) -> L
         joinedload(MessageThread.tutor)
     )
 
-    return query.all()
+    threads = query.all()
+    for t in threads:
+        t.messages = get_recent_messages_by_thread(thread_id=t.id, session=session, page_size=1)
+
+    return threads
 
 
 @sql_session

@@ -277,6 +277,7 @@ class Message(TimestampMixin, Base):
 
     id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
     thread_id = Column(UUIDType, ForeignKey(MessageThread.id, ondelete="CASCADE"))  # type: uuid.UUID
+    thread = relationship(MessageThread, foreign_keys=[thread_id], backref="messages")
     sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
     message = Column(String)  # type: str
     state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
