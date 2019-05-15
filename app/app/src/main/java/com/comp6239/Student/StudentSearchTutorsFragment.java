@@ -86,7 +86,7 @@ public class StudentSearchTutorsFragment extends Fragment {
         ((SearchView) view.findViewById(R.id.tutor_search_bar)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                refreshTutorList(null, null, null, null, q);
+                refreshTutorList(null, null, null, null, query);
                 return false;
             }
 
