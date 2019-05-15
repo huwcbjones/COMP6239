@@ -276,7 +276,7 @@ class Message(TimestampMixin, Base):
     __tablename__ = "messages"
 
     id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
-    thread_id = Column(UUIDType, ForeignKey("MessageThread.id", ondelete="CASCADE"))  # type: uuid.UUID
+    thread_id = Column(UUIDType, ForeignKey(MessageThread.id, ondelete="CASCADE"))  # type: uuid.UUID
     sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
     message = Column(String)  # type: str
     state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
@@ -286,7 +286,7 @@ MessageThread.message_count = column_property(
     select(
         [func.count(Message.id)]
     ).where(
-        Message.thread_id == id
+        Message.thread_id == MessageThread.id
     ).correlate_except(Message)
 )
 
