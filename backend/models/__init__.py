@@ -206,7 +206,7 @@ class Tutor:
         profile = self._get_fields(self._profile)
         tutor = self._get_fields(self._tutor)
         fields = {**profile, **tutor}
-        self._remove_fields(fields, ["password", "created_at", "tutor", "reviewed_by"])
+        self._remove_fields(fields, ["password", "created_at", "tutor", "tutor_id" "reviewed_by"])
         if not include_private:
             self._remove_fields(fields, ["reason", "reviewed_at", "reviewed_id", "state", "email"])
         return fields
@@ -245,16 +245,6 @@ class Rating(TimestampModifiedMixin, Base):
     date = Column(DateTime, nullable=False)
 
 
-class Message(TimestampMixin, Base):
-    __tablename__ = "messages"
-
-    id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
-    thread_id = Column(UUIDType, ForeignKey("MessageThread.id", ondelete="CASCADE"))  # type: uuid.UUID
-    sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
-    message = Column(String)  # type: str
-    state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
-
-
 class MessageThread(TimestampModifiedMixin, Base):
     __tablename__ = "message_threads"
     id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
@@ -267,11 +257,7 @@ class MessageThread(TimestampModifiedMixin, Base):
     request_state = Column(Enum(ThreadState), default=ThreadState.REQUESTED, nullable=False)  # type: ThreadState
     state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
 
-    message_count = column_property(
-        select([func.count(Message.id)]). \
-            where(Message.thread_id == id). \
-            correlate_except(Message)
-    )
+    message_count = None
 
     def get_recipient_id(self, user_id: uuid.UUID):
         if user_id == self.student_id:
@@ -284,6 +270,25 @@ class MessageThread(TimestampModifiedMixin, Base):
             return self.tutor
         else:
             return self.student
+
+
+class Message(TimestampMixin, Base):
+    __tablename__ = "messages"
+
+    id = Column(UUIDType, primary_key=True)  # type: uuid.UUID
+    thread_id = Column(UUIDType, ForeignKey(MessageThread.id, ondelete="CASCADE"))  # type: uuid.UUID
+    sender_id = Column(UUIDType, ForeignKey(User.id, ondelete="CASCADE"))  # type: uuid.UUID
+    message = Column(String)  # type: str
+    state = Column(Enum(MessageState), default=MessageState.SENT, nullable=False)  # type: MessageState
+
+
+MessageThread.message_count = column_property(
+    select(
+        [func.count(Message.id)]
+    ).where(
+        Message.thread_id == MessageThread.id
+    ).correlate_except(Message)
+)
 
 
 # region OAuth Classes

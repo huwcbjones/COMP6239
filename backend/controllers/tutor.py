@@ -10,7 +10,7 @@ from backend.exc import NotFoundException, BadRequestException, UnauthorisedExce
 from backend.models import UserRole, UserGender, TutorProfile
 from backend.models.subject import get_subject_by_id
 from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_tutor_id, get_subjects_by_tutor_id, \
-    get_tutee_request_threads_by_tutor_id, get_tutees_threads_by_tutor_id
+    get_tutee_request_threads_by_tutor_id, get_tutees_threads_by_tutor_id, search_tutors
 from backend.models.user import user_exists_by_id, user_is_role, get_user_by_id
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
@@ -308,3 +308,36 @@ class TuteeRequests(Controller):
             "messages": [],
             "state": thread.state
         } for thread in tutees])
+
+
+class TutorSearch(Controller):
+    route = [r"/search/tutors"]
+
+    @protected(roles=[UserRole.STUDENT])
+    async def get(self):
+        price_low = None
+        price_high = None
+
+        name = self.get_query_argument("name", None)
+        location = self.get_query_argument("location", None)
+        price = self.get_query_argument("price", None)
+        if price:
+            try:
+                price_split = price.split(",")
+                price_low = int(price_split[0])
+                price_high = int(price_split[1])
+            except (ValueError, IndexError):
+                raise BadRequestException("Invalid parameter for price")
+
+        tutors = search_tutors(name=name, location=location, price_lower=price_low, price_higher=price_high)
+        self.write([{
+            "id": tutor.id,
+            "first_name": tutor.first_name,
+            "last_name": tutor.last_name,
+            "gender": tutor.gender,
+            "role": tutor.role,
+            "location": tutor.location,
+            "subjects": tutor.subjects,
+            "bio": tutor.bio,
+            "price": tutor.price
+        } for tutor in tutors])

@@ -29,11 +29,10 @@ class TutorApprovalController(Controller):
         self.check_required_fields(*permissible_fields)
 
         approved = str_to_bool(self.json_args["status"])
-        reason = None
+        reason = self.json_args.get("reason", None)
         if not approved:
             permissible_fields.append("reason")
             self.check_required_fields(*permissible_fields)
-            reason = self.json_args["reason"]
 
         with self.app.db.session() as s:
             tutor = get_profile_by_tutor_id(tutor_id, s)
