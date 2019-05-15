@@ -10,7 +10,7 @@ from backend.exc import NotFoundException, BadRequestException, UnauthorisedExce
 from backend.models import UserRole, UserGender, TutorProfile
 from backend.models.subject import get_subject_by_id
 from backend.models.tutor import get_tutors, get_tutor_by_id, get_profile_by_tutor_id, get_subjects_by_tutor_id, \
-    get_tutee_request_threads_by_tutor_id, get_tutees_threads_by_tutor_id
+    get_tutee_request_threads_by_tutor_id, get_tutees_threads_by_tutor_id, search_tutors
 from backend.models.user import user_exists_by_id, user_is_role, get_user_by_id
 from backend.oauth import protected
 from backend.utils.regex import uuid as uuid_regex
