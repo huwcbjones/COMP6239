@@ -130,6 +130,7 @@ def search_tutors(
         location: str = None,
         price_lower: int = None,
         price_higher: int = None,
+        query_str: str = None,
         session: Session = None
 ) -> List[Tutor]:
     query = session.query(User.id).filter_by(role=UserRole.TUTOR)
@@ -138,8 +139,16 @@ def search_tutors(
             User.first_name.ilike("%{}%".format(name)),
             User.last_name.ilike("%{}%".format(name))
         ))
+
     if location:
         query = query.filter(User.location.ilike("%{}%".format(location)))
+
+    if query_str:
+        query = query.filter(or_(
+            User.first_name.ilike("%{}%".format(query_str)),
+            User.last_name.ilike("%{}%".format(query_str)),
+            User.location.ilike("%{}%".format(query_str))
+        ))
 
     valid_tutor_ids = set([i[0] for i in query.all()])
     query = session.query(TutorProfile.tutor_id, func.max(TutorProfile.id)).group_by(TutorProfile.tutor_id).filter(
