@@ -48,7 +48,7 @@ public interface BackEndService {
     Call<List<Subject>> getAllSubjects();
 
     @POST("/thread/{id}")
-    Call<Void> sendMessageToThread(@Path("id") String id, @Body MessageRequest messageOnly);
+    Call<MessageThread> sendMessageToThread(@Path("id") String id, @Body MessageRequest messageOnly);
 
     @GET("/search/tutors")
     Call<List<Tutor>> getAvailableTutors(@Query("name") String name,

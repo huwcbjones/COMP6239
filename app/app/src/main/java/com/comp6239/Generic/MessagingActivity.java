@@ -24,9 +24,13 @@ import com.comp6239.R;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.UUID;
 
 import okhttp3.OkHttpClient;
@@ -78,21 +82,30 @@ public class MessagingActivity extends AppCompatActivity {
 
 
     public void sendMessage() {
-        if (TextUtils.isEmpty(mMessageBox.getText().toString().trim())) {
+        String messageContent = mMessageBox.getText().toString().trim();
+        if (TextUtils.isEmpty(messageContent)) {
             return; //Dont send an empty message
         }
 
-        Call<Void> send = apiBackend.apiService.sendMessageToThread(threadId, new MessageRequest(mMessageBox.getText().toString()));
+        Message m = new Message();
+        m.setSentAt(DateTime.now(DateTimeZone.forTimeZone(TimeZone.getDefault())).toString());
+        m.setMessage(messageContent);
+        m.setSenderId(BackendRequestController.getInstance(getApplicationContext()).getSession().getUser().getId());
+        m.setState(MessageState.SENDING);
+        mMessageAdapter.newMessage(m);
 
-        send.enqueue(new Callback<Void>() {
+        Call<MessageThread> send = apiBackend.apiService.sendMessageToThread(threadId, new MessageRequest(messageContent));
+
+        send.enqueue(new Callback<MessageThread>() {
             @Override
-            public void onResponse(Call<Void> call, Response<Void> response) {
+            public void onResponse(Call<MessageThread> call, Response<MessageThread> response) {
                 mMessageBox.setText("");
+                mMessageAdapter.swapMessages(getApplicationContext(), response.body());
 //                refreshMessageList();
             }
 
             @Override
-            public void onFailure(Call<Void> call, Throwable t) {
+            public void onFailure(Call<MessageThread> call, Throwable t) {
                 Toast toast = Toast.makeText(getApplicationContext(), "Unable to send message! Please try again later!", Toast.LENGTH_LONG);
                 toast.show();
             }

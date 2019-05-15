@@ -2,6 +2,7 @@ package com.comp6239.Generic;
 
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Messaging.Message;
+import com.comp6239.Backend.Messaging.MessageState;
 import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.User;
 import com.comp6239.R;
@@ -57,7 +59,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     public void newMessage(Message message) {
         if (message == null) return;
-        mMessageList.add(0, message);
+        mMessageList.add(message);
         notifyDataSetChanged();
     }
 
@@ -124,6 +126,10 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         }
 
         void bind(Message message) {
+            if (message.getState() == MessageState.SENDING) {
+                messageText.setBackground(mContext.getResources().getDrawable(mContext.getResources().getIdentifier("message_back_sending", "drawable", mContext.getPackageName())));
+            }
+
             messageText.setText(message.getMessage());
 
             int tOccurence = message.getSentAt().indexOf("T");
