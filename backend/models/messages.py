@@ -12,7 +12,7 @@ from backend.models import Message, MessageThread, MessageState
 def get_recent_threads(user_id: UUID, session: Session, number: Optional[int] = 10) -> List[MessageThread]:
     thread_query = session.query(MessageThread).filter(or_(
         MessageThread.tutor_id == user_id, MessageThread.student_id == user_id
-    )).order_by(MessageThread.modified_at)
+    )).order_by(MessageThread.modified_at.desc())
 
     if number is not None:
         thread_query = thread_query.limit(number)
@@ -45,7 +45,7 @@ def get_thread_by_id(thread_id: UUID, session: Session, lock_update: bool = Fals
 
 @sql_session
 def get_recent_messages_by_thread(thread_id: UUID, session: Session, page: Optional[int] = 0, page_size: Optional[int] = 10) -> List[Message]:
-    query = session.query(Message).filter_by(thread_id=thread_id).order_by(Message.created_at)  # type: Query
+    query = session.query(Message).filter_by(thread_id=thread_id).order_by(Message.created_at.desc())  # type: Query
 
     if page_size:
         query = query.limit(page_size)
