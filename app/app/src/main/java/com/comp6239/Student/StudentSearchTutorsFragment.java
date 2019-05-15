@@ -9,6 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
@@ -80,18 +81,31 @@ public class StudentSearchTutorsFragment extends Fragment {
             mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
 
-        refreshTutorList(null, null, null, null);
+        refreshTutorList(null, null, null, null, null);
 
+        ((SearchView) view.findViewById(R.id.tutor_search_bar)).setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                refreshTutorList(null, null, null, null, q);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
 
         return view;
     }
 
-    private void refreshTutorList(String name, String location, Float lowValue, Float highValue) {
+    private void refreshTutorList(String name, String location, Float lowValue, Float highValue, String q) {
 
         Call<List<Tutor>> tutorList = apiBackend.apiService.getAvailableTutors(
                 (name != null)? name : null,
                 (location != null)? location : null,
-                (lowValue != null && highValue != null)? lowValue + "," + highValue : null);
+                (lowValue != null && highValue != null)? lowValue + "," + highValue : null,
+                (q != null)? q : null);
         tutorList.enqueue(new Callback<List<Tutor>>() {
             @Override
             public void onResponse(Call<List<Tutor>> call, Response<List<Tutor>> response) {

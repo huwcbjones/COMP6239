@@ -53,7 +53,8 @@ public interface BackEndService {
     @GET("/search/tutors")
     Call<List<Tutor>> getAvailableTutors(@Query("name") String name,
                                          @Query("location") String location,
-                                         @Query("price") String lowValueHighValue);
+                                         @Query("price") String lowValueHighValue,
+                                         @Query("q") String q);
 
     @GET("/student/tutors")
     Call<List<MessageThread>> getStudentsTutorConversations();

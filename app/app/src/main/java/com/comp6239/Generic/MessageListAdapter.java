@@ -2,6 +2,7 @@ package com.comp6239.Generic;
 
 
 import android.content.Context;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,7 @@ import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.User;
 import com.comp6239.R;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -127,9 +129,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
         void bind(Message message) {
             messageText.setText(message.getMessage());
-
-            // Format the stored timestamp into a readable String using method.
-            //timeText.setText(Utils.formatDateTime(message.getSentAt()));
+            
 
             nameText.setText(mThread.getRecipient().getFirstName());
             // Insert the profile image from the URL into the ImageView.
