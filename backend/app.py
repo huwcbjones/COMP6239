@@ -40,7 +40,7 @@ class App:
             db_db = os.environ.get("DATABASE_DB", "comp6239")
 
             self.db = self._init_database(db_host, int(db_port), db_user, db_password, db_db)
-            self.db.recreate_db()
+            self.db.recreate_db(if_not_exists=True)
             self._init_oauth_client()
         except OperationalError as e:
             log.fatal(e)

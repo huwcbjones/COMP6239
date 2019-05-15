@@ -48,6 +48,7 @@ import com.comp6239.Backend.Model.Gender;
 import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.Backend.Model.User;
+import com.comp6239.HttpStatusCode;
 import com.comp6239.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -430,6 +431,9 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         private final String mRole;
         private final Gender mGender;
 
+        private boolean createAccountSuccessful = false;
+        private String accountCreationError = "";
+
 
 
         UserRegistrationTask(String email, String password, String firstName, String lastName, Gender gender, String role) {
@@ -489,10 +493,13 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
                 public void onResponse(Call<User> call, Response<User> response) {
                     Log.d("Registration", "Response received");
                     Log.d("Registration", response.message());
-                    if(response.message().equals("Conflict")) { //Account exists
+                    if(response.raw().code() == HttpStatusCode.CONFLICT.getCode()) {
+                        accountCreationError = "An account with that email already exists!";
                         Toast toast = Toast.makeText(getApplicationContext(), "That account already exists!", Toast.LENGTH_LONG);
                         toast.show();
+
                     } else if(response.message().equals("Created")) { //Success
+                        createAccountSuccessful = true;
                         Toast toast = Toast.makeText(getApplicationContext(), "Successfully registered!", Toast.LENGTH_LONG);
                         toast.show();
                     }
@@ -514,13 +521,19 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             mAuthTask = null;
             showProgress(false);
 
-            if (success) {
+            if (createAccountSuccessful) {
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(i);
                 finish();
             } else {
-                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                mPasswordView.requestFocus();
+                TextView field;
+                if (accountCreationError.length() != 0){
+                    field = mEmailView;
+                    field.setError(accountCreationError);
+                } else {
+                    field = mPasswordView;
+                }
+                field.requestFocus();
             }
         }
 
