@@ -204,7 +204,13 @@ class Tutors(Controller):
                 "last_name": thread.get_recipient(self.current_user.id).last_name
             },
             "message_count": thread.message_count,
-            "messages": [],
+            "messages": [{
+                "id": m.id,
+                "sender_id": m.sender_id,
+                "timestamp": m.created_at,
+                "message": m.message,
+                "state": m.state
+            } for m in thread.messages],
             "state": thread.state
         } for thread in tutees])
 
@@ -223,6 +229,12 @@ class TutorRequests(Controller):
                 "last_name": thread.get_recipient(self.current_user.id).last_name
             },
             "message_count": thread.message_count,
-            "messages": [],
+            "messages": [{
+                "id": m.id,
+                "sender_id": m.sender_id,
+                "timestamp": m.created_at,
+                "message": m.message,
+                "state": m.state
+            } for m in thread.messages],
             "state": thread.state
         } for thread in tutees])
