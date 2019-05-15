@@ -330,6 +330,7 @@ class TutorSearch(Controller):
         price_low = None
         price_high = None
 
+        query = self.get_query_argument("q", None)
         name = self.get_query_argument("name", None)
         location = self.get_query_argument("location", None)
         price = self.get_query_argument("price", None)
@@ -341,7 +342,13 @@ class TutorSearch(Controller):
             except (ValueError, IndexError):
                 raise BadRequestException("Invalid parameter for price")
 
-        tutors = search_tutors(name=name, location=location, price_lower=price_low, price_higher=price_high)
+        tutors = search_tutors(
+            name=name,
+            location=location,
+            price_lower=price_low,
+            price_higher=price_high,
+            query_str=query
+        )
         self.write([{
             "id": tutor.id,
             "first_name": tutor.first_name,
