@@ -1,11 +1,11 @@
 from typing import List
 from uuid import UUID
 
-from sqlalchemy import func
+from sqlalchemy import func, or_
 from sqlalchemy.orm import Session, joinedload
 
 from backend.database import sql_session
-from backend.models import TutorProfile, Tutor, Subject, Student, MessageThread, ThreadState
+from backend.models import TutorProfile, Tutor, Subject, MessageThread, ThreadState, User, UserRole
 from backend.models.user import get_user_by_id
 
 
@@ -109,3 +109,35 @@ def get_tutee_request_threads_by_tutor_id(tutor_id: UUID, session: Session) -> L
     )
 
     return query.all()
+
+
+@sql_session
+def search_tutors(
+        name: str = None,
+        location: str = None,
+        price_lower: int = None,
+        price_higher: int = None,
+        session: Session = None
+) -> List[Tutor]:
+    query = session.query(User.id).filter_by(role=UserRole.TUTOR)
+    if name:
+        query = query.filter(or_(
+            User.first_name.like("%{}%".format(name)),
+            User.last_name.like("%{}%".format(name))
+        ))
+    if location:
+        query = query.filter(User.location.like("%{}%".format(name)))
+
+    valid_ids = set(query.all())
+    query = session.query(TutorProfile.tutor_id, func.max(TutorProfile.id)).group_by(TutorProfile.tutor_id).filter(
+        TutorProfile.reviewed_at.isnot(None),
+        TutorProfile.reason.is_(None)
+    )
+    if price_lower:
+        query = query.filter(TutorProfile.price >= price_lower)
+    if price_higher:
+        query = query.filter(TutorProfile.price <= price_higher)
+    valid_ids2 = set([i[0] for i in query.all()])
+
+    tutor_ids = valid_ids.intersection(valid_ids2)
+    return [get_tutor_by_id(i) for i in tutor_ids]

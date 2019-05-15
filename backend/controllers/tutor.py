@@ -308,3 +308,28 @@ class TuteeRequests(Controller):
             "messages": [],
             "state": thread.state
         } for thread in tutees])
+
+
+class TutorSearch(Controller):
+    route = [r"/search/tutors"]
+
+    @protected(roles=[UserRole.STUDENT])
+    async def get(self):
+        price_low = None
+        price_high = None
+
+        name = self.get_query_argument("name", None)
+        location = self.get_query_argument("location", None)
+        price = self.get_query_argument("price", None)
+        if price:
+            try:
+                price_split = price.split(",")
+                price_low = int(price_split[0])
+                price_high = int(price_split[1])
+            except (ValueError, IndexError):
+                raise BadRequestException("Invalid parameter for price")
+
+        tutors = search_tutors(name=name, location=location, price_lower=price_low, price_higher=price_high)
+        self.write([{
+            "id": t.id
+        } for t in tutors])
