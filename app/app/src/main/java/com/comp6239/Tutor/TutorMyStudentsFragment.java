@@ -35,6 +35,7 @@ public class TutorMyStudentsFragment extends Fragment {
     private int mColumnCount = 1;
     private OnMyStudentFragmentInteractionListener mListener;
     private BackendRequestController apiBackend;
+    private RecyclerView mRecyclerView;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -72,23 +73,23 @@ public class TutorMyStudentsFragment extends Fragment {
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            refreshStudentList(recyclerView);
+            refreshStudentList();
         }
         return view;
     }
 
-    private void refreshStudentList(final RecyclerView recyclerView) {
+    public void refreshStudentList() {
         Call<List<MessageThread>> tutorList = apiBackend.apiService.getTutorsTuteesConversations();
         tutorList.enqueue(new Callback<List<MessageThread>>() {
             @Override
             public void onResponse(Call<List<MessageThread>> call, Response<List<MessageThread>> response) {
-                recyclerView.setAdapter(new MyStudentRecyclerViewAdapter(response.body(), mListener));
+                mRecyclerView.setAdapter(new MyStudentRecyclerViewAdapter(response.body(), mListener));
             }
 
             @Override

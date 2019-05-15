@@ -79,7 +79,7 @@ public class MyTutorsRecyclerViewAdapter extends RecyclerView.Adapter<MyTutorsRe
             super(view);
             mView = view;
             mNameView = (TextView) view.findViewById(R.id.recipient_name);
-            mRecentMessageView = (TextView) view.findViewById(R.id.subject_number);
+            mRecentMessageView = (TextView) view.findViewById(R.id.most_recent_message);
             mNotifNumberView = (TextView) view.findViewById(R.id.notification_number);
         }
 

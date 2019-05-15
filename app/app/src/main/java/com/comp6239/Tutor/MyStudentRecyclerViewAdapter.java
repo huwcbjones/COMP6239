@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Messaging.Message;
 import com.comp6239.Backend.Messaging.MessageState;
 import com.comp6239.Backend.Messaging.MessageThread;
@@ -34,7 +33,7 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_conversation_list, parent, false);
+                .inflate(R.layout.conversation_item, parent, false);
         return new ViewHolder(view);
     }
 
@@ -42,16 +41,16 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mNameView.setText(mValues.get(position).getRecipient().getFirstName() + " " + mValues.get(position).getRecipient().getLastName()); //Get name
-        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[mValues.get(position).getMessages().length].getMessage()); //Get the last messages text
+        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[0].getMessage()); //Get the last messages text
 
-        int unreadMessages = 0;
+        Integer unreadMessages = 0;
         for(Message m : mValues.get(position).getMessages()) {
             if(m.getState() == MessageState.DELIVERED ) {
                 unreadMessages++;
             }
         }
 
-        holder.mNotifNumberView.setText(unreadMessages);
+        holder.mNotifNumberView.setText(unreadMessages.toString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +83,7 @@ public class MyStudentRecyclerViewAdapter extends RecyclerView.Adapter<MyStudent
             super(view);
             mView = view;
             mNameView = (TextView) view.findViewById(R.id.recipient_name);
-            mRecentMessageView = (TextView) view.findViewById(R.id.subject_number);
+            mRecentMessageView = (TextView) view.findViewById(R.id.most_recent_message);
             mNotifNumberView = (TextView) view.findViewById(R.id.notification_number);
         }
 

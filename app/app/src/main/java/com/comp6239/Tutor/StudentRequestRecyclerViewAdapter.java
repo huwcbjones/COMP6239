@@ -1,6 +1,7 @@
 package com.comp6239.Tutor;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,16 +42,17 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mNameView.setText(mValues.get(position).getRecipient().getFirstName() + " " + mValues.get(position).getRecipient().getLastName()); //Get name
-        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[mValues.get(position).getMessages().length].getMessage()); //Get the last messages text
+        //Log.d("Studnet Request Adapt", "current position: " + position);
+        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[0].getMessage()); //Get the last messages text
 
-        int unreadMessages = 0;
+        Integer unreadMessages = 0;
         for(Message m : mValues.get(position).getMessages()) {
-            if(m.getState() == MessageState.DELIVERED ) {
+            if(m.getState() != MessageState.READ) {
                 unreadMessages++;
             }
         }
 
-        holder.mNotifNumberView.setText(unreadMessages);
+        holder.mNotifNumberView.setText(unreadMessages.toString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,7 +85,7 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
             super(view);
             mView = view;
             mNameView = (TextView) view.findViewById(R.id.recipient_name);
-            mRecentMessageView = (TextView) view.findViewById(R.id.subject_number);
+            mRecentMessageView = (TextView) view.findViewById(R.id.most_recent_message);
             mNotifNumberView = (TextView) view.findViewById(R.id.notification_number);
         }
 

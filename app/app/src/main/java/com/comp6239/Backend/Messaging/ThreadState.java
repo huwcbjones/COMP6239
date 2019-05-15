@@ -8,5 +8,7 @@ public enum ThreadState {
     @SerializedName("b")
     BLOCKED,
     @SerializedName("a")
-    ALLOWED
+    ALLOWED,
+    @SerializedName("s")
+    SENT
 }

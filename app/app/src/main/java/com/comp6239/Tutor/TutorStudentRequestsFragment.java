@@ -84,17 +84,19 @@ public class TutorStudentRequestsFragment extends Fragment {
         return view;
     }
 
-    private void refreshStudentList() {
+    public void refreshStudentList() {
         Call<List<MessageThread>> tutorList = apiBackend.apiService.getTutorsStudentRequests();
         tutorList.enqueue(new Callback<List<MessageThread>>() {
             @Override
             public void onResponse(Call<List<MessageThread>> call, Response<List<MessageThread>> response) {
+
                 mRecyclerView.setAdapter(new StudentRequestRecyclerViewAdapter(response.body(), mListener));
+
             }
 
             @Override
             public void onFailure(Call<List<MessageThread>> call, Throwable t) {
-                Toast toast = Toast.makeText(getContext(), "There was a network error searching for tutors! Try again later!", Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(getContext(), "There was a network error searching for student requests! Try again later!", Toast.LENGTH_LONG);
                 toast.show();
             }
         });

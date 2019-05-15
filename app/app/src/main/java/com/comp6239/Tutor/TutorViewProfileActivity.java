@@ -5,16 +5,13 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.comp6239.Backend.BackEndService;
 import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Messaging.MessageRequest;
 import com.comp6239.Backend.Model.Subject;
@@ -94,7 +91,7 @@ public class TutorViewProfileActivity extends AppCompatActivity {
 
     private void sendMessageToTutor() {
         LayoutInflater layoutInflater = LayoutInflater.from(TutorViewProfileActivity.this);
-        View promptView = layoutInflater.inflate(R.layout.add_subject_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.dialog_add_subject, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TutorViewProfileActivity.this);
         alertDialogBuilder.setView(promptView);
         ((TextView )promptView.findViewById(R.id.hint_message_dialog)).setText("Enter the message you wish to send to the tutor:");

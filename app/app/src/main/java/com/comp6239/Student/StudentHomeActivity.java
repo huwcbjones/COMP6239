@@ -13,6 +13,7 @@ import android.view.MenuItem;
 
 import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.Tutor;
+import com.comp6239.Generic.MessagingActivity;
 import com.comp6239.R;
 import com.comp6239.Tutor.TutorViewProfileActivity;
 
@@ -77,9 +78,8 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
 
     @Override
     public void onMyTutorsFragmentInteraction(MessageThread item) {
-        Intent i = new Intent(getApplicationContext(), TutorViewProfileActivity.class);
-        i.putExtra("tutorId", item.getId().toString());
-        i.putExtra("isMyTutor", true);
+        Intent i = new Intent(getApplicationContext(), MessagingActivity.class);
+        i.putExtra("threadId", item.getId().toString());
         startActivity(i);
     }
 

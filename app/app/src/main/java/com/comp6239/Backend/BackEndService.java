@@ -91,4 +91,7 @@ public interface BackEndService {
     @POST("/thread/{id}/block")
     Call<Void> blockConversationById(@Path("id") String id);
 
+    @POST("/thread/{id}/approve")
+    Call<Void> approveConversationById(@Path("id") String id);
+
 }

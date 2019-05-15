@@ -10,13 +10,16 @@ public class MessageThread {
     private UUID id;
 
     @SerializedName("recipient")
-    private User recipient;
+    private MessageRecipient recipient;
 
     @SerializedName("state")
     private ThreadState state;
 
     @SerializedName("messages")
     private Message[] messages;
+
+    @SerializedName("message_count")
+    private Integer messageCount;
 
     public UUID getId() {
         return id;
@@ -26,11 +29,11 @@ public class MessageThread {
         this.id = id;
     }
 
-    public User getRecipient() {
+    public MessageRecipient getRecipient() {
         return recipient;
     }
 
-    public void setRecipient(User recipient) {
+    public void setRecipient(MessageRecipient recipient) {
         this.recipient = recipient;
     }
 
@@ -48,5 +51,13 @@ public class MessageThread {
 
     public void setMessages(Message[] messages) {
         this.messages = messages;
+    }
+
+    public Integer getMessageCount() {
+        return messageCount;
+    }
+
+    public void setMessageCount(Integer messageCount) {
+        this.messageCount = messageCount;
     }
 }

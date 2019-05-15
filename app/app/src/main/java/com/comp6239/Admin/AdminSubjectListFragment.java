@@ -116,7 +116,7 @@ public class AdminSubjectListFragment extends Fragment {
 
     public void triggerAddSubject() {
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        View promptView = layoutInflater.inflate(R.layout.add_subject_dialog, null);
+        View promptView = layoutInflater.inflate(R.layout.dialog_add_subject, null);
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
         alertDialogBuilder.setView(promptView);
 

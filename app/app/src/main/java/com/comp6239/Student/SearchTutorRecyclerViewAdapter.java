@@ -74,7 +74,7 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
             mView = view;
             mNameView = view.findViewById(R.id.tutor_name);
             mPriceView = view.findViewById(R.id.tutor_price);
-            mNumOfSubjectsView = view.findViewById(R.id.subject_number);
+            mNumOfSubjectsView = view.findViewById(R.id.most_recent_message);
         }
 
         @Override
