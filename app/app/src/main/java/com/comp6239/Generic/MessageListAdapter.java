@@ -18,6 +18,7 @@ import com.comp6239.Backend.Model.User;
 import com.comp6239.R;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,8 +40,14 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
         if (thread == null) return;
         mThread = thread;
-        mMessageList = Arrays.asList(thread.getMessages());
+        mMessageList = new ArrayList<>(Arrays.asList(thread.getMessages()));
         backend = BackendRequestController.getInstance(context);
+        notifyDataSetChanged();
+    }
+
+    public void newMessage(Message message){
+        if (message == null) return;
+        mMessageList.add(message);
         notifyDataSetChanged();
     }
 

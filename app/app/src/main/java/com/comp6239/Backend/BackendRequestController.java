@@ -29,7 +29,8 @@ public class BackendRequestController {
      * Static controller object that accesses the backend
      */
 
-    private final static String BASE_URL = "https://comp6239.biggy.hcbj.io";
+    public final static String PROTOCOL = "https";
+    public final static String BASE_URL = "comp6239.biggy.hcbj.io/";
     private static BackendRequestController instance;
     public static BackEndService apiService;
     private Context context;
@@ -72,7 +73,7 @@ public class BackendRequestController {
 
         //The retrofit itself
         Retrofit retrofitAsync = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(PROTOCOL + "://" + BASE_URL)
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
