@@ -130,7 +130,7 @@ def search_tutors(
             User.last_name.ilike("%{}%".format(name))
         ))
     if location:
-        query = query.filter(User.location.ilike("%{}%".format(name)))
+        query = query.filter(User.location.ilike("%{}%".format(location)))
 
     valid_tutor_ids = set([i[0] for i in query.all()])
     query = session.query(TutorProfile.tutor_id, func.max(TutorProfile.id)).group_by(TutorProfile.tutor_id).filter(
