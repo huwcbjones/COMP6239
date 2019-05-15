@@ -17,9 +17,13 @@ import com.comp6239.Backend.Messaging.MessageThread;
 import com.comp6239.Backend.Model.User;
 import com.comp6239.R;
 
+import org.joda.time.DateTimeComparator;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class MessageListAdapter extends RecyclerView.Adapter {
@@ -35,25 +39,31 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         swapMessages(context, thread);
     }
 
-    public void swapMessages(Context context, MessageThread thread){
+    public void swapMessages(Context context, MessageThread thread) {
         mContext = context;
 
         if (thread == null) return;
         mThread = thread;
         mMessageList = new ArrayList<>(Arrays.asList(thread.getMessages()));
         backend = BackendRequestController.getInstance(context);
+        Collections.sort(mMessageList, new Comparator<Message>() {
+            @Override
+            public int compare(Message o1, Message o2) {
+                return DateTimeComparator.getInstance().compare(o1.getTimestamp(), o2.getTimestamp());
+            }
+        });
         notifyDataSetChanged();
     }
 
-    public void newMessage(Message message){
+    public void newMessage(Message message) {
         if (message == null) return;
-        mMessageList.add(message);
+        mMessageList.add(0, message);
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        if(mMessageList == null) {
+        if (mMessageList == null) {
             return 0;
         }
         return mMessageList.size();
@@ -116,7 +126,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         void bind(Message message) {
             messageText.setText(message.getMessage());
 
-            int tOccurence= message.getSentAt().indexOf("T");
+            int tOccurence = message.getSentAt().indexOf("T");
             timeText.setText(message.getSentAt().substring(tOccurence + 1, tOccurence + 6));
         }
     }
@@ -137,7 +147,7 @@ public class MessageListAdapter extends RecyclerView.Adapter {
         void bind(Message message) {
             messageText.setText(message.getMessage());
 
-            int tOccurence= message.getSentAt().indexOf("T");
+            int tOccurence = message.getSentAt().indexOf("T");
             timeText.setText(message.getSentAt().substring(tOccurence + 1, tOccurence + 6));
 
             nameText.setText(mThread.getRecipient().getFirstName());

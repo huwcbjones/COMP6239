@@ -1,11 +1,14 @@
 package com.comp6239.Backend.Messaging;
 
-import com.comp6239.Backend.Model.User;
 import com.google.gson.annotations.SerializedName;
+
+import org.joda.time.DateTime;
 
 import java.util.UUID;
 
 public class Message {
+
+
     @SerializedName("id")
     private UUID id;
 
@@ -14,6 +17,8 @@ public class Message {
 
     @SerializedName("timestamp")
     private String sentAt;
+
+    private DateTime timestamp;
 
     @SerializedName("message")
     private String message;
@@ -42,6 +47,7 @@ public class Message {
     }
 
     public void setSentAt(String sentAt) {
+        this.timestamp = new DateTime(sentAt);
         this.sentAt = sentAt;
     }
 
@@ -59,6 +65,13 @@ public class Message {
 
     public void setState(MessageState state) {
         this.state = state;
+    }
+
+    public DateTime getTimestamp() {
+        if (timestamp == null){
+            setSentAt(sentAt);
+        }
+        return timestamp;
     }
 }
 

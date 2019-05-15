@@ -88,7 +88,7 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
                 mMessageBox.setText("");
-                refreshMessageList();
+//                refreshMessageList();
             }
 
             @Override
