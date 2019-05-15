@@ -116,7 +116,9 @@ def send_message(sender_id: UUID, recipient_id: UUID, message: str, session: Ses
                     "last_name": sender.last_name
                 },
                 "message": message.message,
-                "timestamp": message.created_at
+                "timestamp": message.created_at,
+                "id": message.id,
+                "state": message.state
             }
         ),
         recipient.id
