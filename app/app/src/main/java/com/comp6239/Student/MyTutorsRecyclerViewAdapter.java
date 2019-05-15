@@ -39,16 +39,16 @@ public class MyTutorsRecyclerViewAdapter extends RecyclerView.Adapter<MyTutorsRe
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mNameView.setText(mValues.get(position).getRecipient().getFirstName() + " " + mValues.get(position).getRecipient().getLastName()); //Get name
-        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[mValues.get(position).getMessages().length].getMessage()); //Get the last messages text
+        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[0].getMessage()); //Get the last messages text
 
-        int unreadMessages = 0;
+        Integer unreadMessages = 0;
         for(Message m : mValues.get(position).getMessages()) {
             if(m.getState() == MessageState.DELIVERED ) {
                 unreadMessages++;
             }
         }
 
-        holder.mNotifNumberView.setText(unreadMessages);
+        holder.mNotifNumberView.setText(unreadMessages.toString());
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override

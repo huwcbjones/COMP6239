@@ -1,11 +1,15 @@
 package com.comp6239.Generic;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -38,16 +42,17 @@ public class MessagingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messaging);
         apiBackend = BackendRequestController.getInstance(this);
 
-        if(getIntent().hasExtra("threadId")) {
-            threadId = getIntent().getStringExtra("threadId");
-            refreshMessageList();
-        }
-
         mMessageBox = findViewById(R.id.edittext_chatbox);
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mMessageRecycler.setAdapter(mMessageAdapter);
+        mMessageRecycler.setAdapter(new MessageListAdapter(this, null));
 
+        if(getIntent().hasExtra("threadId")) {
+            threadId = getIntent().getStringExtra("threadId");
+            refreshMessageList();
+            mMessageRecycler.setAdapter(mMessageAdapter);
+
+        }
 
         Button sendButton = findViewById(R.id.button_chatbox_send);
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -57,8 +62,8 @@ public class MessagingActivity extends AppCompatActivity {
             }
         });
 
-
     }
+
 
     public void sendMessage() {
         if(TextUtils.isEmpty(mMessageBox.getText().toString().trim())) {
@@ -72,6 +77,7 @@ public class MessagingActivity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 mMessageBox.setText("");
                 refreshMessageList();
+
             }
 
             @Override
@@ -91,6 +97,12 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MessageThread> call, Response<MessageThread> response) {
                 mMessageAdapter = new MessageListAdapter(getApplicationContext(), response.body());
+                Log.d("Messaging", "Setting the adapter after getting messages");
+                mMessageRecycler.setAdapter(mMessageAdapter);
+                mMessageRecycler.setAdapter(mMessageAdapter);
+                mMessageRecycler.setAdapter(mMessageAdapter);
+                mMessageRecycler.setAdapter(mMessageAdapter);
+
             }
 
             @Override

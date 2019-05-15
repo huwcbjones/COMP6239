@@ -3,6 +3,7 @@ package com.comp6239.Generic;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,14 +30,18 @@ public class MessageListAdapter extends RecyclerView.Adapter {
 
     public MessageListAdapter(Context context, MessageThread thread) {
         mContext = context;
-        mThread = thread;
-        mMessageList = Arrays.asList(thread.getMessages());
-        backend = BackendRequestController.getInstance(context);
-
+        if(thread != null) {
+            mThread = thread;
+            mMessageList = Arrays.asList(thread.getMessages());
+            backend = BackendRequestController.getInstance(context);
+        }
     }
 
     @Override
     public int getItemCount() {
+        if(mMessageList == null) {
+            return 0;
+        }
         return mMessageList.size();
     }
 
