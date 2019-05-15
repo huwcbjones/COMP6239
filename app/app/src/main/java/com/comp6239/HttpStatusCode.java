@@ -3,7 +3,7 @@
 
 /**
  * Implementation type com.comp6239.HttpStatusCode
- *
+ * <p>
  * (Only codes 400 to 417 and codes 500 to 524 implemented)
  *
  * @see "http://en.wikipedia.org/wiki/List_of_HTTP_status_codes"
@@ -20,22 +20,22 @@ public enum HttpStatusCode {
     CREATED(201, "Created"),
     ACCEPTED(202, "Accepted"),
     NON_AUTHORITATIVE_INFORMATION(203, "Non-Authoritative Information"),
-    NO_CONTENT(204,  "No Content"),
+    NO_CONTENT(204, "No Content"),
     RESET_CONTENT(205, "Reset Content"),
     PARTIAL_CONTENT(206, "Partial Content"),
-    MULTI_STATUS(207, "Multi-Status (WebDAV; RFC 4918"),
-    ALREADY_REPORTED(208, "Already Reported (WebDAV; RFC 5842)" ),
+    MULTI_STATUS(207, "Multi-Status"),
+    ALREADY_REPORTED(208, "Already Reported"),
     IM_USED(226, "IM Used (RFC 3229)"),
 
     MULTIPLE_CHOICES(300, "Multiple Choices"),
     MOVED_PERMANENTLY(301, "Moved Permanently"),
     FOUND(302, "Found"),
-    SEE_OTHER(303, "See Other (since HTTP/1.1)"),
+    SEE_OTHER(303, "See Other"),
     NOT_MODIFIED(304, "Not Modified"),
-    USE_PROXY(305, "Use Proxy (since HTTP/1.1)"),
+    USE_PROXY(305, "Use Proxy"),
     SWITCH_PROXY(306, "Switch Proxy"),
-    TEMPORARY_REDIRECT(307, "Temporary Redirect (since HTTP/1.1)"),
-    PERMANENT_REDIRECT(308, "Permanent Redirect (approved as experimental RFC)[12]"),
+    TEMPORARY_REDIRECT(307, "Temporary Redirect"),
+    PERMANENT_REDIRECT(308, "Permanent Redirect"),
 
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "Unauthorized"),
@@ -55,6 +55,18 @@ public enum HttpStatusCode {
     UNSUPPORTED_MEDIA_TYPE(415, "Unsupported Media Type"),
     REQUESTED_RANGE_NOT_SATISFIABLE(416, "Requested Range Not Satisfiable"),
     EXPECTATION_FAILED(417, "Expectation Failed"),
+    TEAPOT(418, "I'm a teapot"),
+    MISDIRECTED_REQUEST(421, "Misdirected Request"),
+    UNPROCESSABLE_ENTITY(422, "Unprocessable Entity"),
+    LOCKED(423, "Locked"),
+    FAILED_DEPENDENCY(424, "Failed Dependency"),
+    UPGRADE_REQUIRED(426, "Upgrade Required"),
+    PRECONDITION_REQURED(427, "Precondition Required"),
+    TOO_MANY_REQUESTS(428, "Too Many Requests"),
+    REQUEST_HEADER_FIELDS_TOO_LARGE(431, "Request Header Fields Too Large"),
+    CONNECTION_CLOSED_WITHOUT_RESPONSE(444, "Connection Closed Without Response"),
+    UNAVAILABLE_FOR_LEGAL_REASONS(451, "Unavailable For Legal Reasons"),
+    CLIENT_CLOSED_REQUEST(499, "Client Closed Request"),
 
     INTERNAL_SERVER_ERROR(500, "Internal Server Error"),
     NOT_IMPLEMENTED(501, "Not Implemented"),
@@ -62,16 +74,16 @@ public enum HttpStatusCode {
     SERVICE_UNAVAILABLE(503, "Service Unavailable"),
     GATEWAY_TIMEOUT(504, "Gateway Timeout"),
     HTTP_VERSION_NOT_SUPPORTED(505, "HTTP Version Not Supported"),
-    VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates (RFC 2295)"),
-    INSUFFICIENT_STORAGE(507, "Insufficient Storage (WebDAV; RFC 4918)"),
-    LOOP_DETECTED(508, "Loop Detected (WebDAV; RFC 5842)"),
-    BANDWIDTH_LIMIT_EXCEEDED(509, "Bandwidth Limit Exceeded (Apache bw/limited extension)"),
-    NOT_EXTEND(510, "Not Extended (RFC 2774)"),
-    NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required (RFC 6585)"),
+    VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates"),
+    INSUFFICIENT_STORAGE(507, "Insufficient Storage"),
+    LOOP_DETECTED(508, "Loop Detected"),
+    BANDWIDTH_LIMIT_EXCEEDED(509, "Bandwidth Limit Exceeded"),
+    NOT_EXTEND(510, "Not Extended"),
+    NETWORK_AUTHENTICATION_REQUIRED(511, "Network Authentication Required"),
     CONNECTION_TIMED_OUT(522, "Connection timed out"),
     PROXY_DECLINED_REQUEST(523, "Proxy Declined Request"),
-    TIMEOUT_OCCURRED(524, "A timeout occurred")
-    ;
+    TIMEOUT_OCCURRED(524, "A timeout occurred"),
+    NETWORK_CONNECT_TIMEOUT(599, "Network Connect Timeout Error");
 
     private int code;
     private String desc;
