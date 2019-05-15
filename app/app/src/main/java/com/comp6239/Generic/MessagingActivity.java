@@ -45,13 +45,12 @@ public class MessagingActivity extends AppCompatActivity {
         mMessageBox = findViewById(R.id.edittext_chatbox);
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
-        mMessageRecycler.setAdapter(new MessageListAdapter(this, null));
+        mMessageAdapter = new MessageListAdapter(this, null);
+        mMessageRecycler.setAdapter(mMessageAdapter);
 
         if(getIntent().hasExtra("threadId")) {
             threadId = getIntent().getStringExtra("threadId");
             refreshMessageList();
-            mMessageRecycler.setAdapter(mMessageAdapter);
-
         }
 
         Button sendButton = findViewById(R.id.button_chatbox_send);
@@ -77,7 +76,6 @@ public class MessagingActivity extends AppCompatActivity {
             public void onResponse(Call<Void> call, Response<Void> response) {
                 mMessageBox.setText("");
                 refreshMessageList();
-
             }
 
             @Override
@@ -96,13 +94,8 @@ public class MessagingActivity extends AppCompatActivity {
         thread.enqueue(new Callback<MessageThread>() {
             @Override
             public void onResponse(Call<MessageThread> call, Response<MessageThread> response) {
-                mMessageAdapter = new MessageListAdapter(getApplicationContext(), response.body());
+                mMessageAdapter.swapMessages(getApplicationContext(), response.body());
                 Log.d("Messaging", "Setting the adapter after getting messages");
-                mMessageRecycler.setAdapter(mMessageAdapter);
-                mMessageRecycler.setAdapter(mMessageAdapter);
-                mMessageRecycler.setAdapter(mMessageAdapter);
-                mMessageRecycler.setAdapter(mMessageAdapter);
-
             }
 
             @Override

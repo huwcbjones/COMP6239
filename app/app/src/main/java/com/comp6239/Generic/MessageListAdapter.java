@@ -29,12 +29,17 @@ public class MessageListAdapter extends RecyclerView.Adapter {
     private List<Message> mMessageList;
 
     public MessageListAdapter(Context context, MessageThread thread) {
+        swapMessages(context, thread);
+    }
+
+    public void swapMessages(Context context, MessageThread thread){
         mContext = context;
-        if(thread != null) {
-            mThread = thread;
-            mMessageList = Arrays.asList(thread.getMessages());
-            backend = BackendRequestController.getInstance(context);
-        }
+
+        if (thread == null) return;
+        mThread = thread;
+        mMessageList = Arrays.asList(thread.getMessages());
+        backend = BackendRequestController.getInstance(context);
+        notifyDataSetChanged();
     }
 
     @Override
