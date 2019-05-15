@@ -93,15 +93,15 @@ public class TutorViewProfileActivity extends AppCompatActivity {
     }
 
     private void sendMessageToTutor() {
-        LayoutInflater layoutInflater = LayoutInflater.from(getApplicationContext());
+        LayoutInflater layoutInflater = LayoutInflater.from(TutorViewProfileActivity.this);
         View promptView = layoutInflater.inflate(R.layout.add_subject_dialog, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getApplicationContext());
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TutorViewProfileActivity.this);
         alertDialogBuilder.setView(promptView);
-
+        ((TextView )promptView.findViewById(R.id.hint_message_dialog)).setText("Enter the message you wish to send to the tutor:");
         final EditText editText = promptView.findViewById(R.id.subject_name_edittext);
         // setup a dialog window
         alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("Add Subject", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Send Message to Tutor:", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Call<Void> createMessageRequest = apiBackend.apiService.startConversation(new MessageRequest(
                                 tutorId,
@@ -110,14 +110,14 @@ public class TutorViewProfileActivity extends AppCompatActivity {
                             @SuppressLint("RestrictedApi")
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Messaged the tutor!", Toast.LENGTH_LONG);
+                                Toast toast = Toast.makeText(TutorViewProfileActivity.this, "Messaged the tutor!", Toast.LENGTH_LONG);
                                 toast.show();
                                 fab.setVisibility(View.GONE);
                             }
 
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
-                                Toast toast = Toast.makeText(getApplicationContext(), "Failed to access the server!", Toast.LENGTH_LONG);
+                                Toast toast = Toast.makeText(TutorViewProfileActivity.this, "Failed to access the server!", Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });

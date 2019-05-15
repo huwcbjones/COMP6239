@@ -37,8 +37,12 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).getFirstName());
-        holder.mContentView.setText(mValues.get(position).getLastName());
+        holder.mNameView.setText(mValues.get(position).getFirstName() + " " + mValues.get(position).getLastName());
+        if(mValues.get(position).getPrice() != null && mValues.get(position).getSubjects() != null) {
+            holder.mPriceView.setText("£" + mValues.get(position).getPrice().toString() + " per hour");
+            holder.mNumOfSubjectsView.setText(mValues.get(position).getSubjects().length +" Subject(s)");
+        }
+
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,20 +64,22 @@ public class SearchTutorRecyclerViewAdapter extends RecyclerView.Adapter<SearchT
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
+        public final TextView mNameView;
+        public final TextView mPriceView;
+        public final TextView mNumOfSubjectsView;
         public Tutor mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.recipient_name);
-            mContentView = (TextView) view.findViewById(R.id.subject_number);
+            mNameView = view.findViewById(R.id.tutor_name);
+            mPriceView = view.findViewById(R.id.tutor_price);
+            mNumOfSubjectsView = view.findViewById(R.id.subject_number);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mNameView.getText() + "'";
         }
     }
 }

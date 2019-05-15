@@ -16,6 +16,10 @@ public class MessageRequest {
         this.message = message;
     }
 
+    public MessageRequest(String message) {
+        this.message = message;
+    }
+
     public String getRecipientId() {
         return recipientId;
     }

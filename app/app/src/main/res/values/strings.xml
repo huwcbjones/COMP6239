@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">COMP6239</string>
+    <string name="app_name">COMP6239 - Tutor Finder App</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -25,8 +25,8 @@
     <string name="title_tutor_requests">Tutor Approval</string>
     <string name="title_subjects">Available Subjects</string>
     <string name="title_notifications">Notifications</string>
-    <string name="title_activity_tutor_home">TutorHomeActivity</string>
-    <string name="title_activity_tutor_view_profile">TutorViewProfile</string>
+    <string name="title_activity_tutor_home">Tutor Home</string>
+    <string name="title_activity_tutor_view_profile">Tutor Profile</string>
     <string name="title_activity_admin_home">Admin Home</string>
 
     <string name="preference_file_key">COMP6239</string>

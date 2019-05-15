@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Enter Name of Subject to Add:"
-        android:id="@+id/textView" />
+        android:id="@+id/hint_message_dialog" />
 
     <EditText
         android:id="@+id/subject_name_edittext"

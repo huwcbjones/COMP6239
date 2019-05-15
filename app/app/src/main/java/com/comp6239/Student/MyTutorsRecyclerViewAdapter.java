@@ -31,7 +31,7 @@ public class MyTutorsRecyclerViewAdapter extends RecyclerView.Adapter<MyTutorsRe
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_conversation_list, parent, false);
+                .inflate(R.layout.conversation_item, parent, false);
         return new ViewHolder(view);
     }
 

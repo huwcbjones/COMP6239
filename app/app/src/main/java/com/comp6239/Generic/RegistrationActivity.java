@@ -5,6 +5,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -514,6 +515,8 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             showProgress(false);
 
             if (success) {
+                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(i);
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

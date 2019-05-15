@@ -80,14 +80,18 @@ public class StudentSearchTutorsFragment extends Fragment {
             mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
         }
 
-        refreshTutorList();
+        refreshTutorList(null, null, null, null);
 
 
         return view;
     }
 
-    private void refreshTutorList() {
-        Call<List<Tutor>> tutorList = apiBackend.apiService.getAvailableTutors();
+    private void refreshTutorList(String name, String location, Float lowValue, Float highValue) {
+
+        Call<List<Tutor>> tutorList = apiBackend.apiService.getAvailableTutors(
+                (name != null)? name : null,
+                (location != null)? location : null,
+                (lowValue != null && highValue != null)? lowValue + "," + highValue : null);
         tutorList.enqueue(new Callback<List<Tutor>>() {
             @Override
             public void onResponse(Call<List<Tutor>> call, Response<List<Tutor>> response) {

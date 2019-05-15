@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.comp6239.Backend.BackendRequestController;
+import com.comp6239.Generic.LoginActivity;
 import com.comp6239.R;
 
 /**
@@ -30,7 +31,6 @@ public class TutorMyProfileFragment extends Fragment {
     //private static final String ARG_PARAM2 = "param2";
     private TextView mName;
     private TextView mEmail;
-    private boolean logOut;
 
 
     private OnFragmentInteractionListener mListener;
@@ -88,11 +88,6 @@ public class TutorMyProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 logoutDialog();
-
-                if(logOut) {
-                    backend.getSession().invalidate(); //Invalidate also logs out the user and moves them to login
-                }
-
             }
         });
 
@@ -146,22 +141,24 @@ public class TutorMyProfileFragment extends Fragment {
     }
 
     private void logoutDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setTitle("Are you sure?");
         builder.setMessage("You are about to sign out. Do you want to proceed ?");
         builder.setCancelable(false);
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                logOut = true;
-
+                backend.getSession().invalidate();
+                Intent i = new Intent(getContext(), LoginActivity.class);
+                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(i);
             }
         });
 
         builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                logOut = false;
+                dialog.dismiss();
             }
         });
 

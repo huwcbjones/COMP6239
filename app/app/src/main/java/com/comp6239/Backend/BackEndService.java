@@ -47,8 +47,13 @@ public interface BackEndService {
     @GET("/subject")
     Call<List<Subject>> getAllSubjects();
 
+    @POST("/thread/{id}")
+    Call<Void> sendMessageToThread(@Path("id") String id, @Body MessageRequest messageOnly);
+
     @GET("/search/tutors")
-    Call<List<Tutor>> getAvailableTutors();
+    Call<List<Tutor>> getAvailableTutors(@Query("name") String name,
+                                         @Query("location") String location,
+                                         @Query("price") String lowValueHighValue);
 
     @GET("/student/tutors")
     Call<List<MessageThread>> getStudentsTutorConversations();

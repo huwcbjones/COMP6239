@@ -170,10 +170,6 @@ public class BackendRequestController {
                     editor.remove(context.getResources().getString(R.string.emailSharePref));
                     editor.remove(context.getResources().getString(R.string.tokenSharePref));
 
-
-                    Intent i = new Intent(context, LoginActivity.class);
-                    i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    context.startActivity(i);
                     // sending logged out event to it's listener
                     // i.e: Activity, Fragment, Service
                     if (authenticationListener != null) {

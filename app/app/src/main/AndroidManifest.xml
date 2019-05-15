@@ -16,10 +16,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Generic.MessagingActivity"></activity>
-        <activity android:name=".Admin.AdminReviewTutor" />
+        <activity android:name=".Generic.MessagingActivity"
+            android:noHistory="true"></activity>
+        <activity android:name=".Admin.AdminReviewTutor"
+            android:noHistory="true"/>
         <activity
             android:name=".Generic.RegistrationActivity"
+            android:noHistory="true"
             android:label="@string/title_activity_registration" />
         <activity
             android:name=".Admin.AdminHomeActivity"
@@ -27,6 +30,7 @@
         <activity
             android:name=".Tutor.TutorViewProfileActivity"
             android:label="@string/title_activity_tutor_view_profile"
+            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".Tutor.TutorEditProfileActivity" />
         <activity android:name=".Student.StudentEditProfileActivity" />
@@ -38,10 +42,10 @@
             android:label="@string/title_activity_student_home" />
         <activity
             android:name=".Generic.LoginActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
