@@ -128,7 +128,7 @@ def search_tutors(
     if location:
         query = query.filter(User.location.like("%{}%".format(name)))
 
-    valid_ids = set(query.all())
+    valid_tutor_ids = set([i[0] for i in query.all()])
     query = session.query(TutorProfile.tutor_id, func.max(TutorProfile.id)).group_by(TutorProfile.tutor_id).filter(
         TutorProfile.reviewed_at.isnot(None),
         TutorProfile.reason.is_(None)
@@ -137,7 +137,7 @@ def search_tutors(
         query = query.filter(TutorProfile.price >= price_lower)
     if price_higher:
         query = query.filter(TutorProfile.price <= price_higher)
-    valid_ids2 = set([i[0] for i in query.all()])
+    valid_tutor_profile_ids = set([i[0] for i in query.all()])
 
-    tutor_ids = valid_ids.intersection(valid_ids2)
+    tutor_ids = valid_tutor_ids.intersection(valid_tutor_profile_ids)
     return [get_tutor_by_id(i) for i in tutor_ids]

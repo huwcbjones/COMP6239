@@ -331,5 +331,13 @@ class TutorSearch(Controller):
 
         tutors = search_tutors(name=name, location=location, price_lower=price_low, price_higher=price_high)
         self.write([{
-            "id": t.id
-        } for t in tutors])
+            "id": tutor.id,
+            "first_name": tutor.first_name,
+            "last_name": tutor.last_name,
+            "gender": tutor.gender,
+            "role": tutor.role,
+            "location": tutor.location,
+            "subjects": tutor.subjects,
+            "bio": tutor.bio,
+            "price": tutor.price
+        } for tutor in tutors])
