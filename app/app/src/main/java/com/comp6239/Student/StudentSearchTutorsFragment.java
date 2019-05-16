@@ -92,6 +92,9 @@ public class StudentSearchTutorsFragment extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                if (newText.length() == 0) {
+                    refreshTutorList(null, null, null, null, "");
+                }
                 return false;
             }
         });
