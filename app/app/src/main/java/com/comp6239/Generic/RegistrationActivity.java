@@ -53,6 +53,8 @@ import com.comp6239.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
+import org.w3c.dom.Text;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -78,13 +80,6 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
     private Location mLocation;
     LocationListener locationListener;
 
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -304,14 +299,35 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
+        } else if (TextUtils.isEmpty(firstName)) {
+            mFirstNameView.setError("Please enter a first name!");
+            focusView = mFirstNameView;
+            cancel = true;
+        } else if (TextUtils.isEmpty(lastName)) {
+            mLastNameView.setError("Please enter a last name!");
+            focusView = mLastNameView;
+            cancel = true;
         }
 
-        //TODO: First name, last name validation
+        if(mGenderChoose.getCheckedRadioButtonId() == -1 && !cancel) {
+            cancel = true;
+            focusView = mEmailView;
+            Toast toast = Toast.makeText(getApplicationContext(), "Please check a gender!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
+        if(mRoleChoose.getCheckedRadioButtonId() == -1 && !cancel) {
+            focusView = mEmailView;
+            cancel = true;
+            Toast toast = Toast.makeText(getApplicationContext(), "Please check a role!", Toast.LENGTH_SHORT);
+            toast.show();
+        }
 
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
+
             focusView.requestFocus();
         } else {
             // Show a progress spinner, and kick off a background task to
