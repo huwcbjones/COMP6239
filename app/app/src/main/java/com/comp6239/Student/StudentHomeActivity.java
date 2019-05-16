@@ -37,16 +37,19 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
             switch (item.getItemId()) {
                 case R.id.navigation_search_tutors:
                     Log.i("push button", "searchtutor");
+                    setTitle("Search Tutors");
                     fm.beginTransaction().hide(activeFrag).show(searchTutors).commit();
                     activeFrag = searchTutors;
                     return true;
                 case R.id.navigation_my_tutors:
                     Log.i("push button", "mytutors");
+                    setTitle("My Tutors");
                     fm.beginTransaction().hide(activeFrag).show(myTutors).commit();
                     activeFrag = myTutors;
                     return true;
                 case R.id.navigation_my_profile:
                     Log.i("push button", "myprofile");
+                    setTitle("My Profile");
                     fm.beginTransaction().hide(activeFrag).show(myProfile).commit();
                     activeFrag = myProfile;
                     return true;
@@ -61,7 +64,7 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
 
 
         setContentView(R.layout.activity_student_home);
-        setTitle("Student Home");
+        setTitle("Search Tutors");
 
         fm.beginTransaction().add(R.id.main_container, myProfile, "3").hide(myProfile).commit();
         fm.beginTransaction().add(R.id.main_container, myTutors, "2").hide(myTutors).commit();
