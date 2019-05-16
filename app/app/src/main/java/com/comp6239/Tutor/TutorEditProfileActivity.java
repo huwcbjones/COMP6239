@@ -382,7 +382,7 @@ public class TutorEditProfileActivity extends AppCompatActivity {
             updatedUser.setId(oldUser.getId());
             if(!TextUtils.isEmpty(mFirstName)) updatedUser.setFirstName(mFirstName);
             if(!TextUtils.isEmpty(mLastName)) updatedUser.setLastName(mLastName);
-            if(!TextUtils.isEmpty(mEmail)) updatedUser.setLastName(mEmail);
+            if(!TextUtils.isEmpty(mEmail)) updatedUser.setEmail(mEmail);
             if(!TextUtils.isEmpty(mPassword)) updatedUser.setPassword(mPassword);
             if(!TextUtils.isEmpty(mBio)) updatedUser.setBio(mBio);
             if(mPrice > 0) updatedUser.setPrice(mPrice);
