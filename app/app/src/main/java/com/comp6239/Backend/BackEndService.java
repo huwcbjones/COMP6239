@@ -24,7 +24,7 @@ public interface BackEndService {
     Call<User> createUser(@Body User user);
 
     @GET("/student/{id}/profile")
-    Call<Student> getUser(@Path("id") String ID);
+    Call<Student> getStudent(@Path("id") String ID);
 
     @POST("/student/{id}/profile")
     Call<Student> updateStudent(@Path("id") String id, @Body Student user);

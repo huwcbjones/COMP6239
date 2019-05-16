@@ -17,7 +17,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Generic.MessagingActivity"
-            android:noHistory="true"></activity>
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".Admin.AdminReviewTutor"
             android:noHistory="true"/>
         <activity
@@ -29,6 +30,11 @@
             android:label="@string/title_activity_admin_home" />
         <activity
             android:name=".Tutor.TutorViewProfileActivity"
+            android:label="@string/title_activity_tutor_view_profile"
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".Student.StudentViewProfileActivity"
             android:label="@string/title_activity_tutor_view_profile"
             android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar" />

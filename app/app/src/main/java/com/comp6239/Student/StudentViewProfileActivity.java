@@ -1,4 +1,4 @@
-package com.comp6239.Tutor;
+package com.comp6239.Student;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -15,10 +15,11 @@ import android.widget.Toast;
 
 import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Messaging.MessageRequest;
+import com.comp6239.Backend.Model.Student;
 import com.comp6239.Backend.Model.Subject;
 import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
-import com.comp6239.Student.StudentHomeActivity;
+import com.comp6239.Tutor.TutorHomeActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class TutorViewProfileActivity extends AppCompatActivity {
+public class StudentViewProfileActivity extends AppCompatActivity {
 
     BackendRequestController backendApi;
     FloatingActionButton fab;
@@ -43,17 +44,17 @@ public class TutorViewProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tutor_view_profile);
         apiBackend = BackendRequestController.getInstance(this);
-        if(getIntent().hasExtra("tutorId")) {
-            tutorId = getIntent().getStringExtra("tutorId");
-            Call<Tutor> getTutor = backendApi.apiService.getTutor(getIntent().getStringExtra("tutorId"));
-            getTutor.enqueue(new Callback<Tutor>() {
+        if(getIntent().hasExtra("studentId")) {
+            tutorId = getIntent().getStringExtra("studentId");
+            Call<Student> getTutor = backendApi.apiService.getStudent(getIntent().getStringExtra("studentId"));
+            getTutor.enqueue(new Callback<Student>() {
                 @Override
-                public void onResponse(Call<Tutor> call, Response<Tutor> response) {
+                public void onResponse(Call<Student> call, Response<Student> response) {
                     updateUIWithDetails(response.body());
                 }
 
                 @Override
-                public void onFailure(Call<Tutor> call, Throwable t) {
+                public void onFailure(Call<Student> call, Throwable t) {
 
                 }
             });
@@ -63,18 +64,14 @@ public class TutorViewProfileActivity extends AppCompatActivity {
             threadId = getIntent().getStringExtra("threadId");
         }
 
-        fab = findViewById(R.id.fab);
         blockFab = findViewById(R.id.block_fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendMessageToTutor();
-            }
-        });
+        fab = findViewById(R.id.fab);
 
-        if(getIntent().hasExtra("isMyTutor")) {
-            if(getIntent().getBooleanExtra("isMyTutor", false)) {
-                fab.setVisibility(View.GONE); //If the student viewing the profile has this as tutor, dont show message button
+        fab.setVisibility(View.GONE);
+
+        if(getIntent().hasExtra("isMyStudent")) {
+            if(getIntent().getBooleanExtra("isMyStudent", false)) {
+                blockFab.setVisibility(View.VISIBLE);
             } else {
                 blockFab.setVisibility(View.GONE);
             }
@@ -87,7 +84,7 @@ public class TutorViewProfileActivity extends AppCompatActivity {
                 block.enqueue(new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        Intent i = new Intent(getApplicationContext(), StudentHomeActivity.class);
+                        Intent i = new Intent(getApplicationContext(), TutorHomeActivity.class);
                         i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(i);
                         finish();
@@ -100,6 +97,7 @@ public class TutorViewProfileActivity extends AppCompatActivity {
                 });
             }
         });
+
 
 
     }
@@ -124,9 +122,9 @@ public class TutorViewProfileActivity extends AppCompatActivity {
     }
 
     private void sendMessageToTutor() {
-        LayoutInflater layoutInflater = LayoutInflater.from(TutorViewProfileActivity.this);
+        LayoutInflater layoutInflater = LayoutInflater.from(StudentViewProfileActivity.this);
         View promptView = layoutInflater.inflate(R.layout.dialog_add_subject, null);
-        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(TutorViewProfileActivity.this);
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(StudentViewProfileActivity.this);
         alertDialogBuilder.setView(promptView);
         ((TextView )promptView.findViewById(R.id.hint_message_dialog)).setText("Enter the message you wish to send to the tutor:");
         final EditText editText = promptView.findViewById(R.id.subject_name_edittext);
@@ -141,14 +139,14 @@ public class TutorViewProfileActivity extends AppCompatActivity {
                             @SuppressLint("RestrictedApi")
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                Toast toast = Toast.makeText(TutorViewProfileActivity.this, "Messaged the tutor!", Toast.LENGTH_LONG);
+                                Toast toast = Toast.makeText(StudentViewProfileActivity.this, "Messaged the tutor!", Toast.LENGTH_LONG);
                                 toast.show();
                                 fab.setVisibility(View.GONE);
                             }
 
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
-                                Toast toast = Toast.makeText(TutorViewProfileActivity.this, "Failed to access the server!", Toast.LENGTH_LONG);
+                                Toast toast = Toast.makeText(StudentViewProfileActivity.this, "Failed to access the server!", Toast.LENGTH_LONG);
                                 toast.show();
                             }
                         });
@@ -167,11 +165,11 @@ public class TutorViewProfileActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private void updateUIWithDetails(Tutor tutor) {
-        fillSubjects(Arrays.asList(tutor.getSubjects()));
-        ((TextView) findViewById(R.id.tutorName)).setText(tutor.getFirstName() + " " + tutor.getLastName());
-        ((TextView) findViewById(R.id.tutorPrice)).setText("£" + tutor.getPrice() + " per hour");
-        ((TextView) findViewById(R.id.tutorBio)).setText(tutor.getBio());
+    private void updateUIWithDetails(Student student) {
+        fillSubjects(Arrays.asList(student.getSubjects()));
+        ((TextView) findViewById(R.id.tutorName)).setText(student.getFirstName() + " " + student.getLastName());
+        ((TextView) findViewById(R.id.tutorPrice)).setVisibility(View.GONE);
+        ((TextView) findViewById(R.id.tutorBio)).setVisibility(View.GONE);
     }
 
 }

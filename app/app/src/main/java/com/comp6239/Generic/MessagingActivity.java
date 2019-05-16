@@ -1,11 +1,13 @@
 package com.comp6239.Generic;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -20,7 +22,10 @@ import com.comp6239.Backend.Messaging.Message;
 import com.comp6239.Backend.Messaging.MessageRequest;
 import com.comp6239.Backend.Messaging.MessageState;
 import com.comp6239.Backend.Messaging.MessageThread;
+import com.comp6239.Backend.Model.Tutor;
 import com.comp6239.R;
+import com.comp6239.Student.StudentViewProfileActivity;
+import com.comp6239.Tutor.TutorViewProfileActivity;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -48,6 +53,7 @@ public class MessagingActivity extends AppCompatActivity {
     private BackendRequestController apiBackend;
     private String threadId;
     private EditText mMessageBox;
+    private String recipientId;
 
     private WebSocketListener mMessageListener;
 
@@ -63,6 +69,30 @@ public class MessagingActivity extends AppCompatActivity {
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
         mMessageAdapter = new MessageListAdapter(this, null);
         mMessageRecycler.setAdapter(mMessageAdapter);
+        Toolbar myToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(myToolbar);
+
+        myToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i;
+                if(apiBackend.getSession().getUser() instanceof Tutor) {
+                    i = new Intent(getApplicationContext(), StudentViewProfileActivity.class);
+                    i.putExtra("studentId", recipientId);
+                    i.putExtra("threadId", threadId);
+                    i.putExtra("isMyStudent", true);
+                } else {
+                    i = new Intent(getApplicationContext(), TutorViewProfileActivity.class);
+                    i.putExtra("tutorId", recipientId);
+                    i.putExtra("threadId", threadId);
+                    i.putExtra("isMyTutor", true);
+                }
+                startActivity(i);
+
+            }
+        });
+
+
 
         if (getIntent().hasExtra("threadId")) {
             threadId = getIntent().getStringExtra("threadId");
@@ -79,6 +109,8 @@ public class MessagingActivity extends AppCompatActivity {
         Request request = new Request.Builder().url("wss://" + BackendRequestController.BASE_URL + "ws").build();
         mMessageListener = new MessagingSocketListener();
         WebSocket ws = new OkHttpClient().newWebSocket(request, mMessageListener);
+
+
     }
 
 
@@ -122,6 +154,7 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MessageThread> call, Response<MessageThread> response) {
                 mMessageAdapter.swapMessages(getApplicationContext(), response.body());
+                recipientId = response.body().getRecipient().getId().toString();
                 setTitle(response.body().getRecipient().getFirstName() + " " + response.body().getRecipient().getLastName());
             }
 
