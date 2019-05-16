@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -132,8 +133,13 @@ public class TutorViewProfileActivity extends AppCompatActivity {
         final EditText editText = promptView.findViewById(R.id.subject_name_edittext);
         // setup a dialog window
         alertDialogBuilder.setCancelable(false)
-                .setPositiveButton("Send Message to Tutor:", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Send Message to Tutor", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        if(TextUtils.isEmpty(editText.getText())) {
+                            Toast toast = Toast.makeText(TutorViewProfileActivity.this, "Please enter a message to send before submitting!", Toast.LENGTH_LONG);
+                            toast.show();
+                            return;
+                        }
                         Call<Void> createMessageRequest = apiBackend.apiService.startConversation(new MessageRequest(
                                 tutorId,
                                 editText.getText().toString()));
