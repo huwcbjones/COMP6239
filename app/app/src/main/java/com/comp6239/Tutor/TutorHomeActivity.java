@@ -47,15 +47,18 @@ public class TutorHomeActivity extends AppCompatActivity implements
             switch (item.getItemId()) {
                 case R.id.navigation_my_tutees:
                     fm.beginTransaction().hide(activeFrag).show(myTutees).commit();
+                    setTitle("My Tutees");
                     activeFrag = myTutees;
                     return true;
                 case R.id.navigation_my_requests:
                     fm.beginTransaction().hide(activeFrag).show(myRequests).commit();
+                    setTitle("My Tutor Requests");
                     activeFrag = myRequests;
                     return true;
 
                 case R.id.navigation_my_profile:
                     fm.beginTransaction().hide(activeFrag).show(myProfile).commit();
+                    setTitle("My Profile");
                     activeFrag = myProfile;
                     return true;
             }
@@ -67,6 +70,7 @@ public class TutorHomeActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("My Tutees");
         setContentView(R.layout.activity_tutor_home);
         backendApi = BackendRequestController.getInstance(this);
 
