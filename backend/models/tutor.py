@@ -130,6 +130,7 @@ def search_tutors(
         location: str = None,
         price_lower: int = None,
         price_higher: int = None,
+        subjects: List[str] = None,
         query_str: str = None,
         session: Session = None
 ) -> List[Tutor]:
@@ -144,17 +145,22 @@ def search_tutors(
         query = query.filter(User.location.ilike("%{}%".format(location)))
 
     if query_str:
-        query = query.filter(or_(
-            User.first_name.ilike("%{}%".format(query_str)),
-            User.last_name.ilike("%{}%".format(query_str)),
-            User.location.ilike("%{}%".format(query_str))
-        ))
+        subjects = [s[0] for s in session.query(Subject.id).filter(Subject.name.ilike("%" + query_str + "%")).all()]
+        if not subjects:
+            query = query.filter(or_(
+                User.first_name.ilike("%{}%".format(query_str)),
+                User.last_name.ilike("%{}%".format(query_str)),
+                User.location.ilike("%{}%".format(query_str)),
+            ))
 
     valid_tutor_ids = set([i[0] for i in query.all()])
     query = session.query(TutorProfile.tutor_id, func.max(TutorProfile.id)).group_by(TutorProfile.tutor_id).filter(
         TutorProfile.reviewed_at.isnot(None),
         TutorProfile.reason.is_(None)
     )
+    if subjects:
+        query = query.filter(TutorProfile.subjects.any(Subject.id.in_(subjects)))
+
     if price_lower:
         query = query.filter(TutorProfile.price >= price_lower)
     if price_higher:

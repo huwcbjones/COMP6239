@@ -336,6 +336,8 @@ class TutorSearch(Controller):
         name = self.get_query_argument("name", None)
         location = self.get_query_argument("location", None)
         price = self.get_query_argument("price", None)
+        subjects = self.get_query_argument("subjects", None)
+
         if price:
             try:
                 price_split = price.split(",")
@@ -344,11 +346,17 @@ class TutorSearch(Controller):
             except (ValueError, IndexError):
                 raise BadRequestException("Invalid parameter for price")
 
+        if subjects:
+            subjects = subjects.split(",")
+        else:
+            subjects = []
+
         tutors = search_tutors(
             name=name,
             location=location,
             price_lower=price_low,
             price_higher=price_high,
+            subjects=subjects,
             query_str=query
         )
         self.write([{
