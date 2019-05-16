@@ -61,6 +61,7 @@ public class StudentHomeActivity extends AppCompatActivity implements StudentMyP
 
 
         setContentView(R.layout.activity_student_home);
+        setTitle("Student Home");
 
         fm.beginTransaction().add(R.id.main_container, myProfile, "3").hide(myProfile).commit();
         fm.beginTransaction().add(R.id.main_container, myTutors, "2").hide(myTutors).commit();

@@ -57,6 +57,7 @@ public class MessagingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_messaging);
         apiBackend = BackendRequestController.getInstance(this);
 
+
         mMessageBox = findViewById(R.id.edittext_chatbox);
         mMessageRecycler = findViewById(R.id.reyclerview_message_list);
         mMessageRecycler.setLayoutManager(new LinearLayoutManager(this));
@@ -121,7 +122,7 @@ public class MessagingActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<MessageThread> call, Response<MessageThread> response) {
                 mMessageAdapter.swapMessages(getApplicationContext(), response.body());
-                Log.d("Messaging", "Setting the adapter after getting messages");
+                setTitle(response.body().getRecipient().getFirstName() + " " + response.body().getRecipient().getLastName());
             }
 
             @Override
