@@ -66,6 +66,7 @@ public class StudentEditProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle("Edit My Profile");
         setContentView(R.layout.activity_student_edit_profile);
         apiBackend = BackendRequestController.getInstance(this);
 

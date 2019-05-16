@@ -37,10 +37,12 @@ public class AdminHomeActivity extends AppCompatActivity implements AdminSubject
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.navigation_tutor_approval:
+                    setTitle("Tutors Awaiting Approvals");
                     fm.beginTransaction().hide(activeFrag).show(tutorApproval).commit();
                     activeFrag = tutorApproval;
                     return true;
                 case R.id.navigation_subjects:
+                    setTitle("Subject Management");
                     fm.beginTransaction().hide(activeFrag).show(subjects).commit();
                     activeFrag = subjects;
                     return true;
@@ -54,6 +56,7 @@ public class AdminHomeActivity extends AppCompatActivity implements AdminSubject
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_home);
+        setTitle("Tutors Awaiting Approvals");
 
         apiBackend = BackendRequestController.getInstance(this);
 
