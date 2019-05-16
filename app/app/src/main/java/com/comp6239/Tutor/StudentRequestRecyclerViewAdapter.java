@@ -43,7 +43,7 @@ public class StudentRequestRecyclerViewAdapter extends RecyclerView.Adapter<Stud
         holder.mItem = mValues.get(position);
         holder.mNameView.setText(mValues.get(position).getRecipient().getFirstName() + " " + mValues.get(position).getRecipient().getLastName()); //Get name
         //Log.d("Studnet Request Adapt", "current position: " + position);
-        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[0].getMessage()); //Get the last messages text
+        holder.mRecentMessageView.setText(mValues.get(position).getMessages()[mValues.get(position).getMessages().length - 1].getMessage()); //Get the last messages text
 
         Integer unreadMessages = 0;
         for(Message m : mValues.get(position).getMessages()) {
