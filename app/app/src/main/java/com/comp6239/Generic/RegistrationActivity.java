@@ -53,8 +53,6 @@ import com.comp6239.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 
-import org.w3c.dom.Text;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -116,7 +114,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == EditorInfo.IME_ACTION_DONE || id == EditorInfo.IME_NULL) {
-                    attemptLogin();
+                    attemptRegistration();
                     return true;
                 }
                 return false;
@@ -155,7 +153,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                attemptLogin();
+                attemptRegistration();
             }
         });
 
@@ -210,7 +208,8 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
         mGoLoginView.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                finish();
+                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -265,7 +264,7 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
      * If there are form errors (invalid email, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
-    private void attemptLogin() {
+    private void attemptRegistration() {
         if (mAuthTask != null) {
             return;
         }
@@ -502,34 +501,24 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
 
             Call<User> call = backendApi.apiService.createUser(newUser);
 
+            try {
+                Response<User> response = call.execute();
+                Log.d("Registration", "Response received");
+                Log.d("Registration", response.message());
+                if(response.raw().code() == HttpStatusCode.CONFLICT.getCode()) {
+                    accountCreationError = "An account with that email already exists!";
 
-            call.enqueue(new Callback<User>() {
 
-                @Override
-                public void onResponse(Call<User> call, Response<User> response) {
-                    Log.d("Registration", "Response received");
-                    Log.d("Registration", response.message());
-                    if(response.raw().code() == HttpStatusCode.CONFLICT.getCode()) {
-                        accountCreationError = "An account with that email already exists!";
-                        Toast toast = Toast.makeText(getApplicationContext(), "That account already exists!", Toast.LENGTH_LONG);
-                        toast.show();
-
-                    } else if(response.message().equals("Created")) { //Success
-                        createAccountSuccessful = true;
-                        Toast toast = Toast.makeText(getApplicationContext(), "Successfully registered!", Toast.LENGTH_LONG);
-                        toast.show();
-                    }
-
+                } else if(response.raw().code() == HttpStatusCode.CREATED.getCode()) { //Success
+                    return true;
                 }
+            } catch (IOException e) {
+                accountCreationError = "Failed to register for account";
+                Log.d("Registration", "Failed to register");
+                e.printStackTrace();
+            }
 
-                @Override
-                public void onFailure(Call<User> call, Throwable t) {
-                    Log.d("Registration", "Failed to register");
-                    t.printStackTrace();
-                }
-            });
-
-            return true;
+            return false;
         }
 
         @Override
@@ -537,20 +526,25 @@ public class RegistrationActivity extends AppCompatActivity implements LoaderCal
             mAuthTask = null;
             showProgress(false);
 
-            if (createAccountSuccessful) {
+            if (success) {
+                Toast toast = Toast.makeText(getApplicationContext(), "Successfully registered!", Toast.LENGTH_LONG);
+                toast.show();
                 Intent i = new Intent(getApplicationContext(), LoginActivity.class);
                 startActivity(i);
                 finish();
-            } else {
-                TextView field;
-                if (accountCreationError.length() != 0){
-                    field = mEmailView;
-                    field.setError(accountCreationError);
-                } else {
-                    field = mPasswordView;
-                }
-                field.requestFocus();
+                return;
             }
+
+            TextView field;
+            if (accountCreationError.length() != 0){
+                field = mEmailView;
+                field.setError(accountCreationError);
+            } else {
+                field = mPasswordView;
+            }
+            field.requestFocus();
+            Toast toast = Toast.makeText(getApplicationContext(), accountCreationError, Toast.LENGTH_LONG);
+            toast.show();
         }
 
         @Override
