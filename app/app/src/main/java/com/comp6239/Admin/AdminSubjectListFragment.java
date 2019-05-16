@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.comp6239.Backend.BackendRequestController;
 import com.comp6239.Backend.Model.Subject;
 import com.comp6239.R;
+import com.comp6239.Tutor.TutorViewProfileActivity;
 
 import java.util.List;
 
@@ -166,6 +168,11 @@ public class AdminSubjectListFragment extends Fragment {
         alertDialogBuilder.setCancelable(false)
                 .setPositiveButton("Add Subject", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
+                        if(TextUtils.isEmpty(editText.getText())) {
+                            Toast toast = Toast.makeText(getContext(), "Please enter a Subject name before submitting!", Toast.LENGTH_LONG);
+                            toast.show();
+                            return;
+                        }
                         Call<Void> createSub = apiBackend.apiService.createNewSubject(new Subject(editText.getText().toString()));
                         createSub.enqueue(new Callback<Void>() {
                             @Override
