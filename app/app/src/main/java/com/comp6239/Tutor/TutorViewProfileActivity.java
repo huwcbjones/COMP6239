@@ -172,6 +172,7 @@ public class TutorViewProfileActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.tutorName)).setText(tutor.getFirstName() + " " + tutor.getLastName());
         ((TextView) findViewById(R.id.tutorPrice)).setText("£" + tutor.getPrice() + " per hour");
         ((TextView) findViewById(R.id.tutorBio)).setText(tutor.getBio());
+        ((TextView) findViewById(R.id.tutorLocation)).setText(tutor.getLocation());
     }
 
 }

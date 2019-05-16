@@ -170,6 +170,7 @@ public class StudentViewProfileActivity extends AppCompatActivity {
         ((TextView) findViewById(R.id.tutorName)).setText(student.getFirstName() + " " + student.getLastName());
         ((TextView) findViewById(R.id.tutorPrice)).setVisibility(View.GONE);
         ((TextView) findViewById(R.id.tutorBio)).setVisibility(View.GONE);
+        ((TextView) findViewById(R.id.tutorLocation)).setText(student.getLocation());
     }
 
 }
