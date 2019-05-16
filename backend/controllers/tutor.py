@@ -277,24 +277,25 @@ class Tutees(Controller):
 
     @protected(roles=[UserRole.TUTOR])
     async def get(self):
-        tutees = get_tutees_threads_by_tutor_id(self.current_user.id)
-        self.write([{
-            "id": thread.id,
-            "recipient": {
-                "id": thread.get_recipient(self.current_user.id).id,
-                "first_name": thread.get_recipient(self.current_user.id).first_name,
-                "last_name": thread.get_recipient(self.current_user.id).last_name
-            },
-            "message_count": thread.message_count,
-            "messages": [{
-                "id": m.id,
-                "sender_id": m.sender_id,
-                "timestamp": m.created_at,
-                "message": m.message,
-                "state": m.state
-            } for m in thread.messages],
-            "state": thread.state
-        } for thread in tutees])
+        with self.app.db.session() as s:
+            tutees = get_tutees_threads_by_tutor_id(self.current_user.id, session=s)
+            self.write([{
+                "id": thread.id,
+                "recipient": {
+                    "id": thread.get_recipient(self.current_user.id).id,
+                    "first_name": thread.get_recipient(self.current_user.id).first_name,
+                    "last_name": thread.get_recipient(self.current_user.id).last_name
+                },
+                "message_count": thread.message_count,
+                "messages": [{
+                    "id": m.id,
+                    "sender_id": m.sender_id,
+                    "timestamp": m.created_at,
+                    "message": m.message,
+                    "state": m.state
+                } for m in thread.messages],
+                "state": thread.state
+            } for thread in tutees])
 
 
 class TuteeRequests(Controller):
@@ -302,24 +303,25 @@ class TuteeRequests(Controller):
 
     @protected(roles=[UserRole.TUTOR])
     async def get(self):
-        tutees = get_tutee_request_threads_by_tutor_id(self.current_user.id)
-        self.write([{
-            "id": thread.id,
-            "recipient": {
-                "id": thread.get_recipient(self.current_user.id).id,
-                "first_name": thread.get_recipient(self.current_user.id).first_name,
-                "last_name": thread.get_recipient(self.current_user.id).last_name
-            },
-            "message_count": thread.message_count,
-            "messages": [{
-                "id": m.id,
-                "sender_id": m.sender_id,
-                "timestamp": m.created_at,
-                "message": m.message,
-                "state": m.state
-            } for m in thread.messages],
-            "state": thread.state
-        } for thread in tutees])
+        with self.app.db.session() as s:
+            tutees = get_tutee_request_threads_by_tutor_id(self.current_user.id, session=s)
+            self.write([{
+                "id": thread.id,
+                "recipient": {
+                    "id": thread.get_recipient(self.current_user.id).id,
+                    "first_name": thread.get_recipient(self.current_user.id).first_name,
+                    "last_name": thread.get_recipient(self.current_user.id).last_name
+                },
+                "message_count": thread.message_count,
+                "messages": [{
+                    "id": m.id,
+                    "sender_id": m.sender_id,
+                    "timestamp": m.created_at,
+                    "message": m.message,
+                    "state": m.state
+                } for m in thread.messages],
+                "state": thread.state
+            } for thread in tutees])
 
 
 class TutorSearch(Controller):
