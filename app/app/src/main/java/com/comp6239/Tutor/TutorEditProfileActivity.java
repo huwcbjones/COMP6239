@@ -355,20 +355,20 @@ public class TutorEditProfileActivity extends AppCompatActivity {
             Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
 
             try {
-                List<Address> addresses = geocoder.getFromLocation(
-                        mLocation.getLatitude(),
-                        mLocation.getLongitude(),
-                        // In this sample, get just a single address.
-                        1);
-                loc[0] = addresses.get(0).getSubAdminArea();
+                if (mLocation != null) {
+                    List<Address> addresses = geocoder.getFromLocation(
+                            mLocation.getLatitude(),
+                            mLocation.getLongitude(),
+                            // In this sample, get just a single address.
+                            1);
+                    loc[0] = addresses.get(0).getSubAdminArea();
+                }
             } catch (IOException e) {
                 // Catch network or other I/O problems.
-                Log.e("Registration-GEOCODER", "Network unavailable, location will not be updated.", e);
-                loc[0] = oldUser.getLocation();
+                Log.e("Registration-GEOCODER", "Network unavailable", e);
             } catch (IllegalArgumentException e) {
                 // Catch invalid latitude or longitude values.
-                Log.e("Registration-GEOCODER", "Invalid location passed, location will not be updated..", e);
-                loc[0] = oldUser.getLocation();
+                Log.e("Registration-GEOCODER", "Invalid location passed.", e);
             }
 
             try {
